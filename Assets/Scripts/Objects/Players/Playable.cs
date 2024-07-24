@@ -4,15 +4,6 @@ using UnityEngine;
 
 public class Playable : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    //Git Test NH
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
