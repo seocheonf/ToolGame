@@ -72,8 +72,9 @@ public class GameManager : MonoBehaviour
     private IEnumerator Start()
     {
 
+        #region MakeSingleton
         //싱글톤. 만약 원본이 없다면 저장, 있다면 본인 파괴하고 즉각 나가기.
-        if(instance == null)
+        if (instance == null)
         {
             instance = this;
         }
@@ -82,6 +83,7 @@ public class GameManager : MonoBehaviour
             Destroy(this);
             yield break;
         }
+        #endregion
 
         controller = new ControllerManager();
         yield return controller.Initiate();
