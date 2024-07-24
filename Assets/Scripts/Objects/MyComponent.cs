@@ -4,15 +4,18 @@ using UnityEngine;
 
 public class MyComponent : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
+    protected virtual void MyStart() { }
+    protected virtual void MyDestroy() { }
+
+    protected virtual void OnEnable()
     {
-        
+        GameManager.ObjectsStart -= MyStart;
+        GameManager.ObjectsStart += MyStart;
+    }
+    protected virtual void OnDisable()
+    {
+        GameManager.ObjectsDestroy -= MyDestroy;
+        GameManager.ObjectsDestroy += MyDestroy;
     }
 }
