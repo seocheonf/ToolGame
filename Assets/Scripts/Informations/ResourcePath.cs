@@ -1,18 +1,30 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class ResourcePath : MonoBehaviour
+public static class ResourcePath
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public const string audioMixerPath = "";
 
-    // Update is called once per frame
-    void Update()
+    public static string[] prefabPathArray =
     {
         
-    }
-}
+        #region Object Prefab List
+
+
+
+        #endregion
+
+
+        #region UI Prefab List
+
+
+
+        #endregion
+
+    };
+    public static string[] bgmPathArray =
+    {
+        
+    };
+    public static string[] sfxPathArray =
+    {
+        
+    };
+};

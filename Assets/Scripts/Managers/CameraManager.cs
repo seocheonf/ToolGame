@@ -2,17 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraManager : MonoBehaviour
+public class CameraManager : Manager
 {
-    // Start is called before the first frame update
-    void Start()
+    public override IEnumerator Initiate()
     {
-        
-    }
+        yield return base.Initiate();
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+
     }
 }

@@ -6,6 +6,7 @@ public abstract class Manager
     //생성자를 쓰지 않는 이유는, Manager함수를 넣는 타이밍은 델리게이트인 만큼 순서가 중요함.
     //그러다보니 알아서 딱딱 하게 만들 수는 있겠다만, 그만큼 순서가 중요하기 때문에 프로그래머가 직접 순서를 바깥에서 조정할 수 있게 하기 위함.
     //Initiate를 쓰는 이유는 하단 참조.
+    //어차피 Initiate가 있는 겸, 생성자를 굳이 만들 필요는 없다고 판단. 생성에 대한 처리 시점을 하나의 함수에 몰아서 할 수 있도록. 여러개 있으면 복잡하고 헷갈리니.
 
     //Manager가 생성되었을 때 해야할 일들.
     //코루틴으로서, 스크립트가 실행되는 도중 동시성이 보장되어야 하는 일(오래걸리는 일)들이 있을 가능성에 대비함.
@@ -23,6 +24,5 @@ public abstract class Manager
     public virtual void ManagerUpdate(float deltaTime) { }
     //Manager가 FixedUpdate단에서 지속적으로 해야할 일
     public virtual void ManagerFixedUpdate(float fixedDeltaTime) { }
-    //Manager가 파괴되었을 때 한번 해야할 일
-    public virtual void ManagerDestroy() { }
+
 }
