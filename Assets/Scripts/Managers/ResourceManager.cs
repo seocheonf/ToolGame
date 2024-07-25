@@ -1,18 +1,38 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
-public class ResourceManager : MonoBehaviour
+public class ResourceManager : Manager
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
+    private Dictionary<ResourceEnum.Prefab, GameObject> prefabDictionary;
+    private Dictionary<ResourceEnum.BGM, AudioClip> bgmDictionary;
+    private Dictionary<ResourceEnum.SFX, AudioClip> sfxDictionary;
+
+    private AudioMixer loadedMixer;
+    public AudioMixer LoadedMixer => loadedMixer;
+
+    int resourceAmount;
+    int resourceComplete;
+
+
+    public override IEnumerator Initiate()
     {
-        
+        yield return base.Initiate();
+
+        // 혹시모를 중복 생성 방지
+        if (prefabDictionary != null)   yield break;
+        if (bgmDictionary != null)      yield break;
+        if (sfxDictionary != null)      yield break;
+
+        prefabDictionary = new Dictionary<ResourceEnum.Prefab, GameObject>();
+        bgmDictionary = new Dictionary<ResourceEnum.BGM, AudioClip>();
+        sfxDictionary = new Dictionary<ResourceEnum.SFX, AudioClip>();
+
+        resourceAmount += ResourcePath.prefabPathArray.Length;
+        resourceAmount += ResourcePath.bgmPathArray.Length;
+        resourceAmount += ResourcePath.sfxPathArray.Length;
+
     }
 }
