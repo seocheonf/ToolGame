@@ -41,7 +41,7 @@ public class ResourceManager : Manager
         //UIManager에서 부르게 수정해야 함.
         GameManager.TurnOnBasicLoadingCavnas("Reslurce Loading...");
 
-        //잠시 테스트
+        //잠시 테스트2
 
     }
 
