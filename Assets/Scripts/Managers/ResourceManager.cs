@@ -34,5 +34,24 @@ public class ResourceManager : Manager
         resourceAmount += ResourcePath.bgmPathArray.Length;
         resourceAmount += ResourcePath.sfxPathArray.Length;
 
+        
+
+
+        //임시용
+        //UIManager에서 부르게 수정해야 함.
+        GameManager.TurnOnBasicLoadingCavnas("Reslurce Loading...");
+
+
+
     }
+
+
+    T Load<T>(string filePath) where T : UnityEngine.Object
+    {
+
+        return null;
+    }
+
+
+
 }
