@@ -1,13 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class BasicLoadingCanvas : MonoBehaviour
 {
-   
-    public void SetInfo(string info)
+    [SerializeField]
+    TextMeshProUGUI loadingTextInfo;
+    public void SetInfo(string loadingTextInfo)
     {
-
+        this.loadingTextInfo.text = loadingTextInfo;
     }
 
 }
