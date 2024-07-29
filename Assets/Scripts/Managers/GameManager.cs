@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     #region 변수선언
 
     private static GameManager instance;
-    public static GameManager Instance => Instance;
+    public static GameManager Instance => instance;
 
     private ControllerManager controller;
     public ControllerManager Controller => controller;
@@ -114,7 +114,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Destroy(this);
+            Destroy(gameObject);
             yield break;
         }
 
@@ -164,6 +164,7 @@ public class GameManager : MonoBehaviour
 
     }
 
+
     private void Update()
     {
 
@@ -190,6 +191,7 @@ public class GameManager : MonoBehaviour
 
     }
 
+
     /// <summary>
     /// 기본 로딩 캔버스를 문구와 함께 나타낸다. GameManager 스크립트상의 Update를 정지시킨다.
     /// </summary>
@@ -200,7 +202,7 @@ public class GameManager : MonoBehaviour
         instance.basicLoadingCanvas.SetInfo(info);
         instance.isScriptEntireUpdateStop = true;
     }
-
+    
     /// <summary>
     /// 기본 로딩 캔버스를 닫는다. GameManager 스크립트상의 Update를 진행시킨다.
     /// </summary>
@@ -210,4 +212,33 @@ public class GameManager : MonoBehaviour
         instance.isScriptEntireUpdateStop = false;
     }
 
+    /// <summary>
+    /// 씬 전환 함수
+    /// </summary>
+    /// <param name="sceneName">씬 이름</param>
+    public void SceneChange(string sceneName)
+    {
+        WorldDelete();
+        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+    }
+    /// <summary>
+    /// 씬 전환 함수
+    /// </summary>
+    /// <param name="sceneBuildIndex">씬의 빌드상 Index</param>
+    public void SceneChange(int sceneBuildIndex)
+    {
+        WorldDelete();
+        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneBuildIndex);
+    }
+    /// <summary>
+    /// currentWorld를 지우며 관련 처리를 함께 하는 함수
+    /// </summary>
+    private void WorldDelete()
+    {
+        if (currentWorld != null)
+        {
+            currentWorld.WorldManagerDestroy();
+        }
+        currentWorld = null;
+    }
 }
