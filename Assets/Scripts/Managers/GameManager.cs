@@ -191,7 +191,7 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 기본 로딩 캔버스를 나타낸다. GameManager 스크립트상의 Update를 정지시킨다.
+    /// 기본 로딩 캔버스를 문구와 함께 나타낸다. GameManager 스크립트상의 Update를 정지시킨다.
     /// </summary>
     /// <param name="info"> 기본 로딩 캔버스 문구 </param>
     public static void TurnOnBasicLoadingCavnas(string info)
