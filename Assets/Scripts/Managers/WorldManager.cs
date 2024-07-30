@@ -3,13 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
-public class prefabPool
-{
-    public ResourceEnum.Prefab myPrefab;
-    public int number;
-}
-
 public class WorldManager : MonoBehaviour
 {
 
@@ -19,7 +12,7 @@ public class WorldManager : MonoBehaviour
 
     //인스펙터창에서 미리 설정할 풀링 데이터 정보들
     [SerializeField]
-    List<prefabPool> prefabPoolList = new List<prefabPool>();
+    private List<PrefabPool> prefabPoolList = new List<PrefabPool>();
 
     //각 월드가 Update상에서 해야할 일들의 모음
     //나중에 중간에 월드를 빠져나갈 때, 한꺼번에 있던거 다 뺄 수 있게 애초에 이를 통해서 넣도록 함.
@@ -38,7 +31,7 @@ public class WorldManager : MonoBehaviour
         }
 #endif
 
-        //GameManager와 WorldManager가 하나의 씬에 모두 존재할 때만 필요한 기능
+        //GameManager와 WorldManager가 하나의 씬에 모두 존재할 때만 필요한(유의미한) 기능
         //예외 처리
         yield return new WaitUntil(() => { return GameManager.Instance != null; });
 
@@ -65,6 +58,10 @@ public class WorldManager : MonoBehaviour
 
         pool = new PoolManager();
         yield return pool.Initiate();
+        yield return pool.SetPool(prefabPoolList);
+
+        //준비가 완료되었으니 주민등록 신고하자.
+        GameManager.Instance.SetCurrentWorld(this);
 
         GameManager.TurnOffBasicLoadingCanvas();
     }

@@ -107,6 +107,7 @@ public class GameManager : MonoBehaviour
     {
 
         #region MakeSingleton
+        
         //싱글톤. 만약 원본이 없다면 저장, 있다면 본인 파괴하고 즉각 나가기.
         if (instance == null)
         {
@@ -117,7 +118,7 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
             yield break;
         }
-
+        
         DontDestroyOnLoad(gameObject);
 
         #endregion
@@ -231,6 +232,18 @@ public class GameManager : MonoBehaviour
         UnityEngine.SceneManagement.SceneManager.LoadScene(sceneBuildIndex);
     }
     /// <summary>
+    /// 새로운 World를 적용하는 함수
+    /// </summary>
+    /// <param name="newWorld">새로운 World 정보</param>
+    public void SetCurrentWorld(WorldManager newWorld)
+    {
+        if(currentWorld != null)
+        {
+            WorldDelete();
+        }
+        currentWorld = newWorld;
+    }
+    /// <summary>
     /// currentWorld를 지우며 관련 처리를 함께 하는 함수
     /// </summary>
     private void WorldDelete()
@@ -238,6 +251,7 @@ public class GameManager : MonoBehaviour
         if (currentWorld != null)
         {
             currentWorld.WorldManagerDestroy();
+            Destroy(currentWorld.gameObject);
         }
         currentWorld = null;
     }

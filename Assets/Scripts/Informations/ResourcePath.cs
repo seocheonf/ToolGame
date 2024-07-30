@@ -6,7 +6,8 @@ public static class ResourcePath
     {
         
         #region Object Prefab List
-        "TestPrefab"
+        "TestPrefab",
+        "Monologue"
 
 
         #endregion

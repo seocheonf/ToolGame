@@ -4,7 +4,8 @@
     {
 
         #region Object Prefab List
-        TestPrefab
+        TestPrefab,
+        Monologue
 
 
         #endregion
