@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class WorldManager : MonoBehaviour
 {
+    //각 월드가 관리할 카메라 정보
+    private CameraManager worldCamera;
+    public CameraManager WorldCamera => worldCamera;
 
     //각 월드가 관리할 풀링 정보
     private PoolManager pool;
@@ -12,11 +15,12 @@ public class WorldManager : MonoBehaviour
 
     //인스펙터창에서 미리 설정할 풀링 데이터 정보들
     [SerializeField]
-    private List<PrefabPool> prefabPoolList = new List<PrefabPool>();
+    private List<PrefabPool> prefabPoolList;
 
     //각 월드가 Update상에서 해야할 일들의 모음
     //나중에 중간에 월드를 빠져나갈 때, 한꺼번에 있던거 다 뺄 수 있게 애초에 이를 통해서 넣도록 함.
-    private UpdateFunction WorldUpdates;
+    public UpdateFunction WorldUpdates;
+    public FixedUpdateFunction WorldFixedUpdates;
 
 
     protected virtual IEnumerator Start()
@@ -56,12 +60,21 @@ public class WorldManager : MonoBehaviour
     {
         GameManager.TurnOnBasicLoadingCavnas("World Loading...");
 
+        //우선 주민등록 신고하자.
+        GameManager.Instance.SetCurrentWorld(this);
+
         pool = new PoolManager();
         yield return pool.Initiate();
         yield return pool.SetPool(prefabPoolList);
 
-        //준비가 완료되었으니 주민등록 신고하자.
-        GameManager.Instance.SetCurrentWorld(this);
+        worldCamera = new CameraManager();
+        yield return worldCamera.Initiate();
+
+        //업데이트 등록
+        GameManager.ManagersUpdate -= WorldUpdates;
+        GameManager.ManagersUpdate += WorldUpdates;
+        GameManager.ManagersFixedUpdate -= WorldFixedUpdates;
+        GameManager.ManagersFixedUpdate += WorldFixedUpdates;
 
         GameManager.TurnOffBasicLoadingCanvas();
     }
@@ -71,7 +84,9 @@ public class WorldManager : MonoBehaviour
     /// </summary>
     public virtual void WorldManagerDestroy()
     {
+        //업데이트 해체
         GameManager.ManagersUpdate -= WorldUpdates;
+        GameManager.ManagersFixedUpdate -= WorldFixedUpdates;
     }
 
 }

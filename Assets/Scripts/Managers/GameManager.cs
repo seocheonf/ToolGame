@@ -192,6 +192,30 @@ public class GameManager : MonoBehaviour
 
     }
 
+    private void FixedUpdate()
+    {
+        if (isScriptEntireUpdateStop) return;
+
+        if (ManagersStart != null)
+        {
+            ManagersStart.Invoke();
+            ManagersStart = null;
+        }
+        else
+        {
+            ObjectsStart?.Invoke();
+            ObjectsStart = null;
+
+            if (!isScriptObjectsUpdateStop) ObjectsFixedUpdate?.Invoke(Time.fixedDeltaTime);
+            if (!isScriptManagersUpdateStop) ManagersFixedUpdate?.Invoke(Time.fixedDeltaTime);
+        }
+
+        ObjectsDestroy?.Invoke();
+        ObjectsDestroy = null;
+        ManagersDestroy?.Invoke();
+        ManagersDestroy = null;
+    }
+
 
     /// <summary>
     /// 기본 로딩 캔버스를 문구와 함께 나타낸다. GameManager 스크립트상의 Update를 정지시킨다.

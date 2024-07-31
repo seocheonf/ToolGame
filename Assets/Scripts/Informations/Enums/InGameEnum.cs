@@ -19,3 +19,10 @@ public enum GeneralState
     Action,
     Length
 }
+
+public enum CameraType
+{
+    Default,
+    FirstView,
+    ThirdView
+}

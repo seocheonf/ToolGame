@@ -6,7 +6,7 @@ using TMPro;
 public class BasicLoadingCanvas : MonoBehaviour
 {
     [SerializeField]
-    TextMeshProUGUI loadingTextInfo;
+    private TextMeshProUGUI loadingTextInfo;
     public void SetInfo(string loadingTextInfo)
     {
         this.loadingTextInfo.text = loadingTextInfo;

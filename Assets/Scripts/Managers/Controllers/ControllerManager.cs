@@ -25,6 +25,8 @@ public class ControllerManager : Manager
     {
         base.ManagerUpdate(deltaTime);
 
+        //Cursor.lockState = CursorLockMode.Locked;
+
         mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
         foreach (var each in inputFuncInteractionDictionary)

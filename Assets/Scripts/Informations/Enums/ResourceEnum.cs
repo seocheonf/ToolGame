@@ -5,7 +5,8 @@
 
         #region Object Prefab List
         TestPrefab,
-        Monologue
+        Monologue,
+        CapCap
 
 
         #endregion
