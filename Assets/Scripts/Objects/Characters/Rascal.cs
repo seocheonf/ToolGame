@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Rascal : MonoBehaviour
+public class Rascal : Character
 {
-    //Git Test Hngmo
 
 }

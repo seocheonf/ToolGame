@@ -23,7 +23,28 @@ public class WorldManager : MonoBehaviour
     public FixedUpdateFunction WorldFixedUpdates;
 
 
-    protected virtual IEnumerator Start()
+    /// <summary>
+    /// 각 월드의 업데이트를 한번에 빼기 위해서, 그 월드의 업데이트를 실행하는 함수에 한번 감싼 뒤, 이를 GameManager의 업데이트에 관리.
+    /// </summary>
+    /// <param name="deltaTime">1프레임 시간</param>
+    private void InnerWorldUpdates(float deltaTime)
+    {
+        WorldUpdates?.Invoke(deltaTime);
+    }
+    /// <summary>
+    /// 각 월드의 Fixed 업데이트를 한번에 빼기 위해서, 그 월드의 Fixed 업데이트를 실행하는 함수에 한번 감싼 뒤, 이를 GameManager의 Fixed 업데이트에 관리.
+    /// </summary>
+    /// <param name="fixedDeltaTime">1Fixed프레임 시간</param>
+    private void InnerWorldFixedUpdates(float fixedDeltaTime)
+    {
+        WorldFixedUpdates?.Invoke(fixedDeltaTime);
+    }
+
+    /// <summary>
+    /// WorldManager가 처음 시작할 때, 게임 매니저를 대기하고 자신이 시작할 때 할 일을 게임 매니저 Update의 시작함수 델리게이트에 등록하는 함수. 일을 미뤄 시작 작업 타이밍을 조정하기 위함(게임의 정상 실행을 위해)
+    /// </summary>
+    /// <returns>코루틴용</returns>
+    private IEnumerator Start()
     {
 #if UNITY_EDITOR
         //에디터 상에선 개발 편의를 위해, 게임 매니저가 없으면 최초 씬으로 이동하는 기능
@@ -47,7 +68,7 @@ public class WorldManager : MonoBehaviour
     /// <summary>
     /// 월드 매니저가 태어났을 때 할 일
     /// </summary>
-    protected virtual void WorldManagerStart()
+    private void WorldManagerStart()
     {
         StartCoroutine(Initiate());
     }
@@ -71,12 +92,13 @@ public class WorldManager : MonoBehaviour
         yield return worldCamera.Initiate();
 
         //업데이트 등록
-        GameManager.ManagersUpdate -= WorldUpdates;
-        GameManager.ManagersUpdate += WorldUpdates;
-        GameManager.ManagersFixedUpdate -= WorldFixedUpdates;
-        GameManager.ManagersFixedUpdate += WorldFixedUpdates;
+        GameManager.ManagersUpdate -= InnerWorldUpdates;
+        GameManager.ManagersUpdate += InnerWorldUpdates;
+        GameManager.ManagersFixedUpdate -= InnerWorldFixedUpdates;
+        GameManager.ManagersFixedUpdate += InnerWorldFixedUpdates;
 
-        GameManager.TurnOffBasicLoadingCanvas();
+        //각 월드 매니저들이 완료 될 때 하도록 하자.
+        //GameManager.TurnOffBasicLoadingCanvas();
     }
 
     /// <summary>
@@ -85,8 +107,8 @@ public class WorldManager : MonoBehaviour
     public virtual void WorldManagerDestroy()
     {
         //업데이트 해체
-        GameManager.ManagersUpdate -= WorldUpdates;
-        GameManager.ManagersFixedUpdate -= WorldFixedUpdates;
+        GameManager.ManagersUpdate -= InnerWorldUpdates;
+        GameManager.ManagersFixedUpdate -= InnerWorldFixedUpdates;
     }
 
 }

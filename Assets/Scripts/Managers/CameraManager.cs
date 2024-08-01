@@ -9,7 +9,6 @@ public class CameraManager : Manager
 
     //--------------카메라 매니저 기본 변수부--------------//
     
-
     //카메라매니저가 관리하는 카메라
     private Camera mainCamera;
 
@@ -52,8 +51,7 @@ public class CameraManager : Manager
     //-----------------카메라 조정 변수부-----------------//
 
     //카메라매니저가 관리하는 타겟들의 Stack
-    private List<CameraTarget> cameraTargetLStack;
-
+    private List<ICameraTarget> cameraTargetLStack;
 
     #endregion
 
@@ -85,7 +83,7 @@ public class CameraManager : Manager
         
         currentCameraType = CameraType.Default;
 
-        cameraTargetLStack = new List<CameraTarget>();
+        cameraTargetLStack = new List<ICameraTarget>();
     }
 
 
@@ -102,7 +100,7 @@ public class CameraManager : Manager
     /// </summary>
     /// <param name="cameraTarget">추가하고자 하는 카메라 타겟</param>
     /// <param name="cameraType">설정하고자 하는 카메라 타입</param>
-    public void CameraSet(CameraTarget cameraTarget, CameraType cameraType)
+    public void CameraSet(ICameraTarget cameraTarget, CameraType cameraType)
     {
         cameraTargetLStack.Insert(0, cameraTarget);
         CurrentCameraType = cameraType;
@@ -111,12 +109,13 @@ public class CameraManager : Manager
     /// 카메라 타겟을 제거하는 함수
     /// </summary>
     /// <param name="cameraTarget">제거하고자 하는 카메라 타겟</param>
-    public void CameraBreak(CameraTarget cameraTarget)
+    public void CameraBreak(ICameraTarget cameraTarget)
     {
 #if UNITY_EDITOR
         if(!cameraTargetLStack.Remove(cameraTarget))
         {
             Debug.LogError("CameraManager doesn't have [cameraTarget].");
+            CurrentCameraType = CameraType.Default;
         }
 #else
         cameraTargetLStack.Remove(cameraTarget);
@@ -138,9 +137,9 @@ public class CameraManager : Manager
 #endif
 
         FirstViewCameraData targetData = cameraTargetLStack[0].FirstViewCameraSet();
-        mainCamera.transform.position = targetData.cameraPosition;
-        mainCamera.transform.forward = targetData.cameraForward;
 
+        mainCamera.transform.position = targetData.targetPosition;
+        mainCamera.transform.forward = targetData.targetForward;
 
     }
     /// <summary>
@@ -157,8 +156,31 @@ public class CameraManager : Manager
 #endif
 
         ThirdViewCameraData targetData = cameraTargetLStack[0].ThirdViewCameraSet();
-        
 
+        #region 노환준
+
+        Quaternion rot = Quaternion.Euler(targetData.Xrot, targetData.Yrot, 0);
+        mainCamera.transform.position = targetData.targetPosition;
+        mainCamera.transform.rotation = rot;
+
+        RaycastHit hit;
+        float finalDistance;
+        Vector3 finalDir = (mainCamera.transform.up * targetData.TPPOffsetY) + (-mainCamera.transform.forward * targetData.TPPOffsetZ);
+        finalDir *= targetData.maxDistance;
+
+
+        if (Physics.Linecast(mainCamera.transform.position, targetData.targetPosition + finalDir, out hit))
+        {
+            finalDistance = Mathf.Clamp(hit.distance, targetData.minDistance, targetData.maxDistance);
+        }
+        else
+        {
+            finalDistance = targetData.maxDistance;
+        }
+
+        mainCamera.transform.position = targetData.targetPosition + finalDir.normalized * finalDistance;
+
+        #endregion
 
     }
     /// <summary>
@@ -183,10 +205,11 @@ public class CameraManager : Manager
 /// <summary>
 /// 카메라 타겟이 되고 싶은 자라면 붙이면 좋을 인터페이스
 /// </summary>
-public interface CameraTarget
+public interface ICameraTarget
 {
     public FirstViewCameraData  FirstViewCameraSet();
     public ThirdViewCameraData  ThirdViewCameraSet();
+    //public CustomViewCameraData CustomViewCameraSet(Camera mainCamera);
 }
 
 /// <summary>
@@ -194,22 +217,51 @@ public interface CameraTarget
 /// </summary>
 public class FirstViewCameraData
 {
-    //카메라 위치
-    public Vector3 cameraPosition;
-    //카메라 정면
-    public Vector3 cameraForward;
+    //타겟 위치
+    public Vector3 targetPosition;
+    //타겟의 정면
+    public Vector3 targetForward;
 }
 /// <summary>
 /// 3인칭 카메라 설정 정보
 /// </summary>
 public class ThirdViewCameraData
 {
-    public Vector3 cameraPosition; //카메라 위치
-    public Vector3 cameraRotation_Horizontal;
-    public Vector3 cameraRotation_Vertical;
-    
-    public int maxDistance; //3인칭 뷰에서, 타겟과 카메라 사이의 거리
-    
-    public bool blockingCheck; //3인칭 뷰에서, 전방에 벽이 있을 때 이를 고려하여 카메라를 당길 것인지, 말 것인지에 대한 판단 변수
+    #region 노환준
+
+    public Vector3 targetPosition;
+    public float Xrot;
+    public float Yrot;
+    public int minDistance;
+    public int maxDistance;
+    public float TPPOffsetY;
+    public float TPPOffsetZ;
+
+    #endregion
+
+    #region 김형모
+    /*
+    //타겟 위치
+    public Vector3 targetPosition;
+    //타겟의 정면
+    public Vector3 targetForward;
+
+    //타겟의 수평각도
+    public Vector3 targetRotation_Horizontal;
+    //타겟의 수직각도
+    public Vector3 targetRotation_Vertical;
+
+    //타겟과 카메라 사이의 거리
+    public int maxDistance;
+
+    //전방에 벽이 있을 때 이를 고려하여 카메라를 당길 것인지, 말 것인지에 대한 판단 변수
+    public bool blockingCheck;
+    */
+    #endregion
+}
+/*
+public class CustomViewCameraData
+{
 
 }
+*/
