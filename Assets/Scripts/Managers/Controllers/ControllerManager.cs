@@ -2,7 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public delegate void FuncInteractionFunction();
+public delegate void OnFuncInteractionFunction();
+public delegate void DurationFuncInteractionFunction();
+public delegate void OffFuncInteractionFunction();
+
 
 public class ControllerManager : Manager
 {
