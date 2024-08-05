@@ -17,7 +17,7 @@ public class AffectedCrowdControl
     }
 }
 
-public class Character : MonoBehaviour
+public class Character : MovablePositionObject
 {
     private UniqueTool currentHoldingUniqueTool;
 
@@ -79,6 +79,7 @@ public class Character : MonoBehaviour
 
     private void OnJump()
     {
+        Jump();
     }
     private void Jump()
     {
