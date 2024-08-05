@@ -7,13 +7,11 @@ public class AffectedCrowdControl
 {
     public readonly CrowdControlState crowdControlState;
     public float remainTime;
-    public int tolerance;
 
-    public AffectedCrowdControl(CrowdControlState crowdControlState, float remainTime, int tolerance = 0)
+    public AffectedCrowdControl(CrowdControlState crowdControlState, float remainTime)
     {
         this.crowdControlState = crowdControlState;
         this.remainTime = remainTime;
-        this.tolerance = tolerance;
     }
 }
 

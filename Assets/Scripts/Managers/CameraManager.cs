@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -51,7 +52,8 @@ public class CameraManager : Manager
     //-----------------카메라 조정 변수부-----------------//
 
     //카메라매니저가 관리하는 타겟들의 Stack
-    private List<ICameraTarget> cameraTargetLStack;
+    private List<CameraTargetInfo> cameraTargetLStack;
+
 
     #endregion
 
@@ -83,7 +85,8 @@ public class CameraManager : Manager
         
         currentCameraType = CameraType.Default;
 
-        cameraTargetLStack = new List<ICameraTarget>();
+        cameraTargetLStack = new List<CameraTargetInfo>();
+
     }
 
 
@@ -94,32 +97,116 @@ public class CameraManager : Manager
     public void CameraSet(CameraType cameraType)
     {
         CurrentCameraType = cameraType;
+
+#if UNITY_EDITOR
+        if (cameraTargetLStack.Count <= 0)
+        {
+            Debug.LogError("CameraManager doesn't have [cameraTarget].");
+            return;
+        }
+#endif
+
+        cameraTargetLStack[0].cameraType = cameraType;
+
     }
     /// <summary>
-    /// 카메라 타겟을 추가하고, 타입을 설정하는 함수
+    /// 카메라 타겟을 추가하고, 타입을 설정하는 함수.
     /// </summary>
     /// <param name="cameraTarget">추가하고자 하는 카메라 타겟</param>
     /// <param name="cameraType">설정하고자 하는 카메라 타입</param>
     public void CameraSet(ICameraTarget cameraTarget, CameraType cameraType)
     {
-        cameraTargetLStack.Insert(0, cameraTarget);
+        CameraTargetInfo info = new CameraTargetInfo(cameraTarget, cameraType);
+
+        cameraTargetLStack.Insert(0, info);
+
         CurrentCameraType = cameraType;
     }
     /// <summary>
-    /// 카메라 타겟을 제거하는 함수
+    /// 가장 최근의, 대상이 되는 카메라 타겟을 제거하는 함수
     /// </summary>
     /// <param name="cameraTarget">제거하고자 하는 카메라 타겟</param>
     public void CameraBreak(ICameraTarget cameraTarget)
     {
-#if UNITY_EDITOR
-        if(!cameraTargetLStack.Remove(cameraTarget))
+
+        #region 지우기 위한 작업
+
+        CameraTargetInfo target = null;
+
+        //있는지 찾기. 0번이 가장 최신이라 foreach로 돌려도 된다.
+        foreach (CameraTargetInfo each in cameraTargetLStack)
         {
-            Debug.LogError("CameraManager doesn't have [cameraTarget].");
+            if(each.cameraTarget == cameraTarget)
+            {
+                target = each;
+                break;
+            }
+        }
+
+#if UNITY_EDITOR
+        //없다면
+        if(target == null)
+        {
+            Debug.LogError("지우려는 대상이 없어요!");
+            CurrentCameraType = CameraType.Default;
+            return;
+        }
+#endif
+
+        cameraTargetLStack.Remove(target);
+
+        #endregion
+
+        #region 지우고 난 후 비워졌는지를 확인한 후, 현재 카메라 타입을 정보에 맞게 설정
+        int tempt = 0;
+        foreach(CameraTargetInfo each in cameraTargetLStack)
+        {
+            //하나라도 있다면
+            tempt++;
+            break;
+        }
+        if (tempt == 0)
+        {
+            //하나라도 없다면
             CurrentCameraType = CameraType.Default;
         }
-#else
-        cameraTargetLStack.Remove(cameraTarget);
-#endif
+        else
+        {
+            //하나라도 있다면
+            CurrentCameraType = cameraTargetLStack[0].cameraType;
+        }
+        #endregion
+
+    }
+    /// <summary>
+    /// 대상이 되는 카메라 타겟을 전부 제거하는 함수
+    /// </summary>
+    /// <param name="cameraTarget">제거하고자 하는 카메라 타겟</param>
+    public void CameraBreakAll(ICameraTarget cameraTarget)
+    {
+
+        cameraTargetLStack.RemoveAll((each) => each.cameraTarget == cameraTarget);
+
+        #region 지우고 난 후 비워졌는지를 확인한 후, 현재 카메라 타입을 정보에 맞게 설정
+        int tempt = 0;
+        foreach (CameraTargetInfo each in cameraTargetLStack)
+        {
+            //하나라도 있다면
+            tempt++;
+            break;
+        }
+        if (tempt == 0)
+        {
+            //하나라도 없다면
+            CurrentCameraType = CameraType.Default;
+        }
+        else
+        {
+            //하나라도 있다면
+            CurrentCameraType = cameraTargetLStack[0].cameraType;
+        }
+        #endregion
+
     }
 
 
@@ -136,7 +223,7 @@ public class CameraManager : Manager
         }
 #endif
 
-        FirstViewCameraData targetData = cameraTargetLStack[0].FirstViewCameraSet();
+        FirstViewCameraData targetData = cameraTargetLStack[0].cameraTarget.FirstViewCameraSet();
 
         mainCamera.transform.position = targetData.targetPosition;
         mainCamera.transform.forward = targetData.targetForward;
@@ -155,7 +242,7 @@ public class CameraManager : Manager
         }
 #endif
 
-        ThirdViewCameraData targetData = cameraTargetLStack[0].ThirdViewCameraSet();
+        ThirdViewCameraData targetData = cameraTargetLStack[0].cameraTarget.ThirdViewCameraSet();
 
         #region 노환준
 
@@ -207,8 +294,8 @@ public class CameraManager : Manager
 /// </summary>
 public interface ICameraTarget
 {
-    public FirstViewCameraData  FirstViewCameraSet();
-    public ThirdViewCameraData  ThirdViewCameraSet();
+    public FirstViewCameraData FirstViewCameraSet();
+    public ThirdViewCameraData ThirdViewCameraSet();
     //public CustomViewCameraData CustomViewCameraSet(Camera mainCamera);
 }
 
@@ -221,6 +308,12 @@ public class FirstViewCameraData
     public Vector3 targetPosition;
     //타겟의 정면
     public Vector3 targetForward;
+
+    public FirstViewCameraData(Vector3 targetPosition, Vector3 targetForward)
+    {
+        this.targetPosition = targetPosition;
+        this.targetForward = targetForward;
+    }
 }
 /// <summary>
 /// 3인칭 카메라 설정 정보
@@ -236,6 +329,17 @@ public class ThirdViewCameraData
     public int maxDistance;
     public float TPPOffsetY;
     public float TPPOffsetZ;
+
+    public ThirdViewCameraData(Vector3 targetPosition, float Xrot, float Yrot, int minDistance, int maxDistance, float TPPOffsetY, float TPPOffsetZ)
+    {
+        this.targetPosition = targetPosition;
+        this.Xrot = Xrot;
+        this.Yrot = Yrot;
+        this.minDistance = minDistance;
+        this.maxDistance = maxDistance;
+        this.TPPOffsetY = TPPOffsetY;
+        this.TPPOffsetZ = TPPOffsetZ;
+    }
 
     #endregion
 
@@ -265,3 +369,18 @@ public class CustomViewCameraData
 
 }
 */
+
+/// <summary>
+/// 카메라 타겟과, 그 타겟에 대응하는 현재 카메라 타입을 보관하는 클래스
+/// </summary>
+public class CameraTargetInfo
+{
+    public ICameraTarget cameraTarget;
+    public CameraType cameraType;
+
+    public CameraTargetInfo(ICameraTarget cameraTarget, CameraType cameraType)
+    {
+        this.cameraTarget = cameraTarget;
+        this.cameraType = cameraType;
+    }
+}

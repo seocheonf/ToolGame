@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour
     //실행의 순서를 지켜야 하는 묶음단위가 있으므로 각각의 델리게이트로 분리하여 관리한다.
 
     //처음 나타날 때 한번 해야할 일들의 묶음
-    public static StartFunction ManagersStart;
+    private static StartFunction ManagersStart;
     public static StartFunction ObjectsStart;
 
     //매 프레임마다 지속적으로 해야할 일들의 묶음
