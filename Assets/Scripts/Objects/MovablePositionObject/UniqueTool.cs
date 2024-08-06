@@ -4,24 +4,34 @@ using UnityEngine;
 
 public abstract class UniqueTool : MovablePositionObject, IOuterFuncInteraction, IOnOffFuncInteraction
 {
-    private List<FuncInteractionData> holdingFuncInteractionList;
+    protected List<FuncInteractionData> holdingFuncInteractionList;
 
-    private List<FuncInteractionData> outerFuncInteractionList;
-    private List<FuncInteractionData> onoffFuncInteractionList;
+    protected List<FuncInteractionData> outerFuncInteractionList;
+    protected List<FuncInteractionData> onoffFuncInteractionList;
 
 
-    private float angle;
-    private Character holdingCharacter;
-    
+    protected float angle;
+    protected Character holdingCharacter;
+
+    protected override void Initialize()
+    {
+        base.Initialize();
+
+        holdingFuncInteractionList = new List<FuncInteractionData>();
+        outerFuncInteractionList = new List<FuncInteractionData>();
+        onoffFuncInteractionList = new List<FuncInteractionData>();
+
+    }
+
     public virtual void PutTool()
     {
 
     }
-    private void CheckPutToolUpdate(float deltaTime)
+    protected void CheckPutToolUpdate(float deltaTime)
     {
 
     }
-    private void PutToolEnd()
+    protected void PutToolEnd()
     {
 
     }

@@ -15,7 +15,17 @@ public abstract class MyComponent : MonoBehaviour
     }
     protected virtual void OnDisable()
     {
-        GameManager.ObjectsDestroy -= MyDestroy;
-        GameManager.ObjectsDestroy += MyDestroy;
+        GameManager.ObjectsStart -= MyStart;
+        MyDestroy();
+
+        //GameManager.ObjectsDestroy -= MyDestroy;
+        //GameManager.ObjectsDestroy += MyDestroy;
     }
+    /*
+    protected virtual void OnDestroy()
+    {
+        GameManager.ObjectsStart -= MyStart;
+        GameManager.ObjectsDestroy -= MyDestroy;
+    }
+    */
 }

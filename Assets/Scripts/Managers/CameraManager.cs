@@ -308,12 +308,16 @@ public class FirstViewCameraData
     public Vector3 targetPosition;
     //타겟의 정면
     public Vector3 targetForward;
+    
 
-    public FirstViewCameraData(Vector3 targetPosition, Vector3 targetForward)
+    
+    public void SetInfo(Vector3 targetPosition, Vector3 targetForward)
     {
         this.targetPosition = targetPosition;
         this.targetForward = targetForward;
     }
+    
+
 }
 /// <summary>
 /// 3인칭 카메라 설정 정보
@@ -330,7 +334,8 @@ public class ThirdViewCameraData
     public float TPPOffsetY;
     public float TPPOffsetZ;
 
-    public ThirdViewCameraData(Vector3 targetPosition, float Xrot, float Yrot, int minDistance, int maxDistance, float TPPOffsetY, float TPPOffsetZ)
+    
+    public void SetInfo(Vector3 targetPosition, float Xrot, float Yrot, int minDistance, int maxDistance, float TPPOffsetY, float TPPOffsetZ)
     {
         this.targetPosition = targetPosition;
         this.Xrot = Xrot;
@@ -340,6 +345,7 @@ public class ThirdViewCameraData
         this.TPPOffsetY = TPPOffsetY;
         this.TPPOffsetZ = TPPOffsetZ;
     }
+    
 
     #endregion
 

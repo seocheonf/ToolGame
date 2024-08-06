@@ -98,7 +98,8 @@ public class WorldManager : MonoBehaviour
         GameManager.ManagersFixedUpdate += InnerWorldFixedUpdates;
 
         //각 월드 매니저들이 완료 될 때 하도록 하자.
-        //GameManager.TurnOffBasicLoadingCanvas();
+        //임시
+        GameManager.TurnOffBasicLoadingCanvas();
     }
 
     /// <summary>

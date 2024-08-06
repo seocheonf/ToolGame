@@ -53,7 +53,7 @@ public class GameManager : MonoBehaviour
 
     //사라질 때 한번 해야할 일들의 묶음
     public static DestroyFunction ManagersDestroy;
-    public static DestroyFunction ObjectsDestroy;
+    //public static DestroyFunction ObjectsDestroy;
 
     [SerializeField]
     private BasicLoadingCanvas basicLoadingCanvas;
@@ -178,6 +178,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            
             ObjectsStart?.Invoke();
             ObjectsStart = null;
 
@@ -185,11 +186,10 @@ public class GameManager : MonoBehaviour
             if (!isScriptObjectsUpdateStop) ObjectsUpdate?.Invoke(Time.deltaTime);
         }
 
-        ObjectsDestroy?.Invoke();
-        ObjectsDestroy = null;
+        //ObjectsDestroy?.Invoke();
+        //ObjectsDestroy = null;
         ManagersDestroy?.Invoke();
         ManagersDestroy = null;
-
     }
 
     private void FixedUpdate()
@@ -203,6 +203,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            
             ObjectsStart?.Invoke();
             ObjectsStart = null;
 
@@ -210,8 +211,8 @@ public class GameManager : MonoBehaviour
             if (!isScriptManagersUpdateStop) ManagersFixedUpdate?.Invoke(Time.fixedDeltaTime);
         }
 
-        ObjectsDestroy?.Invoke();
-        ObjectsDestroy = null;
+        //ObjectsDestroy?.Invoke();
+        //ObjectsDestroy = null;
         ManagersDestroy?.Invoke();
         ManagersDestroy = null;
     }

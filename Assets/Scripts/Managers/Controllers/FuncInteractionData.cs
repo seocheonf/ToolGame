@@ -32,6 +32,8 @@ public struct FuncInteractionData
 
     #region 오버로드 레거시
 
+    /*
+
     /// <summary>
     /// [입력 대상 - 입력받는 순간의 기능] 쌍으로 구성된 구조체 데이터 생성자
     /// </summary>
@@ -79,6 +81,8 @@ public struct FuncInteractionData
         DurationFuncInteraction = null;
         OffFuncInteraction = OffFunc;
     }
+
+    */
 
     #endregion
 }

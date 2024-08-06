@@ -17,85 +17,85 @@ public class AffectedCrowdControl
 
 public class Character : MovablePositionObject
 {
-    private UniqueTool currentHoldingUniqueTool;
+    protected UniqueTool currentHoldingUniqueTool;
 
-    private Vector3 wantMoveDirection;
-    private Vector3 currentMoveDirection;
+    protected Vector3 wantMoveDirection;
+    protected Vector3 currentMoveDirection;
 
-    private bool isMoveForward;
-    private bool isMoveBackward;
-    private bool isMoveLeft;
-    private bool isMoveRight;
+    protected bool isMoveForward;
+    protected bool isMoveBackward;
+    protected bool isMoveLeft;
+    protected bool isMoveRight;
 
-    private bool isAir;
+    protected bool isAir;
 
-    private GeneralState currentGeneralState;
+    protected GeneralState currentGeneralState;
 
     CrowdControlState currentCrowdControlState;
     List<AffectedCrowdControl> affectedCrowdControlList;
 
-    private float defaultRunningRatio;
-    private float runningRatio;
+    protected float defaultRunningRatio;
+    protected float runningRatio;
 
-    private float currentSpeed;
+    protected float currentSpeed;
 
-    private float defaultMoveSpeed;
-    private float moveSpeed;
+    protected float defaultMoveSpeed;
+    protected float moveSpeed;
 
-    private float defaultAccelSpeed;
-    private float accelSpeed;
+    protected float defaultAccelSpeed;
+    protected float accelSpeed;
 
-    private float defaultJumpPower;
-    private float jumpPower;
+    protected float defaultJumpPower;
+    protected float jumpPower;
 
-    private Vector3 currentSightAngle;
-
-
+    protected Vector3 currentSightAngle;
 
 
-    private void PutTool()
+
+
+    protected virtual void PutTool()
     {
 
     }
-    private void PickUpTool(UniqueTool target)
+    public virtual void PickUpTool(UniqueTool target)
     {
 
     }
 
-    private void OnMoveForward()
+    protected void OnMoveForward()
     {
     }
-    private void OnMoveBackward()
+    protected void OnMoveBackward()
     {
     }
-    private void OnMoveLeft()
+    protected void OnMoveLeft()
     {
     }
-    private void OnMoveRight()
+    protected void OnMoveRight()
     {
     }
 
-    private void OnJump()
+    protected void OnJump()
     {
         Jump();
     }
-    private void Jump()
+    protected virtual void Jump()
     {
     }
 
-    private void OnRun()
+    protected void OnRun()
     {
     }
-    private void Run()
+    protected virtual void Run()
     {
     }
 
-    private void MoveHorizontalityFixedUpdate(float fixedDeltaTime)
+    protected virtual void MoveHorizontalityFixedUpdate(float fixedDeltaTime)
     {
 
     }
 
-    private void ApplicationCrowdControl()
+    protected void ApplicationCrowdControl()
     {
 
     }
@@ -103,7 +103,7 @@ public class Character : MovablePositionObject
     {
 
     }
-    private void RenewalCrowdControlRemainTimeUpdate(float deltaTime)
+    protected void RenewalCrowdControlRemainTimeUpdate(float deltaTime)
     {
 
     }
