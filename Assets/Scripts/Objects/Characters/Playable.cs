@@ -18,6 +18,47 @@ public class Playable : Character
 
     private int currentSightOrdinal;
 
+    private bool isJump;
+
+
+    protected override void MyStart()
+    {
+        base.MyStart();
+        FuncInteractionData jump = new();
+        jump.keyCode = KeyCode.Space;
+        jump.description = "점프";
+        jump.OnFuncInteraction = OnJump;
+        ControllerManager.AddInputFuncInteraction(jump);
+
+        FuncInteractionData forward = new();
+        forward.keyCode = KeyCode.W;
+        forward.description = "앞으로 이동";
+        forward.OnFuncInteraction = OnMoveForward;
+        ControllerManager.AddInputFuncInteraction(forward);
+
+        FuncInteractionData backward = new();
+        backward.keyCode = KeyCode.S;
+        backward.description = "뒤로 이동";
+        backward.OnFuncInteraction = OnMoveBackward;
+        ControllerManager.AddInputFuncInteraction(backward);
+
+        FuncInteractionData left = new();
+        left.keyCode = KeyCode.A;
+        left.description = "왼쪽으로 이동";
+        left.OnFuncInteraction = OnMoveLeft;
+        ControllerManager.AddInputFuncInteraction(left);
+
+        FuncInteractionData right = new();
+        right.keyCode = KeyCode.D;
+        right.description = "오른쪽으로 이동";
+        right.OnFuncInteraction = OnMoveRight;
+        ControllerManager.AddInputFuncInteraction(right);
+    }
+
+    protected override void Jump()
+    {
+        isJump = true;
+    }
 
     private void OnSit()
     {
