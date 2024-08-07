@@ -13,6 +13,26 @@ public abstract class UniqueTool : MovablePositionObject, IOuterFuncInteraction,
     protected float angle;
     protected Character holdingCharacter;
 
+    //잡을 지점
+    [SerializeField]
+    protected Vector3 catchedLocalPosition;
+
+#if UNITY_EDITOR
+
+    public virtual Vector3 CatchedLocalPosition
+    {
+        get
+        {
+            return transform.position + catchedLocalPosition;
+        }
+        set
+        {
+            catchedLocalPosition = value - transform.position;
+        }
+    }
+
+#endif
+
     protected override void Initialize()
     {
         base.Initialize();
@@ -25,7 +45,12 @@ public abstract class UniqueTool : MovablePositionObject, IOuterFuncInteraction,
 
     public virtual void PutTool()
     {
-
+        transform.parent = null;
+        holdingCharacter = null;
+        physicsInteractionObjectRigidbody.isKinematic = false;
+        physicsInteractionObjectCollider.isTrigger = false;
+        ControllerManager.RemoveInputFuncInteraction(holdingFuncInteractionList);
+        
     }
     protected void CheckPutToolUpdate(float deltaTime)
     {
@@ -33,11 +58,15 @@ public abstract class UniqueTool : MovablePositionObject, IOuterFuncInteraction,
     }
     protected void PutToolEnd()
     {
-
+        
     }
     public virtual void PickUpTool(Character source)
     {
-
+        transform.parent = source.transform;
+        holdingCharacter = source;
+        physicsInteractionObjectRigidbody.isKinematic = true;
+        physicsInteractionObjectCollider.isTrigger = true;
+        ControllerManager.AddInputFuncInteraction(holdingFuncInteractionList);
     }
 
     public List<FuncInteractionData> GetHoldingFuncInteractionList()
@@ -56,4 +85,30 @@ public abstract class UniqueTool : MovablePositionObject, IOuterFuncInteraction,
     {
         return default;
     }
+
+
+
+
+
+
+    //외부가 바라보는 나의 중심 월드 좌표
+    protected Vector3 fakeCenterPosition;
+    /// <summary>
+    /// 거짓 월드 중심 좌표. 이 값을 바꾸면, 이 거짓 월드 중심 좌표를 기준으로하는 좌표로 위치가 옮겨진다.
+    /// </summary>
+    public Vector3 FakeCenterPosition
+    {
+        get
+        {
+            return transform.position + catchedLocalPosition;
+        }
+        set
+        {
+            transform.position = value - catchedLocalPosition;
+        }
+    }
+    
+
+
+
 }

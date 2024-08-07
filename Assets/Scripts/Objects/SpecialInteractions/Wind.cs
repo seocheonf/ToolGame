@@ -94,7 +94,6 @@ namespace SpecialInteraction
 
         private void CustomFixedUpdate(float fixedDeltaTime)
         {
-            Debug.Log(Quaternion.identity);
             windData.Direction = transform.rotation * windData.offset * Vector3.forward;
         }
 

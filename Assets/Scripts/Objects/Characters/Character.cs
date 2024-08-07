@@ -51,15 +51,36 @@ public class Character : MovablePositionObject
     protected Vector3 currentSightAngle;
 
 
+    //잡을 지점
+    [SerializeField]
+    protected Vector3 catchingLocalPosition;
+
+#if UNITY_EDITOR
+
+    public virtual Vector3 CatchingLocalPosition
+    {
+        get
+        {
+            return transform.position + catchingLocalPosition;
+        }
+        set
+        {
+            catchingLocalPosition = value - transform.position;
+        }
+    }
+
+#endif
 
 
     protected virtual void PutTool()
     {
-
+        currentHoldingUniqueTool.PutTool();
+        currentHoldingUniqueTool = null;
     }
     public virtual void PickUpTool(UniqueTool target)
     {
-
+        target.PickUpTool(this);
+        currentHoldingUniqueTool = target;
     }
 
     protected void OnMoveForward()

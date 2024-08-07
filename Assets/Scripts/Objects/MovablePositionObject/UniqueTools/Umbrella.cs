@@ -3,11 +3,94 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+class MeshSet
+{
+    public MeshCollider meshCollider;
+    public MeshFilter meshFilter;
+
+    public MeshSet(MeshCollider meshCollider, MeshFilter meshFilter, Mesh mesh)
+    {
+        this.meshCollider = meshCollider;
+        this.meshFilter = meshFilter;
+        MeshSetting(mesh);
+    }
+
+    public void MeshSetting(Mesh mesh)
+    {
+        meshCollider.sharedMesh = mesh;
+        meshFilter.mesh = mesh;
+    }
+}
+
+[RequireComponent(typeof(MeshRenderer), typeof(MeshCollider), typeof(MeshFilter))]
 public class Umbrella : UniqueTool
 {
+
+    //
+
+    [SerializeField]
+    private ResourceEnum.Material umbrellaMaterial;
+    private Mesh umbrellaOpen;
+    private Mesh umbrellaClosed;
+
+    private MeshRenderer umbrellaMeshRenderer;
+
+    private MeshSet umbrellaMeshSet;
+
+    //true는 펼침, false는 닫힘
+    private bool umbrellaMode = true;
+    private bool UmbrellaMode
+    {
+        get => umbrellaMode;
+        set
+        {
+            umbrellaMode = value;
+            umbrellaMeshSet.MeshSetting(CurrentMesh);
+        }
+    }
+    /*
+    private enum UmbrellaMode
+    {
+        Open,
+        Closed
+    }
+
+    private UmbrellaMode _umbrellaMode;
+    private UmbrellaMode _UmbrellaMode
+    {
+        set
+        {
+
+        }
+    }
+    */
+
+    private Mesh CurrentMesh
+    {
+        get
+        {
+            return UmbrellaMode ? umbrellaOpen : umbrellaClosed;
+        }
+    }
+
+
+    //
+
+
+
+
     protected override void Initialize()
     {
         base.Initialize();
+
+        //변수 초기화
+        umbrellaOpen = ResourceManager.GetResource(ResourceEnum.Mesh.Mesh_UmbrellaOpen);
+        umbrellaClosed = ResourceManager.GetResource(ResourceEnum.Mesh.Mesh_UmbrellaClosed);
+
+        umbrellaMeshRenderer = GetComponent<MeshRenderer>();
+        umbrellaMeshRenderer.material = ResourceManager.GetResource(umbrellaMaterial);
+
+        umbrellaMeshSet = new MeshSet(physicsInteractionObjectCollider as MeshCollider, GetComponent<MeshFilter>(), CurrentMesh);
 
         //기능 등록 작업
 
@@ -19,7 +102,7 @@ public class Umbrella : UniqueTool
 
         //기능 준비 작업
 
-
+        holdingFuncInteractionList.Add(new FuncInteractionData(KeyCode.Tab, "우산 펼치고 접기", UmbrellaModeChange, null, null));
 
 
     }
@@ -37,41 +120,66 @@ public class Umbrella : UniqueTool
     public override void GetSpecialInteraction(WindData source)
     {
 
-
         //힘 보정 필요
+      
 
-        
-        float dotValue = Vector3.Dot(transform.up, source.Direction);
+        //일반적인 힘 작용
+        base.GetSpecialInteraction(source);
 
-        if(holdingCharacter == null)
+        //특수작용 - 펼쳐져 있을 때만
+        if (UmbrellaMode)
         {
+            float dotValue = Vector3.Dot(transform.up, source.Direction);
             receivedForceQueue.Enqueue(new ForceInfo(transform.up * dotValue * 5f * source.intensity, ForceType.VelocityForce));
-            receivedForceQueue.Enqueue(new ForceInfo(source.Direction * source.intensity, ForceType.VelocityForce));
         }
-
-
-
 
     }
 
     private void CustomFixedUpdate(float fixedDeltaTime)
     {
-        //하강 중일 때, 하강 속도 감소
-        if(physicsInteractionObjectRigidbody.velocity.y <= 0)
-        {
-            float dotValue = Vector3.Dot(Vector3.up, transform.up);
-            Vector3 downVelocity = physicsInteractionObjectRigidbody.velocity;
-            downVelocity.y *= (1 - dotValue * 0.05f);
-            physicsInteractionObjectRigidbody.velocity = downVelocity;
-        }
 
-        while (receivedForceQueue.TryDequeue(out ForceInfo result))
-        {
-            AddForce(result);
-        }
+        
+        
+        ApplyForce();
 
-        Debug.Log(physicsInteractionObjectRigidbody.velocity.magnitude);
     }
 
+    private void UmbrellaModeChange()
+    {
+        UmbrellaMode = !UmbrellaMode;
+    }
+
+    private void ApplyForce()
+    {
+        if(holdingCharacter == null)
+        {
+            //하강 중일 때, 하강 속도 감소
+            if (physicsInteractionObjectRigidbody.velocity.y <= 0 && UmbrellaMode)
+            {
+                float dotValue = Vector3.Dot(Vector3.up, transform.up);
+                Vector3 downVelocity = physicsInteractionObjectRigidbody.velocity;
+                downVelocity.y *= (1 - dotValue * 0.05f);
+                physicsInteractionObjectRigidbody.velocity = downVelocity;
+            }
+
+            while (receivedForceQueue.TryDequeue(out ForceInfo result))
+            {
+                AddForce(result);
+            }
+        }
+        else
+        {
+            if (holdingCharacter.GetDownSpeed() <= 0 && UmbrellaMode)
+            {
+                float dotValue = Vector3.Dot(Vector3.up, transform.up);
+                holdingCharacter.AccelDownForce((1 - dotValue * 0.05f));
+            }
+
+            while (receivedForceQueue.TryDequeue(out ForceInfo result))
+            {
+                holdingCharacter.AddForce(result);
+            }
+        }
+    }
 
 }

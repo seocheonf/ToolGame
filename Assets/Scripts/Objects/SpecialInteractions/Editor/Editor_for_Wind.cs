@@ -11,6 +11,7 @@ public class DirectionSetting : Editor
 {
     private void OnSceneGUI()
     {
+
         Wind targetWind = target as Wind;
 
         Handles.color = Color.blue;

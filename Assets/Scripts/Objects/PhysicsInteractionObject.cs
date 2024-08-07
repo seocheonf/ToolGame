@@ -24,17 +24,19 @@ public class ForceInfo
     }
 }
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(Collider), typeof(Rigidbody))]
 public abstract class PhysicsInteractionObject : MyComponent
 {
 
     protected Rigidbody physicsInteractionObjectRigidbody;
+    protected Collider physicsInteractionObjectCollider;
 
     protected Queue<ForceInfo> receivedForceQueue;
 
     private void Awake()
     {
         physicsInteractionObjectRigidbody = GetComponent<Rigidbody>();
+        physicsInteractionObjectCollider = GetComponent<Collider>();
     }
 
     protected override void MyStart()
@@ -54,6 +56,17 @@ public abstract class PhysicsInteractionObject : MyComponent
     public virtual void GetSpecialInteraction(SpecialInteraction.FireData source)
     {
 
+    }
+
+    public virtual void AccelDownForce(float ratio)
+    {
+        Vector3 down = physicsInteractionObjectRigidbody.velocity;
+        down.y *= ratio;
+        physicsInteractionObjectRigidbody.velocity = down;
+    }
+    public float GetDownSpeed()
+    {
+        return physicsInteractionObjectRigidbody.velocity.y;
     }
 
     public virtual void AddForce(ForceInfo info)

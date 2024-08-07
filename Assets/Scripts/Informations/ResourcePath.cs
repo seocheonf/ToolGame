@@ -29,4 +29,24 @@ public static class ResourcePath
     {
         
     };
+
+    public static string[] meshPathArray =
+    {
+        #region Umbrella
+        "Meshes/Umbrellas/Mesh_UmbrellaOpen",
+        "Meshes/Umbrellas/Mesh_UmbrellaClosed",
+        #endregion
+    };
+
+    public static string[] materialPathArray =
+    {
+        #region Umbrella
+        "Materials/Umbrellas/Material_Umbrella1",
+        "Materials/Umbrellas/Material_Umbrella2",
+        "Materials/Umbrellas/Material_Umbrella3",
+        "Materials/Umbrellas/Material_Umbrella4",
+        "Materials/Umbrellas/Material_Umbrella5",
+        "Materials/Umbrellas/Material_Umbrella6"
+        #endregion
+    };
 };

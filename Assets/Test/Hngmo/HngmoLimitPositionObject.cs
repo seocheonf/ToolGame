@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class HngmoLimitPositionObject : LimitPositionObject
 {
+    public Umbrella umbrellaTest;
+
     protected override void Initialize()
     {
         base.Initialize();
@@ -13,6 +15,8 @@ public class HngmoLimitPositionObject : LimitPositionObject
     protected override void MyStart()
     {
         base.MyStart();
+        GameManager.ObjectsUpdate -= CustomUpdate;
+        GameManager.ObjectsUpdate += CustomUpdate;
         GameManager.ObjectsFixedUpdate -= CustomFixedUpdate;
         GameManager.ObjectsFixedUpdate += CustomFixedUpdate;
     }
@@ -20,7 +24,24 @@ public class HngmoLimitPositionObject : LimitPositionObject
     protected override void MyDestroy()
     {
         base.MyDestroy();
+        GameManager.ObjectsUpdate -= CustomUpdate;
         GameManager.ObjectsFixedUpdate -= CustomFixedUpdate;
+    }
+
+    private void CustomUpdate(float deltaTime)
+    {
+
+        /*
+        if (Input.GetKeyDown(KeyCode.CapsLock))
+        {
+            umbrellaTest.PickUpTool(null);
+        }
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            umbrellaTest.PutTool();
+        }
+        */
+
     }
 
     private void CustomFixedUpdate(float fixedDeltaTime)
