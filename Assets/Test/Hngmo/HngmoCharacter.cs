@@ -13,6 +13,7 @@ public class HngmoCharacter : Character, ICameraTarget
         base.Initialize();
 
         AboutTool = (new FuncInteractionData(KeyCode.Mouse1, "우산 들기", ToolSet, null, null));
+        
     }
 
 
@@ -43,26 +44,33 @@ public class HngmoCharacter : Character, ICameraTarget
     {
         if(Input.GetKey(KeyCode.W))
         {
-            transform.position += Vector3.forward * deltaTime * 5f;
+            transform.position += transform.forward * deltaTime * 5f;
         }
         else if (Input.GetKey(KeyCode.A))
         {
-            transform.position += Vector3.left * deltaTime * 5f;
+            transform.position -= transform.right * deltaTime * 5f;
         }
         else if (Input.GetKey(KeyCode.S))
         {
-            transform.position -= Vector3.forward * deltaTime * 5f;
+            transform.position -= transform.forward * deltaTime * 5f;
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            transform.position -= Vector3.left * deltaTime * 5f;
+            transform.position += transform.right * deltaTime * 5f;
         }
 
         if(Input.GetKeyDown(KeyCode.Space))
         {
             AddForce(Vector3.up * 10f, ForceType.VelocityForce);
         }
+
+        xRot += ControllerManager.MouseMovement.x;
+        yRot += ControllerManager.MouseMovement.y;
+        transform.eulerAngles = new Vector3(0, xRot, 0);
     }
+
+    float xRot;
+    float yRot;
 
     private void CustomFixedUpdate(float fixedDeltaTime)
     {
@@ -86,7 +94,7 @@ public class HngmoCharacter : Character, ICameraTarget
     public override void PickUpTool(UniqueTool target)
     {
         base.PickUpTool(target);
-        target.FakeCenterPosition = catchingLocalPosition + transform.position;
+        target.FakeCenterPosition = transform.position + CatchingLocalPosition;
     }
 
     public FirstViewCameraData FirstViewCameraSet()
@@ -98,7 +106,7 @@ public class HngmoCharacter : Character, ICameraTarget
     public ThirdViewCameraData ThirdViewCameraSet()
     {
         ThirdViewCameraData tempt = new ThirdViewCameraData();
-        tempt.SetInfo(transform.position, 0, 0, 3, 10, 1, 5);
+        tempt.SetInfo(transform.position, -yRot, xRot, 3, 10, 1, 5);
         return tempt;
     }
 

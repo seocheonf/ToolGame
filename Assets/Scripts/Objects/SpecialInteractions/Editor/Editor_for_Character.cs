@@ -14,7 +14,7 @@ public class SetCatchingPointEdit : Editor
 
         Character targetCharacter = target as Character;
 
-        targetCharacter.CatchingLocalPosition = Handles.PositionHandle(targetCharacter.CatchingLocalPosition, Quaternion.identity);
+        targetCharacter.CatchingLocalPositionEdit = Handles.PositionHandle(targetCharacter.CatchingLocalPositionEdit, Quaternion.identity);
 
     }
 }

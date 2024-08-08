@@ -53,11 +53,18 @@ public class Character : MovablePositionObject
 
     //잡을 지점
     [SerializeField]
-    protected Vector3 catchingLocalPosition;
+    private Vector3 catchingLocalPosition;
+    protected Vector3 CatchingLocalPosition
+    {
+        get
+        {
+            return transform.rotation * catchingLocalPosition;
+        }
+    }
 
 #if UNITY_EDITOR
 
-    public virtual Vector3 CatchingLocalPosition
+    public virtual Vector3 CatchingLocalPositionEdit
     {
         get
         {

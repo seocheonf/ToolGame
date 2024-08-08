@@ -14,7 +14,7 @@ public class SetCatchedPointEdit : Editor
 
         UniqueTool targetTool = target as UniqueTool;
 
-        targetTool.CatchedLocalPosition = Handles.PositionHandle(targetTool.CatchedLocalPosition, Quaternion.identity);
+        targetTool.CatchedLocalPositionEdit = Handles.PositionHandle(targetTool.CatchedLocalPositionEdit, Quaternion.identity);
         
     }
 }

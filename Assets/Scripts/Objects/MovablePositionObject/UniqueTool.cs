@@ -13,13 +13,21 @@ public abstract class UniqueTool : MovablePositionObject, IOuterFuncInteraction,
     protected float angle;
     protected Character holdingCharacter;
 
-    //잡을 지점
+    //잡힐 지점
     [SerializeField]
-    protected Vector3 catchedLocalPosition;
+    private Vector3 catchedLocalPosition;
+    protected Vector3 CatchedLocalPosition
+    {
+        get
+        {
+            return transform.rotation * catchedLocalPosition;
+        }
+    }
+
 
 #if UNITY_EDITOR
 
-    public virtual Vector3 CatchedLocalPosition
+    public virtual Vector3 CatchedLocalPositionEdit
     {
         get
         {
@@ -100,11 +108,11 @@ public abstract class UniqueTool : MovablePositionObject, IOuterFuncInteraction,
     {
         get
         {
-            return transform.position + catchedLocalPosition;
+            return transform.position + CatchedLocalPosition;
         }
         set
         {
-            transform.position = value - catchedLocalPosition;
+            transform.position = value - CatchedLocalPosition;
         }
     }
     

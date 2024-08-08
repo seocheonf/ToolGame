@@ -182,4 +182,36 @@ public class Umbrella : UniqueTool
         }
     }
 
+    int umbDir = 0;
+
+    public override void PickUpTool(Character source)
+    {
+        base.PickUpTool(source);
+        //UmbrellaDirectionChange(umbDir);
+    }
+
+    //0 - ╬у, 1 - ╣з, 2 - ю╖, 3 - аб, 4 - ©Л
+    private void UmbrellaDirectionChange(int dir)
+    {
+        switch (dir)
+        {
+            case 0:
+                transform.up = holdingCharacter.transform.forward;
+                break;
+            case 1:
+                transform.up = -holdingCharacter.transform.forward;
+                break;
+            case 2:
+                transform.up = holdingCharacter.transform.up;
+                break;
+            case 3:
+                transform.up = -holdingCharacter.transform.right;
+                break;
+            case 4:
+                transform.up = holdingCharacter.transform.right;
+                break;
+
+        }
+    }
+
 }
