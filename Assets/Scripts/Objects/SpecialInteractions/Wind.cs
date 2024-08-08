@@ -100,7 +100,6 @@ namespace SpecialInteraction
         //감지를 하자.
         private void OnTriggerStay(Collider target)
         {
-            Debug.Log(target.name);
             if(target.TryGetComponent(out PhysicsInteractionObject result))
             {
                 result.GetSpecialInteraction(windData);

@@ -6,12 +6,10 @@ using UnityEngine;
 class MeshSet
 {
     
-    public MeshCollider meshCollider;
     public MeshFilter meshFilter;
 
-    public MeshSet(MeshCollider meshCollider, MeshFilter meshFilter, Mesh mesh)
+    public MeshSet(MeshFilter meshFilter, Mesh mesh)
     {
-        this.meshCollider = meshCollider;
         this.meshFilter = meshFilter;
         MeshSetting(mesh);
     }
@@ -19,8 +17,6 @@ class MeshSet
     public void MeshSetting(Mesh mesh)
     {
         meshFilter.mesh = mesh;
-        //meshCollider.sharedMesh = null;
-        meshCollider.sharedMesh = mesh;
     }
     
 
@@ -48,31 +44,10 @@ public class Umbrella : UniqueTool
         get => umbrellaMode;
         set
         {
-            
-            //CurrentMesh2.enabled = false;
             umbrellaMode = value;
-            //CurrentMesh2.enabled = true;
-            //umbrellaMeshSet.meshFilter.mesh = CurrentMesh;
             umbrellaMeshSet.MeshSetting(CurrentMesh);
         }
     }
-    /*
-    private enum UmbrellaMode
-    {
-        Open,
-        Closed
-    }
-
-    private UmbrellaMode _umbrellaMode;
-    private UmbrellaMode _UmbrellaMode
-    {
-        set
-        {
-
-        }
-    }
-    */
-
     
     private Mesh CurrentMesh
     {
@@ -81,21 +56,6 @@ public class Umbrella : UniqueTool
             return UmbrellaMode ? umbrellaOpen : umbrellaClosed;
         }
     }
-    
-
-    //private MeshCollider CurrentMesh2
-    //{
-    //    get
-    //    {
-    //        return UmbrellaMode ? open : closed;
-    //    }
-    //}
-
-
-    //
-
-
-
 
     protected override void Initialize()
     {
@@ -108,7 +68,7 @@ public class Umbrella : UniqueTool
         umbrellaMeshRenderer = GetComponent<MeshRenderer>();
         umbrellaMeshRenderer.material = ResourceManager.GetResource(umbrellaMaterial);
 
-        umbrellaMeshSet = new MeshSet(physicsInteractionObjectCollider as MeshCollider, GetComponent<MeshFilter>(), CurrentMesh);
+        umbrellaMeshSet = new MeshSet(GetComponent<MeshFilter>(), CurrentMesh);
 
         //기능 등록 작업
 

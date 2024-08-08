@@ -24,7 +24,7 @@ public class ForceInfo
     }
 }
 
-//[RequireComponent(typeof(Collider), typeof(Rigidbody))]
+[RequireComponent(typeof(Collider), typeof(Rigidbody))]
 public abstract class PhysicsInteractionObject : MyComponent
 {
 
