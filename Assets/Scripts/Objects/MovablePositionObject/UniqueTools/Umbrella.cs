@@ -5,6 +5,7 @@ using UnityEngine;
 
 class MeshSet
 {
+    
     public MeshCollider meshCollider;
     public MeshFilter meshFilter;
 
@@ -17,12 +18,15 @@ class MeshSet
 
     public void MeshSetting(Mesh mesh)
     {
-        meshCollider.sharedMesh = mesh;
         meshFilter.mesh = mesh;
+        //meshCollider.sharedMesh = null;
+        meshCollider.sharedMesh = mesh;
     }
+    
+
 }
 
-[RequireComponent(typeof(MeshRenderer), typeof(MeshCollider), typeof(MeshFilter))]
+[RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
 public class Umbrella : UniqueTool
 {
 
@@ -44,7 +48,11 @@ public class Umbrella : UniqueTool
         get => umbrellaMode;
         set
         {
+            
+            //CurrentMesh2.enabled = false;
             umbrellaMode = value;
+            //CurrentMesh2.enabled = true;
+            //umbrellaMeshSet.meshFilter.mesh = CurrentMesh;
             umbrellaMeshSet.MeshSetting(CurrentMesh);
         }
     }
@@ -65,6 +73,7 @@ public class Umbrella : UniqueTool
     }
     */
 
+    
     private Mesh CurrentMesh
     {
         get
@@ -72,6 +81,15 @@ public class Umbrella : UniqueTool
             return UmbrellaMode ? umbrellaOpen : umbrellaClosed;
         }
     }
+    
+
+    //private MeshCollider CurrentMesh2
+    //{
+    //    get
+    //    {
+    //        return UmbrellaMode ? open : closed;
+    //    }
+    //}
 
 
     //
@@ -138,7 +156,7 @@ public class Umbrella : UniqueTool
     private void CustomFixedUpdate(float fixedDeltaTime)
     {
 
-        
+        //FakeCenterRotation *= Quaternion.Euler(1, 0, 0);
         
         ApplyForce();
 

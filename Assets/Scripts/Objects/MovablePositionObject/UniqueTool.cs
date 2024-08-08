@@ -99,8 +99,6 @@ public abstract class UniqueTool : MovablePositionObject, IOuterFuncInteraction,
 
 
 
-    //외부가 바라보는 나의 중심 월드 좌표
-    protected Vector3 fakeCenterPosition;
     /// <summary>
     /// 거짓 월드 중심 좌표. 이 값을 바꾸면, 이 거짓 월드 중심 좌표를 기준으로하는 좌표로 위치가 옮겨진다.
     /// </summary>
@@ -113,6 +111,24 @@ public abstract class UniqueTool : MovablePositionObject, IOuterFuncInteraction,
         set
         {
             transform.position = value - CatchedLocalPosition;
+        }
+    }
+    
+    /// <summary>
+    /// 거짓 월드 중심 좌표를 기준으로 하는 캐릭터의 회전 각도. 값을 변경하면, 거짓 월드 중심 좌표를 기준으로 회전한다.
+    /// </summary>
+    public Quaternion FakeCenterRotation
+    {
+        get
+        {
+            return transform.rotation;
+        }
+        set
+        {
+            Vector3 beforePosition = FakeCenterPosition;
+            transform.rotation = value;
+            FakeCenterPosition = beforePosition;
+
         }
     }
     
