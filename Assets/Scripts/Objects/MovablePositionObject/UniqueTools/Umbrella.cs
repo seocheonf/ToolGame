@@ -22,7 +22,7 @@ class MeshSet
 
 }
 
-[RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
+//[RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
 public class Umbrella : UniqueTool
 {
 
@@ -37,6 +37,9 @@ public class Umbrella : UniqueTool
 
     private MeshSet umbrellaMeshSet;
 
+    private MeshCollider umbrellaOpenCollider;
+    private MeshCollider umbrellaClosedCollider;
+
     //true´Â ÆîÄ§, false´Â ´ÝÈû
     private bool umbrellaMode = true;
     private bool UmbrellaMode
@@ -46,6 +49,18 @@ public class Umbrella : UniqueTool
         {
             umbrellaMode = value;
             umbrellaMeshSet.MeshSetting(CurrentMesh);
+            if(umbrellaMode)
+            {
+                umbrellaOpenCollider.enabled = true;
+                physicsInteractionObjectCollider = umbrellaOpenCollider;
+                umbrellaClosedCollider.enabled = false;
+            }
+            else
+            {
+                umbrellaOpenCollider.enabled = false;
+                physicsInteractionObjectCollider = umbrellaClosedCollider;
+                umbrellaClosedCollider.enabled = true;
+            }
         }
     }
     
@@ -65,8 +80,21 @@ public class Umbrella : UniqueTool
         umbrellaOpen = ResourceManager.GetResource(ResourceEnum.Mesh.Mesh_UmbrellaOpen);
         umbrellaClosed = ResourceManager.GetResource(ResourceEnum.Mesh.Mesh_UmbrellaClosed);
 
-        umbrellaMeshRenderer = GetComponent<MeshRenderer>();
+        //umbrellaMeshRenderer = GetComponent<MeshRenderer>();
+        //umbrellaMeshRenderer.material = ResourceManager.GetResource(umbrellaMaterial);
+
+        umbrellaMeshRenderer = gameObject.AddComponent<MeshRenderer>();
         umbrellaMeshRenderer.material = ResourceManager.GetResource(umbrellaMaterial);
+
+        umbrellaOpenCollider = gameObject.AddComponent<MeshCollider>();
+        umbrellaOpenCollider.convex = true;
+        umbrellaOpenCollider.sharedMesh = ResourceManager.GetResource(ResourceEnum.Mesh.Mesh_UmbrellaOpen);
+        physicsInteractionObjectCollider = umbrellaOpenCollider;
+
+        umbrellaClosedCollider = gameObject.AddComponent<MeshCollider>();
+        umbrellaClosedCollider.convex = true;
+        umbrellaClosedCollider.sharedMesh = ResourceManager.GetResource(ResourceEnum.Mesh.Mesh_UmbrellaClosed);
+        umbrellaClosedCollider.enabled = false;
 
         umbrellaMeshSet = new MeshSet(GetComponent<MeshFilter>(), CurrentMesh);
 
