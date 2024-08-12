@@ -25,9 +25,9 @@ class MeshSet
 class UmbrellaConditionData
 {
     //대상이 되는 우산
-    public Umbrella targetUmbrella;
+    private Umbrella targetUmbrella;
     //현재 우산 상황에서 할 수 있는 기능 모음
-    public List<FuncInteractionData> holdingFuncInteractionList;
+    private List<FuncInteractionData> holdingFuncInteractionList;
 
     public UmbrellaConditionData(Umbrella targetUmbrella, List<FuncInteractionData> holdingFuncInteractionList)
     {
@@ -35,14 +35,14 @@ class UmbrellaConditionData
         this.holdingFuncInteractionList = holdingFuncInteractionList;
     }
 
-    //현재 우산 상황에서 들릴 때 해야할 일
-    public void PickUpTool()
+    //현재 우산 상황이 되었을 때 해야할 일
+    public void SetCondition()
     {
         
     }
 
-    //현재 우산 상황에서 놓일 때 해야할 일
-    public void PutTool()
+    //현재 우산 상황에서 빠져 나올 때 해야할 일
+    public void UnsetCondition()
     {
         
     }
@@ -71,13 +71,31 @@ public class Umbrella : UniqueTool
     UmbrellaCondition initialUmbrellaCondition;
     UmbrellaCondition currentUmbrellaCondition;
 
+    Dictionary<UmbrellaCondition, List<FuncInteractionData>> umbConditionFuncDictionary;
+
     private void ChangeUmbrellaCondition(UmbrellaCondition change)
     {
+
         if(holdingCharacter != null)
         {
             //기능 넣고 빼기는 들고 있을 때만.
+            ChangeUmbrellaFuncInteraction(change);
         }
+
+
+
+        //마지막에 식별해주는 친구 바꾸기
+        currentUmbrellaCondition = change;
+        holdingFuncInteractionList = ;//바뀐 놈 List로 갱신
     }
+    private void ChangeUmbrellaFuncInteraction(UmbrellaCondition change)
+    {
+        //current의 List를 remove요청, change의 List를 add요청
+
+        ControllerManager.RemoveInputFuncInteraction(holdingFuncInteractionList);
+        ControllerManager.AddInputFuncInteraction();//바뀐 놈 List로 갱신
+    }
+
 
     [SerializeField]
     private ResourceEnum.Material umbrellaMaterial;
