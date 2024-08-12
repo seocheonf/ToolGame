@@ -22,11 +22,62 @@ class MeshSet
 
 }
 
-//[RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
+class UmbrellaConditionData
+{
+    //대상이 되는 우산
+    public Umbrella targetUmbrella;
+    //현재 우산 상황에서 할 수 있는 기능 모음
+    public List<FuncInteractionData> holdingFuncInteractionList;
+
+    public UmbrellaConditionData(Umbrella targetUmbrella, List<FuncInteractionData> holdingFuncInteractionList)
+    {
+        this.targetUmbrella = targetUmbrella;
+        this.holdingFuncInteractionList = holdingFuncInteractionList;
+    }
+
+    //현재 우산 상황에서 들릴 때 해야할 일
+    public void PickUpTool()
+    {
+        
+    }
+
+    //현재 우산 상황에서 놓일 때 해야할 일
+    public void PutTool()
+    {
+        
+    }
+
+
+
+
+
+}
+
+[RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
 public class Umbrella : UniqueTool
 {
 
-    //
+    enum UmbrellaCondition
+    {
+        Closed,
+        Open,
+        Reverse,
+        Hook
+    }
+
+    
+
+    [SerializeField]
+    UmbrellaCondition initialUmbrellaCondition;
+    UmbrellaCondition currentUmbrellaCondition;
+
+    private void ChangeUmbrellaCondition(UmbrellaCondition change)
+    {
+        if(holdingCharacter != null)
+        {
+            //기능 넣고 빼기는 들고 있을 때만.
+        }
+    }
 
     [SerializeField]
     private ResourceEnum.Material umbrellaMaterial;
