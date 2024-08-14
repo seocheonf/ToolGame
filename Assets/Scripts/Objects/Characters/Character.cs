@@ -54,7 +54,7 @@ public class Character : MovablePositionObject
     //잡을 지점
     [SerializeField]
     private Vector3 catchingLocalPosition;
-    protected Vector3 CatchingLocalPosition
+    public Vector3 CatchingLocalPosition
     {
         get
         {

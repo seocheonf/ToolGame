@@ -15,7 +15,7 @@ public abstract class UniqueTool : MovablePositionObject, IOuterFuncInteraction,
 
     //¿‚»˙ ¡ˆ¡°
     [SerializeField]
-    private Vector3 catchedLocalPosition;
+    protected Vector3 catchedLocalPosition;
     protected Vector3 CatchedLocalPosition
     {
         get
