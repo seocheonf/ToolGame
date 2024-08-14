@@ -42,31 +42,14 @@ public class HngmoCharacter : Character, ICameraTarget
 
     private void CustomUpdate(float deltaTime)
     {
-        if(Input.GetKey(KeyCode.W))
-        {
-            transform.position += transform.forward * deltaTime * 5f;
-        }
-        else if (Input.GetKey(KeyCode.A))
-        {
-            transform.position -= transform.right * deltaTime * 5f;
-        }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            transform.position -= transform.forward * deltaTime * 5f;
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            transform.position += transform.right * deltaTime * 5f;
-        }
+        
 
         if(Input.GetKeyDown(KeyCode.Space))
         {
             AddForce(Vector3.up * 10f, ForceType.VelocityForce);
         }
 
-        xRot += ControllerManager.MouseMovement.x;
-        yRot += ControllerManager.MouseMovement.y;
-        transform.eulerAngles = new Vector3(0, xRot, 0);
+
     }
 
     float xRot;
@@ -74,11 +57,31 @@ public class HngmoCharacter : Character, ICameraTarget
 
     private void CustomFixedUpdate(float fixedDeltaTime)
     {
+        if (Input.GetKey(KeyCode.W))
+        {
+            transform.position += transform.forward * fixedDeltaTime * 10f;
+        }
+        else if (Input.GetKey(KeyCode.A))
+        {
+            transform.position -= transform.right * fixedDeltaTime * 10f;
+        }
+        else if (Input.GetKey(KeyCode.S))
+        {
+            transform.position -= transform.forward * fixedDeltaTime * 10f;
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            transform.position += transform.right * fixedDeltaTime * 10f;
+        }
 
         while (receivedForceQueue.TryDequeue(out ForceInfo result))
         {
             AddForce(result);
         }
+
+        xRot += ControllerManager.MouseMovement.x * 10f;
+        yRot += ControllerManager.MouseMovement.y * 10f;
+        transform.eulerAngles = new Vector3(0, xRot, 0);
 
     }
 
@@ -111,4 +114,14 @@ public class HngmoCharacter : Character, ICameraTarget
     }
 
 
+    public override Vector3 CurrentSightAngle
+    {
+        get
+        {
+            Vector3 result = Vector3.zero;
+            result.x = -yRot;
+            result.y = xRot;
+            return result;
+        }
+    }
 }

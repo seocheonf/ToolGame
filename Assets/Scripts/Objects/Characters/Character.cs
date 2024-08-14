@@ -49,18 +49,29 @@ public class Character : MovablePositionObject
     protected float jumpPower;
 
     protected Vector3 currentSightAngle;
-
+    public virtual Vector3 CurrentSightAngle
+    {
+        get
+        {
+            return currentSightAngle;
+        }
+    }
 
     //잡을 지점
     [SerializeField]
     private Vector3 catchingLocalPosition;
-    public Vector3 CatchingLocalPosition
+    protected Vector3 CatchingLocalPosition
     {
         get
         {
             return transform.rotation * catchingLocalPosition;
         }
     }
+    public Vector3 GetCatchingPosition()
+    {
+        return transform.position + CatchingLocalPosition;
+    }
+
 
 #if UNITY_EDITOR
 
@@ -140,4 +151,5 @@ public class Character : MovablePositionObject
     {
 
     }
+
 }

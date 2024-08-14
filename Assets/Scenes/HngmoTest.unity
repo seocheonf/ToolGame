@@ -898,7 +898,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   catchedLocalPosition: {x: 0, y: 0, z: 0}
+  initialCondition: 0
   umbrellaMaterial: 5
+  umbrellaMeshRenderer: {fileID: 0}
+  umbrellaOpenCollider: {fileID: 0}
+  umbrellaClosedCollider: {fileID: 0}
+  catchedLocalPositionKnob: {x: 0, y: 0, z: 0}
+  catchedLocalPositionKnobReverse: {x: 0, y: 0, z: 0}
+  settingJointPoint: 0
 --- !u!54 &1069714093
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1026,6 +1033,9 @@ GameObject:
   - component: {fileID: 1093168349}
   - component: {fileID: 1093168346}
   - component: {fileID: 1093168345}
+  - component: {fileID: 1093168351}
+  - component: {fileID: 1093168353}
+  - component: {fileID: 1093168352}
   m_Layer: 0
   m_Name: Umbrella
   m_TagString: Untagged
@@ -1046,7 +1056,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   catchedLocalPosition: {x: 0, y: -0.54798615, z: 0}
+  initialCondition: 0
   umbrellaMaterial: 2
+  umbrellaMeshRenderer: {fileID: 1093168351}
+  umbrellaOpenCollider: {fileID: 1093168353}
+  umbrellaClosedCollider: {fileID: 1093168352}
+  catchedLocalPositionKnob: {x: 0, y: -0.5408373, z: 0}
+  catchedLocalPositionKnobReverse: {x: 0, y: 0.5189254, z: 0}
+  settingJointPoint: 0
 --- !u!54 &1093168346
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1081,7 +1098,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1093168344}
-  m_Mesh: {fileID: 4300000, guid: 5f6fafc52a26dde4c8cf9613255bec35, type: 2}
+  m_Mesh: {fileID: 4300000, guid: 3f35d66844d632e47aa7bb092904566b, type: 2}
 --- !u!4 &1093168350
 Transform:
   m_ObjectHideFlags: 0
@@ -1097,6 +1114,92 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &1093168351
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1093168344}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &1093168352
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1093168344}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: 3f35d66844d632e47aa7bb092904566b, type: 2}
+--- !u!64 &1093168353
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1093168344}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 4300000, guid: 5f6fafc52a26dde4c8cf9613255bec35, type: 2}
 --- !u!1 &1137020094
 GameObject:
   m_ObjectHideFlags: 0

@@ -106,4 +106,10 @@ public abstract class PhysicsInteractionObject : MyComponent
         receivedForceQueue = new Queue<ForceInfo>();
     }
 
+
+
+    public virtual Vector3 GetVelocity()
+    {
+        return physicsInteractionObjectRigidbody.velocity;
+    }
 }

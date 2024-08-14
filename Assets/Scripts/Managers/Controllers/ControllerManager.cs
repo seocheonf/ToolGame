@@ -50,15 +50,16 @@ public class ControllerManager : Manager
             }
         }
 
+        while (removeFuncInteractionQueue.TryDequeue(out FuncInteractionData result))
+        {
+            RealRemoveInputFuncInteraction(result);
+        }
+
         while (addFuncInteractionQueue.TryDequeue(out FuncInteractionData result))
         {
             RealAddInputFuncInteraction(result);
         }
 
-        while (removeFuncInteractionQueue.TryDequeue(out FuncInteractionData result))
-        {
-            RealRemoveInputFuncInteraction(result);
-        }
 
     }
 

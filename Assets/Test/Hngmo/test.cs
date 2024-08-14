@@ -17,6 +17,6 @@ public class test : MonoBehaviour
     void Update()
     {
 
-        textTa.text = $"{target.isTrigger} / {target.enabled} / {target.material} / {target.convex} / {target.sharedMesh} / {target.contactOffset}";
+        //textTa.text = $"{target.isTrigger} / {target.enabled} / {target.material} / {target.convex} / {target.sharedMesh} / {target.contactOffset}";
     }
 }
