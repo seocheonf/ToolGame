@@ -40,7 +40,8 @@ namespace SpecialInteraction
         WindData windData;
         [SerializeField]
         Collider windCollider;
-
+        
+        const float reactionRatio = 0.3f;
 
 
 #if UNITY_EDITOR
@@ -94,7 +95,13 @@ namespace SpecialInteraction
 
         private void CustomFixedUpdate(float fixedDeltaTime)
         {
+
+            //방향 값 갱신
             windData.Direction = transform.rotation * windData.offset * Vector3.forward;
+
+            //원천에게 반작용.
+            windData.origin.AddForce(reactionRatio * windData.intensity * -windData.Direction, ForceType.VelocityForce);
+
         }
 
         //감지를 하자.

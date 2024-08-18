@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class UniqueTool : MovablePositionObject, IOuterFuncInteraction, IOnOffFuncInteraction
+public abstract class UniqueTool : MovablePositionObject
 {
     protected List<FuncInteractionData> holdingFuncInteractionList;
 
@@ -80,24 +80,21 @@ public abstract class UniqueTool : MovablePositionObject, IOuterFuncInteraction,
         ControllerManager.AddInputFuncInteraction(holdingFuncInteractionList);
     }
 
+    public override void AddForce(Vector3 direction, ForceType forceType, bool isMassIgnore = false)
+    {
+        if(holdingCharacter != null)
+        {
+            holdingCharacter.AddForce(direction, forceType, isMassIgnore);
+            return;
+        }
+
+        base.AddForce(direction, forceType, isMassIgnore);
+    }
+
     public List<FuncInteractionData> GetHoldingFuncInteractionList()
     {
         return default;
     }
-
-    //인터페이스 구체화
-
-    public List<FuncInteractionData> GetOuterFuncInteractionList()
-    {
-        return default;
-    }
-
-    public List<FuncInteractionData> GetOnOffFuncInteractionList()
-    {
-        return default;
-    }
-
-
 
 
 

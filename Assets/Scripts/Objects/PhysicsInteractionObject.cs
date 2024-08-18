@@ -24,14 +24,20 @@ public class ForceInfo
     }
 }
 
-//[RequireComponent(typeof(Collider), typeof(Rigidbody))]
+[RequireComponent(typeof(Collider), typeof(Rigidbody))]
 public abstract class PhysicsInteractionObject : MyComponent
 {
-
     protected Rigidbody physicsInteractionObjectRigidbody;
     protected Collider physicsInteractionObjectCollider;
 
     protected Queue<ForceInfo> receivedForceQueue;
+
+    protected float initialMass;
+    public float InitialMass => initialMass;
+    protected float currentMass;
+    public float CurrentMass => currentMass;
+
+    const float massRatio = 0.01f;
 
     private void Awake()
     {
@@ -69,13 +75,14 @@ public abstract class PhysicsInteractionObject : MyComponent
         return physicsInteractionObjectRigidbody.velocity.y;
     }
 
-    public virtual void AddForce(ForceInfo info)
+    public virtual void AddForce(ForceInfo info, bool isMassIgnore = false)
     {
-        AddForce(info.direction, info.forceType);
+        AddForce(info.direction, info.forceType, isMassIgnore);
     }
-    public virtual void AddForce(Vector3 direction, ForceType forceType)
+    public virtual void AddForce(Vector3 direction, ForceType forceType, bool isMassIgnore = false)
     {
-        switch(forceType)
+        direction = isMassIgnore ? direction : direction / (1 + currentMass * massRatio);
+        switch (forceType)
         {
             case ForceType.VelocityForce:
                 AddForceVelocity(direction);
@@ -88,6 +95,7 @@ public abstract class PhysicsInteractionObject : MyComponent
                 break;
         }
     }
+
     private void AddForceVelocity(Vector3 direction)
     {
         physicsInteractionObjectRigidbody.velocity += direction;
@@ -104,8 +112,9 @@ public abstract class PhysicsInteractionObject : MyComponent
     protected virtual void Initialize()
     {
         receivedForceQueue = new Queue<ForceInfo>();
+        initialMass = physicsInteractionObjectRigidbody.mass;
+        currentMass = physicsInteractionObjectRigidbody.mass;
     }
-
 
 
     public virtual Vector3 GetVelocity()

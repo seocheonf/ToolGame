@@ -6,6 +6,8 @@ public class HngmoCharacter : Character, ICameraTarget
 {
     public UniqueTool sampleTool;
 
+    public float sampleSensitive;
+
     FuncInteractionData AboutTool;
 
     protected override void Initialize()
@@ -74,15 +76,16 @@ public class HngmoCharacter : Character, ICameraTarget
             transform.position += transform.right * fixedDeltaTime * 10f;
         }
 
+
         while (receivedForceQueue.TryDequeue(out ForceInfo result))
         {
             AddForce(result);
         }
 
-        xRot += ControllerManager.MouseMovement.x * 10f;
-        yRot += ControllerManager.MouseMovement.y * 10f;
+        xRot += ControllerManager.MouseMovement.x * sampleSensitive;
+        yRot += ControllerManager.MouseMovement.y * sampleSensitive;
         transform.eulerAngles = new Vector3(0, xRot, 0);
-
+    
     }
 
     private void ToolSet()

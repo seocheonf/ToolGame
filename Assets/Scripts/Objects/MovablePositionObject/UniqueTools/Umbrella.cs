@@ -502,11 +502,6 @@ public class Umbrella : UniqueTool
                 downVelocity.y *= (1 - dotValue * 0.05f);
                 physicsInteractionObjectRigidbody.velocity = downVelocity;
             }
-
-            while (receivedForceQueue.TryDequeue(out ForceInfo result))
-            {
-                AddForce(result);
-            }
         }
         else
         {
@@ -515,11 +510,11 @@ public class Umbrella : UniqueTool
                 float dotValue = Vector3.Dot(Vector3.up, transform.up);
                 holdingCharacter.AccelDownForce((1 - dotValue * 0.05f));
             }
+        }
 
-            while (receivedForceQueue.TryDequeue(out ForceInfo result))
-            {
-                holdingCharacter.AddForce(result);
-            }
+        while (receivedForceQueue.TryDequeue(out ForceInfo result))
+        {
+            AddForce(result);
         }
     }
 
@@ -538,6 +533,7 @@ public class Umbrella : UniqueTool
     {
         transform.parent = source.transform;
         holdingCharacter = source;
+        //////////////////currentMass = initialMass + source.InitialMass;//////
         physicsInteractionObjectRigidbody.isKinematic = true;
         physicsInteractionObjectCollider.isTrigger = true;
         ChangeUmbrellStatus();
