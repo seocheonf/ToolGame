@@ -27,7 +27,11 @@ public class ForceInfo
 [RequireComponent(typeof(Collider), typeof(Rigidbody))]
 public abstract class PhysicsInteractionObject : MyComponent
 {
-    protected Rigidbody physicsInteractionObjectRigidbody;
+    //본 오브젝트의 물리작용 원본 리지드바디
+    protected Rigidbody initialRigidbody;
+    //본 오브젝트가 물리작용을 할 때, 마치 자신의 것 처럼 활용해야 할 리지드바디. 즉 물리적으로 실질적인 본인을 의미함.
+    protected Rigidbody currentRigidbody;
+    public Rigidbody CurrentRigidbody => currentRigidbody;
     protected Collider physicsInteractionObjectCollider;
 
     protected Queue<ForceInfo> receivedForceQueue;
@@ -41,7 +45,7 @@ public abstract class PhysicsInteractionObject : MyComponent
 
     private void Awake()
     {
-        physicsInteractionObjectRigidbody = GetComponent<Rigidbody>();
+        initialRigidbody = GetComponent<Rigidbody>();
         physicsInteractionObjectCollider = GetComponent<Collider>();
     }
 
@@ -51,9 +55,14 @@ public abstract class PhysicsInteractionObject : MyComponent
         Initialize();
     }
 
+    protected virtual void MainFixedUpdate(float fixedDeltaTime)
+    {
+        ApplyForceQueue();
+    }
+
     public virtual void GetSpecialInteraction(SpecialInteraction.WindData source)
     {
-        receivedForceQueue.Enqueue(new ForceInfo(source.Direction * source.intensity, ForceType.VelocityForce));
+        AddForce(new ForceInfo(source.Direction * source.intensity, ForceType.VelocityForce));
     }
     public virtual void GetSpecialInteraction(SpecialInteraction.WaterData source)
     {
@@ -66,22 +75,31 @@ public abstract class PhysicsInteractionObject : MyComponent
 
     public virtual void AccelDownForce(float ratio)
     {
-        Vector3 down = physicsInteractionObjectRigidbody.velocity;
+        Vector3 down = currentRigidbody.velocity;
         down.y *= ratio;
-        physicsInteractionObjectRigidbody.velocity = down;
+        currentRigidbody.velocity = down;
     }
-    public float GetDownSpeed()
+    public virtual float GetDownSpeed()
     {
-        return physicsInteractionObjectRigidbody.velocity.y;
+        return currentRigidbody.velocity.y;
     }
 
-    public virtual void AddForce(ForceInfo info, bool isMassIgnore = false)
+    public void AddForce(Vector3 direction, ForceType forceType)
     {
-        AddForce(info.direction, info.forceType, isMassIgnore);
+        AddForce(new ForceInfo(direction, forceType));
     }
-    public virtual void AddForce(Vector3 direction, ForceType forceType, bool isMassIgnore = false)
+    public void AddForce(ForceInfo info)
     {
-        direction = isMassIgnore ? direction : direction / (1 + currentMass * massRatio);
+        receivedForceQueue.Enqueue(info);
+    }
+
+    private void ApplyForce(ForceInfo info)
+    {
+        ApplyForce(info.direction, info.forceType);
+    }
+    private void ApplyForce(Vector3 direction, ForceType forceType)
+    {
+        direction /= (1 + currentRigidbody.mass * massRatio);
         switch (forceType)
         {
             case ForceType.VelocityForce:
@@ -95,10 +113,17 @@ public abstract class PhysicsInteractionObject : MyComponent
                 break;
         }
     }
+    protected void ApplyForceQueue()
+    {
+        while(receivedForceQueue.TryDequeue(out ForceInfo result))
+        {
+            ApplyForce(result.direction, result.forceType);
+        }
+    }
 
     private void AddForceVelocity(Vector3 direction)
     {
-        physicsInteractionObjectRigidbody.velocity += direction;
+        currentRigidbody.velocity += direction;
     }
     private void AddForceImpulse(Vector3 direction)
     {
@@ -112,13 +137,25 @@ public abstract class PhysicsInteractionObject : MyComponent
     protected virtual void Initialize()
     {
         receivedForceQueue = new Queue<ForceInfo>();
-        initialMass = physicsInteractionObjectRigidbody.mass;
-        currentMass = physicsInteractionObjectRigidbody.mass;
+        currentRigidbody = initialRigidbody;
+        initialMass = initialRigidbody.mass;
+        currentMass = currentRigidbody.mass;
+
+        //기능 등록 작업
+        GameManager.ObjectsFixedUpdate -= MainFixedUpdate;
+        GameManager.ObjectsFixedUpdate += MainFixedUpdate;
     }
 
+    protected override void MyDestroy()
+    {
+        base.MyDestroy();
+
+        //기능 해제 작업
+        GameManager.ObjectsFixedUpdate -= MainFixedUpdate;
+    }
 
     public virtual Vector3 GetVelocity()
     {
-        return physicsInteractionObjectRigidbody.velocity;
+        return currentRigidbody.velocity;
     }
 }

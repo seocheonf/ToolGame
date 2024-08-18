@@ -6,10 +6,6 @@ public abstract class UniqueTool : MovablePositionObject
 {
     protected List<FuncInteractionData> holdingFuncInteractionList;
 
-    protected List<FuncInteractionData> outerFuncInteractionList;
-    protected List<FuncInteractionData> onoffFuncInteractionList;
-
-
     protected float angle;
     protected Character holdingCharacter;
 
@@ -46,17 +42,18 @@ public abstract class UniqueTool : MovablePositionObject
         base.Initialize();
 
         holdingFuncInteractionList = new List<FuncInteractionData>();
-        outerFuncInteractionList = new List<FuncInteractionData>();
-        onoffFuncInteractionList = new List<FuncInteractionData>();
 
     }
 
     public virtual void PutTool()
     {
+        //타겟 리지드바디 초기화
+        currentRigidbody = initialRigidbody;
 
+        //기존 본인 설정 초기화
         physicsInteractionObjectCollider.isTrigger = false;
-        physicsInteractionObjectRigidbody.isKinematic = false;
-        physicsInteractionObjectRigidbody.velocity = holdingCharacter.GetVelocity();
+        currentRigidbody.isKinematic = false;
+        currentRigidbody.velocity = holdingCharacter.GetVelocity();
         ControllerManager.RemoveInputFuncInteraction(holdingFuncInteractionList);
         transform.parent = null;
         holdingCharacter = null;
@@ -72,28 +69,22 @@ public abstract class UniqueTool : MovablePositionObject
     }
     public virtual void PickUpTool(Character source)
     {
+        //기존 본인 설정 세팅
         transform.parent = source.transform;
         holdingCharacter = source;
-        physicsInteractionObjectRigidbody.isKinematic = true;
+        currentRigidbody.isKinematic = true;
         physicsInteractionObjectCollider.isTrigger = true;
         FakeCenterPosition = holdingCharacter.GetCatchingPosition();
         ControllerManager.AddInputFuncInteraction(holdingFuncInteractionList);
+
+        //타겟 리지드바디 설정
+        currentRigidbody = holdingCharacter.CurrentRigidbody;
     }
 
-    public override void AddForce(Vector3 direction, ForceType forceType, bool isMassIgnore = false)
-    {
-        if(holdingCharacter != null)
-        {
-            holdingCharacter.AddForce(direction, forceType, isMassIgnore);
-            return;
-        }
-
-        base.AddForce(direction, forceType, isMassIgnore);
-    }
 
     public List<FuncInteractionData> GetHoldingFuncInteractionList()
     {
-        return default;
+        return holdingFuncInteractionList;
     }
 
 

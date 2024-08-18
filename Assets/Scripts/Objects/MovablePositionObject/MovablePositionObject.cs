@@ -13,8 +13,8 @@ public class MovablePositionObject : PhysicsInteractionObject
     {
         base.Initialize();
 
-        initialMass = physicsInteractionObjectRigidbody.mass;
-        currentMass = physicsInteractionObjectRigidbody.mass;
+        initialMass = currentRigidbody.mass;
+        currentMass = currentRigidbody.mass;
     }
     */
 

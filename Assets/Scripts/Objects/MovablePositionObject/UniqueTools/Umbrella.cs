@@ -117,8 +117,6 @@ public class Umbrella : UniqueTool
         //기능 등록 작업
         GameManager.ObjectsFixedUpdate -= CustomUpdate;
         GameManager.ObjectsFixedUpdate += CustomUpdate;
-        GameManager.ObjectsFixedUpdate -= CustomFixedUpdate;
-        GameManager.ObjectsFixedUpdate += CustomFixedUpdate;
 
 
         //기능 준비 작업
@@ -376,9 +374,10 @@ public class Umbrella : UniqueTool
     }
 
     /// <summary>
-    /// 우산을 들고 있는 여부에 따라 collider isTrigger on/off 설정
+    /// 우산을 들고 있는 여부에 따라 collider isTrigger on/off 설정.\n
+    /// 추후 다른 곳에서 사용시 null체크 관련해서 수정할 것.
     /// </summary>
-    private void ChangeUmbrellStatus()
+    private void ChangeUmbrellaStatus()
     {
         //들고 있냐에 따라 바꿈
         if(holdingCharacter != null)
@@ -473,7 +472,7 @@ public class Umbrella : UniqueTool
         if (umbrellaMode)
         {
             float dotValue = Vector3.Dot(transform.up, source.Direction);
-            receivedForceQueue.Enqueue(new ForceInfo(transform.up * dotValue * 5f * source.intensity, ForceType.VelocityForce));
+            AddForce(new ForceInfo(transform.up * dotValue * 5f * source.intensity, ForceType.VelocityForce));
         }
 
     }
@@ -484,6 +483,18 @@ public class Umbrella : UniqueTool
 
     }
 
+    protected override void MainFixedUpdate(float fixedDeltaTime)
+    {
+        ChangeUmbrellaDirectionFixedUpdate(fixedDeltaTime);
+        if(GetDownSpeed() <= 0 && umbrellaMode)
+        {
+            float dotValue = Vector3.Dot(Vector3.up, transform.up);
+            AccelDownForce(1 - dotValue * 0.05f);
+        }
+        base.MainFixedUpdate(fixedDeltaTime);
+    }
+
+    /* Legacy
     private void CustomFixedUpdate(float fixedDeltaTime)
     {
         ChangeUmbrellaDirectionFixedUpdate(fixedDeltaTime);
@@ -495,12 +506,12 @@ public class Umbrella : UniqueTool
         if(holdingCharacter == null)
         {
             //하강 중일 때, 하강 속도 감소
-            if (physicsInteractionObjectRigidbody.velocity.y <= 0 && umbrellaMode)
+            if (currentRigidbody.velocity.y <= 0 && umbrellaMode)
             {
                 float dotValue = Vector3.Dot(Vector3.up, transform.up);
-                Vector3 downVelocity = physicsInteractionObjectRigidbody.velocity;
+                Vector3 downVelocity = currentRigidbody.velocity;
                 downVelocity.y *= (1 - dotValue * 0.05f);
-                physicsInteractionObjectRigidbody.velocity = downVelocity;
+                currentRigidbody.velocity = downVelocity;
             }
         }
         else
@@ -517,31 +528,39 @@ public class Umbrella : UniqueTool
             AddForce(result);
         }
     }
+    */
 
     public override void PutTool()
     {
+        //타겟 리지드바디 초기화
+        currentRigidbody = initialRigidbody;
+
+        //기존 본인 설정 초기화
         physicsInteractionObjectCollider.isTrigger = false;
-        physicsInteractionObjectRigidbody.isKinematic = false;
-        physicsInteractionObjectRigidbody.velocity = holdingCharacter.GetVelocity();
+        currentRigidbody.isKinematic = false;
+        currentRigidbody.velocity = holdingCharacter.GetVelocity();
         ControllerManager.RemoveInputFuncInteraction(conditionFuncInteractionDictionary[currentCondition]);
         transform.parent = null;
         holdingCharacter = null;
-        ChangeUmbrellStatus();
+        ChangeUmbrellaStatus();
     }
 
     public override void PickUpTool(Character source)
     {
+        //기존 본인 설정 세팅
         transform.parent = source.transform;
         holdingCharacter = source;
-        //////////////////currentMass = initialMass + source.InitialMass;//////
-        physicsInteractionObjectRigidbody.isKinematic = true;
+        currentRigidbody.isKinematic = true;
         physicsInteractionObjectCollider.isTrigger = true;
-        ChangeUmbrellStatus();
+        ChangeUmbrellaStatus();
         FakeCenterPosition = holdingCharacter.GetCatchingPosition();
 
         SetUmbrellaDirection(currentStandardaAngle);
 
         ControllerManager.AddInputFuncInteraction(conditionFuncInteractionDictionary[currentCondition]);
+
+        //타겟 리지드바디 설정
+        currentRigidbody = holdingCharacter.CurrentRigidbody;
     }
 
     protected override void MyDestroy()
@@ -551,7 +570,6 @@ public class Umbrella : UniqueTool
         //기능 해제 작업
 
         GameManager.ObjectsUpdate -= CustomUpdate;
-        GameManager.ObjectsFixedUpdate -= CustomFixedUpdate;
         
 
     }

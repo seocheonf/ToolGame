@@ -92,6 +92,7 @@ public class Character : MovablePositionObject
 
     protected virtual void PutTool()
     {
+        currentRigidbody.mass = initialMass;
         currentHoldingUniqueTool.PutTool();
         currentHoldingUniqueTool = null;
     }
@@ -99,6 +100,7 @@ public class Character : MovablePositionObject
     {
         target.PickUpTool(this);
         currentHoldingUniqueTool = target;
+        currentRigidbody.mass += currentHoldingUniqueTool.InitialMass;
     }
 
     protected void OnMoveForward()
