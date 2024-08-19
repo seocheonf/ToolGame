@@ -112,7 +112,7 @@ public class HngmoCharacter : Character, ICameraTarget
     }
 
 
-    public override Vector3 CurrentSightAngle
+    public override Vector3 CurrentSightEulerAngle
     {
         get
         {

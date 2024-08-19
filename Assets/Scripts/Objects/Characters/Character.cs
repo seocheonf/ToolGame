@@ -48,12 +48,28 @@ public class Character : MovablePositionObject
     protected float defaultJumpPower;
     protected float jumpPower;
 
-    protected Vector3 currentSightAngle;
-    public virtual Vector3 CurrentSightAngle
+    protected Vector3 currentSightEulerAngle;
+    //오일러각
+    public virtual Vector3 CurrentSightEulerAngle
     {
         get
         {
-            return currentSightAngle;
+            return currentSightEulerAngle;
+        }
+    }
+    //쿼터니언각
+    public virtual Quaternion CurrentSightQuaternionAngle
+    {
+        get
+        {
+            return Quaternion.Euler(CurrentSightEulerAngle);
+        }
+    }
+    public virtual Vector3 CurrentSightForward
+    {
+        get
+        {
+            return Quaternion.Euler(CurrentSightEulerAngle) * Vector3.forward;
         }
     }
 

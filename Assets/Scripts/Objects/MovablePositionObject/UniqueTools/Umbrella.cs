@@ -1,4 +1,5 @@
 using SpecialInteraction;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -110,7 +111,7 @@ public class Umbrella : UniqueTool
         //기본 Joint 지점은 손잡이
         catchedLocalPosition = catchedLocalPositionKnob;
 
-        ChangeCurrentCondition(initialCondition);
+        ChangeInitialCondition(initialCondition);
 
         conditionFuncInteractionDictionary = new Dictionary<UmbrellaCondition, List<FuncInteractionData>>();
 
@@ -136,6 +137,7 @@ public class Umbrella : UniqueTool
 
         //뒤집혀 있을 때 할 일 대기
         conditionFuncInteractionDictionary[UmbrellaCondition.Reverse].Add(new FuncInteractionData(KeyCode.Tab, "우산 뒤집기", TryCloseUmbrella, null, null));
+        conditionFuncInteractionDictionary[UmbrellaCondition.Reverse].Add(new FuncInteractionData(KeyCode.CapsLock, "갈고리 걸기", TryHookOnUmbrella, null, null));
 
         //걸려 있을 때 할 일 대기
         //conditionFuncInteractionDictionary[UmbrellaCondition.Open].Add(new FuncInteractionData(KeyCode., "우산", null, null, null));
@@ -216,17 +218,86 @@ public class Umbrella : UniqueTool
     }
 
     //우산을 걸기
-    private void TryHookUmbrella()
+    private void TryHookOnUmbrella()
     {
         if (currentCondition != UmbrellaCondition.Reverse)
             return;
 
-        
-
-        HookUmbrella();
+        HookOnUmbrella();
     }
-    private void HookUmbrella()
+
+
+    private void OnDrawGizmos()
     {
+        if (!Application.isPlaying)
+            return;
+
+        if (holdingCharacter == null)
+            return;
+
+        //holdingCharacter.CurrentSightEulerAngle <= 이놈은 시야각을 나타내는 오일러 각
+        Vector3 sightForward = Quaternion.Euler(holdingCharacter.CurrentSightEulerAngle) * Vector3.forward;
+
+        {
+            Gizmos.color = Color.red;
+
+            Gizmos.DrawLine(FakeCenterPosition, FakeCenterPosition + sightForward * 5f);
+
+
+            Collider[] hithit = Physics.OverlapBox(FakeCenterPosition + sightForward * 5f, Vector3.one * 2, holdingCharacter.CurrentSightQuaternionAngle);
+            if(hithit.Length == 0)
+            {
+                return;
+            }
+
+            Matrix4x4 rotationMatrix = Matrix4x4.TRS(FakeCenterPosition + sightForward * 5f, Quaternion.Euler(holdingCharacter.CurrentSightEulerAngle), Vector3.one);
+            Gizmos.matrix = rotationMatrix;
+
+            Gizmos.DrawWireCube(Vector3.zero, Vector3.one * 4);
+
+        }
+
+    }
+
+    private void HookOnUmbrella()
+    {
+        //이 작업은 잡고 있는 캐릭터가 있을 때 실행되긴 하나, 혹시모르니 null체크
+        if (holdingCharacter == null)
+            return;
+        
+        Vector3 sightForward = holdingCharacter.CurrentSightForward;
+        Collider[] hithit = Physics.OverlapBox(FakeCenterPosition + sightForward * 5f, Vector3.one * 2, holdingCharacter.CurrentSightQuaternionAngle);
+
+        //가장 가까운 놈 캐칭
+        Vector3 dir = Vector3.one * float.MaxValue;
+        UmbrellaHookTarget resultTarget = null;
+        foreach(Collider each in hithit)
+        {
+            Debug.Log(each.name);
+            Debug.Log("Ca");
+            if(each.TryGetComponent(out UmbrellaHookTarget result))
+            {
+                Debug.Log("Catch");
+                Vector3 dirSub = FakeCenterPosition - each.transform.position;
+                float magSub = dirSub.magnitude;
+                if (magSub < dir.magnitude)
+                {
+                    dir = dirSub;
+                    resultTarget = result;
+                }
+            }
+        }
+        if (resultTarget == null)
+        {
+            Debug.Log("empty");
+            return;
+        }
+
+        Debug.Log("name : " + resultTarget.name);
+        return;
+
+
+
         // 우산을 접고
         SetUmbrellaMode(false);
         // 우산 잡는 위치를 바꾸고
@@ -324,7 +395,7 @@ public class Umbrella : UniqueTool
         }
     }
 
-    private void ChangeCurrentCondition(UmbrellaCondition newCondition)
+    private void ChangeInitialCondition(UmbrellaCondition newCondition)
     {
         currentCondition = newCondition;
         
@@ -340,7 +411,7 @@ public class Umbrella : UniqueTool
                 ReverseUmbrella();
                 break;
             case UmbrellaCondition.Hook:
-                HookUmbrella();
+                //HookOnUmbrella();
                 break;
             default:
                 currentCondition = UmbrellaCondition.Open;
@@ -425,13 +496,13 @@ public class Umbrella : UniqueTool
     private void ChangeUmbrellaDirectionSight()
     {
         //캐릭터의 시야를 바라보게 설정
-        SetFakeCenterEulerAngle(holdingCharacter.CurrentSightAngle);
+        SetFakeCenterEulerAngle(holdingCharacter.CurrentSightEulerAngle);
         //대상의 방향을 추가로 조정하는 과정. 기본 우산의 forward를 고려하는 것과, 추가 회전을 통해 눈에 잘 보이게 하기 위한 작업
         SetFakeCenterQuaternionProductRotation(Quaternion.Euler(-120, 22.5f, 0));
 
         /*
         Vector3 tempt = FakeCenterPosition;
-        transform.eulerAngles = holdingCharacter.CurrentSightAngle;
+        transform.eulerAngles = holdingCharacter.CurrentSightEulerAngle;
         transform.rotation *= Quaternion.Euler(-90, 0, 0);
         FakeCenterPosition = tempt;
         */
@@ -493,6 +564,7 @@ public class Umbrella : UniqueTool
         }
         base.MainFixedUpdate(fixedDeltaTime);
     }
+
 
     /* Legacy
     private void CustomFixedUpdate(float fixedDeltaTime)
