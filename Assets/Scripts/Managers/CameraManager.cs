@@ -6,19 +6,19 @@ using UnityEngine;
 public class CameraManager : Manager
 {
 
-    #region º¯¼öºÎ
+    #region ë³€ìˆ˜ë¶€
 
-    //--------------Ä«¸Ş¶ó ¸Å´ÏÀú ±âº» º¯¼öºÎ--------------//
+    //--------------ì¹´ë©”ë¼ ë§¤ë‹ˆì € ê¸°ë³¸ ë³€ìˆ˜ë¶€--------------//
     
-    //Ä«¸Ş¶ó¸Å´ÏÀú°¡ °ü¸®ÇÏ´Â Ä«¸Ş¶ó
+    //ì¹´ë©”ë¼ë§¤ë‹ˆì €ê°€ ê´€ë¦¬í•˜ëŠ” ì¹´ë©”ë¼
     private Camera mainCamera;
 
-    //Ä«¸Ş¶ó°¡ ÇØ¾ßÇÒ ÀÏÀÇ ÀüÈ¯À» À§ÇÑ µ¨¸®°ÔÀÌÆ®
+    //ì¹´ë©”ë¼ê°€ í•´ì•¼í•  ì¼ì˜ ì „í™˜ì„ ìœ„í•œ ë¸ë¦¬ê²Œì´íŠ¸
     private FixedUpdateFunction CameraFixedUpdate;
 
-    //Ä«¸Ş¶óÀÇ Å¸ÀÔ. Å¸ÀÔ¿¡ µû¶ó ÇàÀ§°¡ ´Ş¶óÁü
+    //ì¹´ë©”ë¼ì˜ íƒ€ì…. íƒ€ì…ì— ë”°ë¼ í–‰ìœ„ê°€ ë‹¬ë¼ì§
     private CameraType currentCameraType;
-    //Ä«¸Ş¶ó Å¸ÀÔÀÌ º¯ÇÔ¿¡ µû¶ó, Ä«¸Ş¶ó°¡ ¼öÇàÇØ¾ß ÇÒ ÀÏµµ ÀüÈ¯µÇ¾î¾ß ÇÔ.
+    //ì¹´ë©”ë¼ íƒ€ì…ì´ ë³€í•¨ì— ë”°ë¼, ì¹´ë©”ë¼ê°€ ìˆ˜í–‰í•´ì•¼ í•  ì¼ë„ ì „í™˜ë˜ì–´ì•¼ í•¨.
     private CameraType CurrentCameraType
     {
         get
@@ -49,15 +49,15 @@ public class CameraManager : Manager
         }
     }
 
-    //-----------------Ä«¸Ş¶ó Á¶Á¤ º¯¼öºÎ-----------------//
+    //-----------------ì¹´ë©”ë¼ ì¡°ì • ë³€ìˆ˜ë¶€-----------------//
 
-    //Ä«¸Ş¶ó¸Å´ÏÀú°¡ °ü¸®ÇÏ´Â Å¸°ÙµéÀÇ Stack
+    //ì¹´ë©”ë¼ë§¤ë‹ˆì €ê°€ ê´€ë¦¬í•˜ëŠ” íƒ€ê²Ÿë“¤ì˜ Stack
     private List<CameraTargetInfo> cameraTargetLStack;
 
 
     #endregion
 
-    #region ÇÔ¼öºÎ
+    #region í•¨ìˆ˜ë¶€
 
     public override IEnumerator Initiate()
     {
@@ -65,10 +65,10 @@ public class CameraManager : Manager
 
         GameManager.TurnOnBasicLoadingCavnas("Camera Loading..");
 
-        //º¯¼ö ÃÊ±âÈ­
+        //ë³€ìˆ˜ ì´ˆê¸°í™”
         VarInitialize();
 
-        //ÀÚ½ÅÀÇ ¾÷µ¥ÀÌÆ®°¡ ´©±¸¿Í ÇÔ²² »ì°í Á×´Â°¡¸¦ »ı°¢ÇØº¸ÀÚ.
+        //ìì‹ ì˜ ì—…ë°ì´íŠ¸ê°€ ëˆ„êµ¬ì™€ í•¨ê»˜ ì‚´ê³  ì£½ëŠ”ê°€ë¥¼ ìƒê°í•´ë³´ì.
         GameManager.Instance.CurrentWorld.WorldFixedUpdates -= ManagerFixedUpdate;
         GameManager.Instance.CurrentWorld.WorldFixedUpdates += ManagerFixedUpdate;
 
@@ -77,7 +77,7 @@ public class CameraManager : Manager
     }
 
     /// <summary>
-    /// Ä«¸Ş¶ó ¸Å´ÏÀúÀÇ ±âº» º¯¼ö ÃÊ±âÈ­¸¦ ´ã´çÇÑ´Ù.
+    /// ì¹´ë©”ë¼ ë§¤ë‹ˆì €ì˜ ê¸°ë³¸ ë³€ìˆ˜ ì´ˆê¸°í™”ë¥¼ ë‹´ë‹¹í•œë‹¤.
     /// </summary>
     private void VarInitialize()
     {
@@ -91,9 +91,9 @@ public class CameraManager : Manager
 
 
     /// <summary>
-    /// Ä«¸Ş¶ó Å¸ÀÔÀ» ¼³Á¤ÇÏ´Â ÇÔ¼ö
+    /// ì¹´ë©”ë¼ íƒ€ì…ì„ ì„¤ì •í•˜ëŠ” í•¨ìˆ˜
     /// </summary>
-    /// <param name="cameraType">¼³Á¤ÇÏ°íÀÚ ÇÏ´Â Ä«¸Ş¶ó Å¸ÀÔ</param>
+    /// <param name="cameraType">ì„¤ì •í•˜ê³ ì í•˜ëŠ” ì¹´ë©”ë¼ íƒ€ì…</param>
     public void CameraSet(CameraType cameraType)
     {
         CurrentCameraType = cameraType;
@@ -110,10 +110,10 @@ public class CameraManager : Manager
 
     }
     /// <summary>
-    /// Ä«¸Ş¶ó Å¸°ÙÀ» Ãß°¡ÇÏ°í, Å¸ÀÔÀ» ¼³Á¤ÇÏ´Â ÇÔ¼ö.
+    /// ì¹´ë©”ë¼ íƒ€ê²Ÿì„ ì¶”ê°€í•˜ê³ , íƒ€ì…ì„ ì„¤ì •í•˜ëŠ” í•¨ìˆ˜.
     /// </summary>
-    /// <param name="cameraTarget">Ãß°¡ÇÏ°íÀÚ ÇÏ´Â Ä«¸Ş¶ó Å¸°Ù</param>
-    /// <param name="cameraType">¼³Á¤ÇÏ°íÀÚ ÇÏ´Â Ä«¸Ş¶ó Å¸ÀÔ</param>
+    /// <param name="cameraTarget">ì¶”ê°€í•˜ê³ ì í•˜ëŠ” ì¹´ë©”ë¼ íƒ€ê²Ÿ</param>
+    /// <param name="cameraType">ì„¤ì •í•˜ê³ ì í•˜ëŠ” ì¹´ë©”ë¼ íƒ€ì…</param>
     public void CameraSet(ICameraTarget cameraTarget, CameraType cameraType)
     {
         CameraTargetInfo info = new CameraTargetInfo(cameraTarget, cameraType);
@@ -123,17 +123,17 @@ public class CameraManager : Manager
         CurrentCameraType = cameraType;
     }
     /// <summary>
-    /// °¡Àå ÃÖ±ÙÀÇ, ´ë»óÀÌ µÇ´Â Ä«¸Ş¶ó Å¸°ÙÀ» Á¦°ÅÇÏ´Â ÇÔ¼ö
+    /// ê°€ì¥ ìµœê·¼ì˜, ëŒ€ìƒì´ ë˜ëŠ” ì¹´ë©”ë¼ íƒ€ê²Ÿì„ ì œê±°í•˜ëŠ” í•¨ìˆ˜
     /// </summary>
-    /// <param name="cameraTarget">Á¦°ÅÇÏ°íÀÚ ÇÏ´Â Ä«¸Ş¶ó Å¸°Ù</param>
+    /// <param name="cameraTarget">ì œê±°í•˜ê³ ì í•˜ëŠ” ì¹´ë©”ë¼ íƒ€ê²Ÿ</param>
     public void CameraBreak(ICameraTarget cameraTarget)
     {
 
-        #region Áö¿ì±â À§ÇÑ ÀÛ¾÷
+        #region ì§€ìš°ê¸° ìœ„í•œ ì‘ì—…
 
         CameraTargetInfo target = null;
 
-        //ÀÖ´ÂÁö Ã£±â. 0¹øÀÌ °¡Àå ÃÖ½ÅÀÌ¶ó foreach·Î µ¹·Áµµ µÈ´Ù.
+        //ìˆëŠ”ì§€ ì°¾ê¸°. 0ë²ˆì´ ê°€ì¥ ìµœì‹ ì´ë¼ foreachë¡œ ëŒë ¤ë„ ëœë‹¤.
         foreach (CameraTargetInfo each in cameraTargetLStack)
         {
             if(each.cameraTarget == cameraTarget)
@@ -144,10 +144,10 @@ public class CameraManager : Manager
         }
 
 #if UNITY_EDITOR
-        //¾ø´Ù¸é
+        //ì—†ë‹¤ë©´
         if(target == null)
         {
-            Debug.LogError("Áö¿ì·Á´Â ´ë»óÀÌ ¾ø¾î¿ä!");
+            Debug.LogError("ì§€ìš°ë ¤ëŠ” ëŒ€ìƒì´ ì—†ì–´ìš”!");
             CurrentCameraType = CameraType.Default;
             return;
         }
@@ -157,52 +157,52 @@ public class CameraManager : Manager
 
         #endregion
 
-        #region Áö¿ì°í ³­ ÈÄ ºñ¿öÁ³´ÂÁö¸¦ È®ÀÎÇÑ ÈÄ, ÇöÀç Ä«¸Ş¶ó Å¸ÀÔÀ» Á¤º¸¿¡ ¸Â°Ô ¼³Á¤
+        #region ì§€ìš°ê³  ë‚œ í›„ ë¹„ì›Œì¡ŒëŠ”ì§€ë¥¼ í™•ì¸í•œ í›„, í˜„ì¬ ì¹´ë©”ë¼ íƒ€ì…ì„ ì •ë³´ì— ë§ê²Œ ì„¤ì •
         int tempt = 0;
         foreach(CameraTargetInfo each in cameraTargetLStack)
         {
-            //ÇÏ³ª¶óµµ ÀÖ´Ù¸é
+            //í•˜ë‚˜ë¼ë„ ìˆë‹¤ë©´
             tempt++;
             break;
         }
         if (tempt == 0)
         {
-            //ÇÏ³ª¶óµµ ¾ø´Ù¸é
+            //í•˜ë‚˜ë¼ë„ ì—†ë‹¤ë©´
             CurrentCameraType = CameraType.Default;
         }
         else
         {
-            //ÇÏ³ª¶óµµ ÀÖ´Ù¸é
+            //í•˜ë‚˜ë¼ë„ ìˆë‹¤ë©´
             CurrentCameraType = cameraTargetLStack[0].cameraType;
         }
         #endregion
 
     }
     /// <summary>
-    /// ´ë»óÀÌ µÇ´Â Ä«¸Ş¶ó Å¸°ÙÀ» ÀüºÎ Á¦°ÅÇÏ´Â ÇÔ¼ö
+    /// ëŒ€ìƒì´ ë˜ëŠ” ì¹´ë©”ë¼ íƒ€ê²Ÿì„ ì „ë¶€ ì œê±°í•˜ëŠ” í•¨ìˆ˜
     /// </summary>
-    /// <param name="cameraTarget">Á¦°ÅÇÏ°íÀÚ ÇÏ´Â Ä«¸Ş¶ó Å¸°Ù</param>
+    /// <param name="cameraTarget">ì œê±°í•˜ê³ ì í•˜ëŠ” ì¹´ë©”ë¼ íƒ€ê²Ÿ</param>
     public void CameraBreakAll(ICameraTarget cameraTarget)
     {
 
         cameraTargetLStack.RemoveAll((each) => each.cameraTarget == cameraTarget);
 
-        #region Áö¿ì°í ³­ ÈÄ ºñ¿öÁ³´ÂÁö¸¦ È®ÀÎÇÑ ÈÄ, ÇöÀç Ä«¸Ş¶ó Å¸ÀÔÀ» Á¤º¸¿¡ ¸Â°Ô ¼³Á¤
+        #region ì§€ìš°ê³  ë‚œ í›„ ë¹„ì›Œì¡ŒëŠ”ì§€ë¥¼ í™•ì¸í•œ í›„, í˜„ì¬ ì¹´ë©”ë¼ íƒ€ì…ì„ ì •ë³´ì— ë§ê²Œ ì„¤ì •
         int tempt = 0;
         foreach (CameraTargetInfo each in cameraTargetLStack)
         {
-            //ÇÏ³ª¶óµµ ÀÖ´Ù¸é
+            //í•˜ë‚˜ë¼ë„ ìˆë‹¤ë©´
             tempt++;
             break;
         }
         if (tempt == 0)
         {
-            //ÇÏ³ª¶óµµ ¾ø´Ù¸é
+            //í•˜ë‚˜ë¼ë„ ì—†ë‹¤ë©´
             CurrentCameraType = CameraType.Default;
         }
         else
         {
-            //ÇÏ³ª¶óµµ ÀÖ´Ù¸é
+            //í•˜ë‚˜ë¼ë„ ìˆë‹¤ë©´
             CurrentCameraType = cameraTargetLStack[0].cameraType;
         }
         #endregion
@@ -211,9 +211,9 @@ public class CameraManager : Manager
 
 
     /// <summary>
-    /// 1ÀÎÄª Ä«¸Ş¶ó »óÅÂ¿¡¼­ ¼öÇàÇØ¾ßÇÒ Ä«¸Ş¶ó µ¿ÀÛ
+    /// 1ì¸ì¹­ ì¹´ë©”ë¼ ìƒíƒœì—ì„œ ìˆ˜í–‰í•´ì•¼í•  ì¹´ë©”ë¼ ë™ì‘
     /// </summary>
-    /// <param name="fixedDeltaTime">FixedUpdate ¼öÇà ½Ã°£ °£°İ</param>
+    /// <param name="fixedDeltaTime">FixedUpdate ìˆ˜í–‰ ì‹œê°„ ê°„ê²©</param>
     private void FirstViewCameraFixedUpdate(float fixedDeltaTime)
     {
 #if UNITY_EDITOR
@@ -230,9 +230,9 @@ public class CameraManager : Manager
 
     }
     /// <summary>
-    /// 3ÀÎÄª Ä«¸Ş¶ó »óÅÂ¿¡¼­ ¼öÇàÇØ¾ßÇÒ Ä«¸Ş¶ó µ¿ÀÛ
+    /// 3ì¸ì¹­ ì¹´ë©”ë¼ ìƒíƒœì—ì„œ ìˆ˜í–‰í•´ì•¼í•  ì¹´ë©”ë¼ ë™ì‘
     /// </summary>
-    /// <param name="fixedDeltaTime">FixedUpdate ¼öÇà ½Ã°£ °£°İ</param>
+    /// <param name="fixedDeltaTime">FixedUpdate ìˆ˜í–‰ ì‹œê°„ ê°„ê²©</param>
     private void ThirdViewCameraFixedUpdate(float fixedDeltaTime)
     {
 #if UNITY_EDITOR
@@ -244,7 +244,7 @@ public class CameraManager : Manager
 
         ThirdViewCameraData targetData = cameraTargetLStack[0].cameraTarget.ThirdViewCameraSet();
 
-        #region ³ëÈ¯ÁØ
+        #region ë…¸í™˜ì¤€
 
         Quaternion rot = Quaternion.Euler(targetData.Xrot, targetData.Yrot, 0);
         mainCamera.transform.position = targetData.targetPosition;
@@ -271,9 +271,9 @@ public class CameraManager : Manager
 
     }
     /// <summary>
-    /// ±âº» Ä«¸Ş¶ó »óÅÂ¿¡¼­ ¼öÇàÇØ¾ßÇÒ Ä«¸Ş¶ó µ¿ÀÛ
+    /// ê¸°ë³¸ ì¹´ë©”ë¼ ìƒíƒœì—ì„œ ìˆ˜í–‰í•´ì•¼í•  ì¹´ë©”ë¼ ë™ì‘
     /// </summary>
-    /// <param name="fixedDeltaTime">FixedUpdate ¼öÇà ½Ã°£ °£°İ</param>
+    /// <param name="fixedDeltaTime">FixedUpdate ìˆ˜í–‰ ì‹œê°„ ê°„ê²©</param>
     private void DefaultCameraFixedUpdate(float fixedDeltaTime)
     {
 
@@ -290,7 +290,7 @@ public class CameraManager : Manager
 }
 
 /// <summary>
-/// Ä«¸Ş¶ó Å¸°ÙÀÌ µÇ°í ½ÍÀº ÀÚ¶ó¸é ºÙÀÌ¸é ÁÁÀ» ÀÎÅÍÆäÀÌ½º
+/// ì¹´ë©”ë¼ íƒ€ê²Ÿì´ ë˜ê³  ì‹¶ì€ ìë¼ë©´ ë¶™ì´ë©´ ì¢‹ì„ ì¸í„°í˜ì´ìŠ¤
 /// </summary>
 public interface ICameraTarget
 {
@@ -300,33 +300,30 @@ public interface ICameraTarget
 }
 
 /// <summary>
-/// 1¾ÈÃ¢ Ä«¸Ş¶ó ¼³Á¤ Á¤º¸
+/// 1ì•ˆì°½ ì¹´ë©”ë¼ ì„¤ì • ì •ë³´
 /// </summary>
 public class FirstViewCameraData
 {
-    //Å¸°Ù À§Ä¡
+    //íƒ€ê²Ÿ ìœ„ì¹˜
     public Vector3 targetPosition;
-    //Å¸°ÙÀÇ Á¤¸é
+    //íƒ€ê²Ÿì˜ ì •ë©´
     public Vector3 targetForward;
-    
 
-    
     public void SetInfo(Vector3 targetPosition, Vector3 targetForward)
     {
         this.targetPosition = targetPosition;
         this.targetForward = targetForward;
     }
-    
-
 }
 /// <summary>
-/// 3ÀÎÄª Ä«¸Ş¶ó ¼³Á¤ Á¤º¸
+/// 3ì¸ì¹­ ì¹´ë©”ë¼ ì„¤ì • ì •ë³´
 /// </summary>
 public class ThirdViewCameraData
 {
-    #region ³ëÈ¯ÁØ
+    #region ë…¸í™˜ì¤€
 
     public Vector3 targetPosition;
+    public Vector3 targetForward;
     public float Xrot;
     public float Yrot;
     public int minDistance;
@@ -334,7 +331,7 @@ public class ThirdViewCameraData
     public float TPPOffsetY;
     public float TPPOffsetZ;
 
-    
+
     public void SetInfo(Vector3 targetPosition, float Xrot, float Yrot, int minDistance, int maxDistance, float TPPOffsetY, float TPPOffsetZ)
     {
         this.targetPosition = targetPosition;
@@ -345,26 +342,25 @@ public class ThirdViewCameraData
         this.TPPOffsetY = TPPOffsetY;
         this.TPPOffsetZ = TPPOffsetZ;
     }
-    
 
     #endregion
 
-    #region ±èÇü¸ğ
+    #region ê¹€í˜•ëª¨
     /*
-    //Å¸°Ù À§Ä¡
+    //íƒ€ê²Ÿ ìœ„ì¹˜
     public Vector3 targetPosition;
-    //Å¸°ÙÀÇ Á¤¸é
+    //íƒ€ê²Ÿì˜ ì •ë©´
     public Vector3 targetForward;
 
-    //Å¸°ÙÀÇ ¼öÆò°¢µµ
+    //íƒ€ê²Ÿì˜ ìˆ˜í‰ê°ë„
     public Vector3 targetRotation_Horizontal;
-    //Å¸°ÙÀÇ ¼öÁ÷°¢µµ
+    //íƒ€ê²Ÿì˜ ìˆ˜ì§ê°ë„
     public Vector3 targetRotation_Vertical;
 
-    //Å¸°Ù°ú Ä«¸Ş¶ó »çÀÌÀÇ °Å¸®
+    //íƒ€ê²Ÿê³¼ ì¹´ë©”ë¼ ì‚¬ì´ì˜ ê±°ë¦¬
     public int maxDistance;
 
-    //Àü¹æ¿¡ º®ÀÌ ÀÖÀ» ¶§ ÀÌ¸¦ °í·ÁÇÏ¿© Ä«¸Ş¶ó¸¦ ´ç±æ °ÍÀÎÁö, ¸» °ÍÀÎÁö¿¡ ´ëÇÑ ÆÇ´Ü º¯¼ö
+    //ì „ë°©ì— ë²½ì´ ìˆì„ ë•Œ ì´ë¥¼ ê³ ë ¤í•˜ì—¬ ì¹´ë©”ë¼ë¥¼ ë‹¹ê¸¸ ê²ƒì¸ì§€, ë§ ê²ƒì¸ì§€ì— ëŒ€í•œ íŒë‹¨ ë³€ìˆ˜
     public bool blockingCheck;
     */
     #endregion
@@ -377,7 +373,7 @@ public class CustomViewCameraData
 */
 
 /// <summary>
-/// Ä«¸Ş¶ó Å¸°Ù°ú, ±× Å¸°Ù¿¡ ´ëÀÀÇÏ´Â ÇöÀç Ä«¸Ş¶ó Å¸ÀÔÀ» º¸°üÇÏ´Â Å¬·¡½º
+/// ì¹´ë©”ë¼ íƒ€ê²Ÿê³¼, ê·¸ íƒ€ê²Ÿì— ëŒ€ì‘í•˜ëŠ” í˜„ì¬ ì¹´ë©”ë¼ íƒ€ì…ì„ ë³´ê´€í•˜ëŠ” í´ë˜ìŠ¤
 /// </summary>
 public class CameraTargetInfo
 {
