@@ -221,6 +221,12 @@ public class FirstViewCameraData
     public Vector3 targetPosition;
     //타겟의 정면
     public Vector3 targetForward;
+
+    public void SetInfo(Vector3 targetPosition, Vector3 targetForward)
+    {
+        this.targetPosition = targetPosition;
+        this.targetForward = targetForward;
+    }
 }
 /// <summary>
 /// 3인칭 카메라 설정 정보
@@ -230,12 +236,24 @@ public class ThirdViewCameraData
     #region 노환준
 
     public Vector3 targetPosition;
+    public Vector3 targetForward;
     public float Xrot;
     public float Yrot;
     public int minDistance;
     public int maxDistance;
     public float TPPOffsetY;
     public float TPPOffsetZ;
+
+    public void SetInfo(Vector3 targetPosition, float Xrot, float Yrot, int minDistance, int maxDistance, float TPPOffsetY, float TPPOffsetZ)
+    {
+        this.targetPosition = targetPosition;
+        this.Xrot = Xrot;
+        this.Yrot = Yrot;
+        this.minDistance = minDistance;
+        this.maxDistance = maxDistance;
+        this.TPPOffsetY = TPPOffsetY;
+        this.TPPOffsetZ = TPPOffsetZ;
+    }
 
     #endregion
 
