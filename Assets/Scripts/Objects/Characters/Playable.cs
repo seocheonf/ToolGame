@@ -38,59 +38,36 @@ public class Playable : Character, ICameraTarget
     protected override void MyStart()
     {
         base.MyStart();
-        rb = GetComponent<Rigidbody>();
         characterCollider = GetComponent<CapsuleCollider>();
 
-        FuncInteractionData jump = new();
-        jump.keyCode = KeyCode.Space;
-        jump.description = "점프";
-        jump.OnFuncInteraction = OnJump;
+        FuncInteractionData jump = new(KeyCode.Space, "점프", OnJump, null, null);
         ControllerManager.AddInputFuncInteraction(jump);
 
-        FuncInteractionData forward = new();
-        forward.keyCode = KeyCode.W;
-        forward.description = "앞으로 이동";
-        forward.DurationFuncInteraction = OnMoveForward;
+        FuncInteractionData forward = new(KeyCode.W, "앞으로 이동", null, OnMoveForward, null);
         ControllerManager.AddInputFuncInteraction(forward);
 
-        FuncInteractionData backward = new();
-        backward.keyCode = KeyCode.S;
-        backward.description = "뒤로 이동";
-        backward.DurationFuncInteraction = OnMoveBackward;
+        FuncInteractionData backward = new(KeyCode.S, "뒤로 이동", null, OnMoveBackward, null);
         ControllerManager.AddInputFuncInteraction(backward);
 
-        FuncInteractionData left = new();
-        left.keyCode = KeyCode.A;
-        left.description = "왼쪽으로 이동";
-        left.DurationFuncInteraction = OnMoveLeft;
+        FuncInteractionData left = new(KeyCode.A, "왼쪽으로 이동", null, OnMoveLeft, null);
         ControllerManager.AddInputFuncInteraction(left);
 
-        FuncInteractionData right = new();
-        right.keyCode = KeyCode.D;
-        right.description = "오른쪽으로 이동";
-        right.DurationFuncInteraction = OnMoveRight;
+        FuncInteractionData right = new(KeyCode.D, "오른쪽으로 이동", null, OnMoveRight, null);
         ControllerManager.AddInputFuncInteraction(right);
 
-        FuncInteractionData accel = new();
-        accel.keyCode = KeyCode.LeftShift;
-        accel.description = "대시 기능";
-        accel.DurationFuncInteraction = OnRun;
-        accel.OffFuncInteraction = RunGetKeyUp;
+        FuncInteractionData accel = new(KeyCode.LeftShift, "대시 기능", null, OnRun, RunGetKeyUp);
         ControllerManager.AddInputFuncInteraction(accel);
 
-        FuncInteractionData sit = new();
-        sit.keyCode = KeyCode.LeftControl;
-        sit.description = "앉기 기능";
-        accel.DurationFuncInteraction = OnSit;
-        accel.OffFuncInteraction = UnSit;
+        FuncInteractionData sit = new(KeyCode.LeftControl, "앉기 기능", null, OnSit, UnSit);
         ControllerManager.AddInputFuncInteraction(sit);
 
-        FuncInteractionData rush = new();
-        rush.keyCode = KeyCode.R;
-        rush.description = "돌진 기능";
-        rush.OnFuncInteraction = OnRush;
+        FuncInteractionData rush = new(KeyCode.R, "돌진 기능", OnRush, null, null);
         ControllerManager.AddInputFuncInteraction(rush);
+
+        GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraType.ThirdView);
+
     }
+
 
     protected void PlayableManagerUpdate(float deltaTime)
     {
@@ -103,12 +80,19 @@ public class Playable : Character, ICameraTarget
     {
         MoveHorizontalityFixedUpdate(fixedDeltaTime);
         ResetDirection();
-
+        CharacterRotationSightFixedUpdate();
     }
 
     protected override void Initialize()
     {
         base.Initialize();
+
+
+        rushPower = defaultRushPower;
+
+
+
+
         GameManager.ObjectsUpdate -= PlayableManagerUpdate;
         GameManager.ObjectsFixedUpdate -= PlayableManagerFixedUpdate;
 
@@ -121,11 +105,8 @@ public class Playable : Character, ICameraTarget
         base.MyDestroy();
         GameManager.ObjectsUpdate -= PlayableManagerUpdate;
         GameManager.ObjectsFixedUpdate -= PlayableManagerFixedUpdate;
-    }
 
-    protected override void Jump()
-    {
-        isJump = true;
+
     }
 
     private void OnSit()
@@ -137,12 +118,12 @@ public class Playable : Character, ICameraTarget
     {
         RaycastHit hit;
         Debug.DrawRay(transform.position, Vector3.down * 2, UnityEngine.Color.magenta);
-        if (Physics.Raycast(rb.transform.position, Vector3.down, out hit, 2f))
+        if (Physics.Raycast(currentRigidbody.transform.position, Vector3.down, out hit, 2f))
         {
             if (hit.collider.GetComponent<Rigidbody>())
             {
                 if (joint == null) joint = gameObject.AddComponent<FixedJoint>();
-                rb.constraints = RigidbodyConstraints.None;
+                currentRigidbody.constraints = RigidbodyConstraints.None;
                 joint.connectedBody = hit.collider.GetComponent<Rigidbody>();
             }
         }
@@ -161,11 +142,12 @@ public class Playable : Character, ICameraTarget
 
     private void Rush()
     {
+        Debug.Log("rush");
         if (IsGround && !isRush)
         {
             isRush = true;
             rushCoolTime = defaultRushCoolTime;
-            rb.AddForce(transform.forward * rushPower, ForceMode.Impulse);
+            currentRigidbody.AddForce(transform.forward * rushPower, ForceMode.Impulse);
         }
     }
 
@@ -230,6 +212,8 @@ public class Playable : Character, ICameraTarget
         xRot = Mathf.Clamp(xRot, -clampAngle, clampAngle);
 
         transform.eulerAngles = new Vector3(0, yRot, 0);
+
+
     }
     public FirstViewCameraData FirstViewCameraSet()
     {
@@ -244,4 +228,7 @@ public class Playable : Character, ICameraTarget
         tempt.SetInfo(transform.position, -xRot, yRot, 1, 5, 1, 2.5f);
         return tempt;
     }
+
+
+    
 }

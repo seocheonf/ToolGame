@@ -156,7 +156,6 @@ public class GameManager : MonoBehaviour
         option = new OptionManager();
         yield return option.Initiate();
 
-
         ManagersUpdate += controller.ManagerUpdate;
         ManagersUpdate += ui.ManagerUpdate;
         ManagersUpdate += sound.ManagerUpdate;

@@ -32,7 +32,8 @@ public class ControllerManager : Manager
 
         //Cursor.lockState = CursorLockMode.Locked;
 
-        mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+        mouseMovement.x = Input.GetAxis("Mouse X");
+        mouseMovement.y = Input.GetAxis("Mouse Y");
 
         foreach (var each in inputFuncInteractionDictionary)
         {
@@ -80,6 +81,7 @@ public class ControllerManager : Manager
     {
         if (!inputFuncInteractionDictionary.TryAdd(funcInteractionData.keyCode, funcInteractionData))
         {
+            Debug.LogError("이미 할당된 키에 중복으로 할당되었어요!!!");
             inputFuncInteractionDictionary[funcInteractionData.keyCode] = funcInteractionData;
         }
     }

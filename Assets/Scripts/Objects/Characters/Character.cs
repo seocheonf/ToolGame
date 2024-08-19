@@ -17,14 +17,9 @@ public class AffectedCrowdControl
 
 public class Character : MovablePositionObject
 {
-<<<<<< feature/NH
-    // TODO : 나중에 코드 합쳤을 때 RigidBody 바꿔줘야 함
-    private UniqueTool currentHoldingUniqueTool;
+
     protected CapsuleCollider characterCollider;
-    protected Rigidbody rb;   
-=======
     protected UniqueTool currentHoldingUniqueTool;
->>>>>> sub_master
 
     protected Vector3 wantMoveDirection;
     protected Vector3 currentMoveDirection;
@@ -149,7 +144,7 @@ public class Character : MovablePositionObject
 
     protected virtual void PutTool()
     {
-        currentRigidbody.mass = initialMass;
+        base.currentRigidbody.mass = initialMass;
         currentHoldingUniqueTool.PutTool();
         currentHoldingUniqueTool = null;
     }
@@ -157,7 +152,7 @@ public class Character : MovablePositionObject
     {
         target.PickUpTool(this);
         currentHoldingUniqueTool = target;
-        currentRigidbody.mass += currentHoldingUniqueTool.InitialMass;
+        base.currentRigidbody.mass += currentHoldingUniqueTool.InitialMass;
     }
 
     #region 이동계열 함수 
@@ -216,13 +211,12 @@ public class Character : MovablePositionObject
 
     protected virtual void Jump()
     {
-        jumpPower = defaultJumpPower;
         if (IsGround)
         {
-            Vector3 result = rb.velocity;
+            Vector3 result = currentRigidbody.velocity;
             result.y = jumpPower;
 
-            rb.velocity = result;
+            currentRigidbody.velocity = result;
         }
     }
 
@@ -260,33 +254,19 @@ public class Character : MovablePositionObject
     {
         CheckWantMoveDirection();
         currentMoveDirection = (wantMoveDirection.x * transform.right + wantMoveDirection.z * transform.forward).normalized;
-        if (currentMoveDirection.magnitude == 0)
-        {
-            Vector3 speedLimit = rb.velocity;
-            speedLimit.x = Mathf.Lerp(speedLimit.x, 0, 0.1f);
-            speedLimit.z = Mathf.Lerp(speedLimit.z, 0, 0.1f);
-            rb.velocity = speedLimit;
-        }
-        else
-        {
-            rb.MovePosition(transform.position + FixedUpdate_Calculate_Move());
-            
-            if (rb.velocity.magnitude > maxSpeed)
-            {
-                rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpeed);
-            }
-        }
+        transform.position += FixedUpdate_Calculate_Move();
+        //currentRigidbody.MovePosition(transform.position + FixedUpdate_Calculate_Move());
     }
 
 
     private void Stun()
     {
-        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        currentRigidbody.constraints = RigidbodyConstraints.FreezeRotation;
     }
 
     private void ElectricShock()
     {
-        rb.constraints = RigidbodyConstraints.None;
+        currentRigidbody.constraints = RigidbodyConstraints.None;
     }
 
     protected void ApplicationCrowdControl()
@@ -446,4 +426,14 @@ public class Character : MovablePositionObject
 
     #endregion
 
+
+
+    protected override void Initialize()
+    {
+        base.Initialize();
+        accelSpeed = defaultAccelSpeed;
+        moveSpeed = defaultMoveSpeed;
+        jumpPower = defaultJumpPower;
+        
+    }
 }
