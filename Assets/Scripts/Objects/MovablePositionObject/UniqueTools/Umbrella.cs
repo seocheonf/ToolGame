@@ -236,19 +236,12 @@ public class Umbrella : UniqueTool
             return;
 
         //holdingCharacter.CurrentSightEulerAngle <= 이놈은 시야각을 나타내는 오일러 각
-        Vector3 sightForward = Quaternion.Euler(holdingCharacter.CurrentSightEulerAngle) * Vector3.forward;
+        Vector3 sightForward = holdingCharacter.CurrentSightForward;
 
         {
             Gizmos.color = Color.red;
 
             Gizmos.DrawLine(FakeCenterPosition, FakeCenterPosition + sightForward * 5f);
-
-
-            Collider[] hithit = Physics.OverlapBox(FakeCenterPosition + sightForward * 5f, Vector3.one * 2, holdingCharacter.CurrentSightQuaternionAngle);
-            if(hithit.Length == 0)
-            {
-                return;
-            }
 
             Matrix4x4 rotationMatrix = Matrix4x4.TRS(FakeCenterPosition + sightForward * 5f, Quaternion.Euler(holdingCharacter.CurrentSightEulerAngle), Vector3.one);
             Gizmos.matrix = rotationMatrix;
