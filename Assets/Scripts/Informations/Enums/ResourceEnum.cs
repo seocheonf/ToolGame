@@ -29,4 +29,24 @@
     {
         
     }
+
+    public enum Mesh
+    {
+        #region Umbrella
+        Mesh_UmbrellaOpen,
+        Mesh_UmbrellaClosed
+        #endregion
+    }
+
+    public enum Material
+    {
+        #region Umbrella
+        Material_Umbrella1,
+        Material_Umbrella2,
+        Material_Umbrella3,
+        Material_Umbrella4,
+        Material_Umbrella5,
+        Material_Umbrella6
+        #endregion
+    }
 }

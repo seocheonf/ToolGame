@@ -7,96 +7,152 @@ public class AffectedCrowdControl
 {
     public readonly CrowdControlState crowdControlState;
     public float remainTime;
-    public int tolerance;
 
-    public AffectedCrowdControl(CrowdControlState crowdControlState, float remainTime, int tolerance = 0)
+    public AffectedCrowdControl(CrowdControlState crowdControlState, float remainTime)
     {
         this.crowdControlState = crowdControlState;
         this.remainTime = remainTime;
-        this.tolerance = tolerance;
     }
 }
 
-public class Character : MonoBehaviour
+public class Character : MovablePositionObject
 {
-    private UniqueTool currentHoldingUniqueTool;
+    protected UniqueTool currentHoldingUniqueTool;
 
-    private Vector3 wantMoveDirection;
-    private Vector3 currentMoveDirection;
+    protected Vector3 wantMoveDirection;
+    protected Vector3 currentMoveDirection;
 
-    private bool isMoveForward;
-    private bool isMoveBackward;
-    private bool isMoveLeft;
-    private bool isMoveRight;
+    protected bool isMoveForward;
+    protected bool isMoveBackward;
+    protected bool isMoveLeft;
+    protected bool isMoveRight;
 
-    private bool isAir;
+    protected bool isAir;
 
-    private GeneralState currentGeneralState;
+    protected GeneralState currentGeneralState;
 
     CrowdControlState currentCrowdControlState;
     List<AffectedCrowdControl> affectedCrowdControlList;
 
-    private float defaultRunningRatio;
-    private float runningRatio;
+    protected float defaultRunningRatio;
+    protected float runningRatio;
 
-    private float currentSpeed;
+    protected float currentSpeed;
 
-    private float defaultMoveSpeed;
-    private float moveSpeed;
+    protected float defaultMoveSpeed;
+    protected float moveSpeed;
 
-    private float defaultAccelSpeed;
-    private float accelSpeed;
+    protected float defaultAccelSpeed;
+    protected float accelSpeed;
 
-    private float defaultJumpPower;
-    private float jumpPower;
+    protected float defaultJumpPower;
+    protected float jumpPower;
 
-    private Vector3 currentSightAngle;
+    protected Vector3 currentSightEulerAngle;
+    //오일러각
+    public virtual Vector3 CurrentSightEulerAngle
+    {
+        get
+        {
+            return currentSightEulerAngle;
+        }
+    }
+    //쿼터니언각
+    public virtual Quaternion CurrentSightQuaternionAngle
+    {
+        get
+        {
+            return Quaternion.Euler(CurrentSightEulerAngle);
+        }
+    }
+    public virtual Vector3 CurrentSightForward
+    {
+        get
+        {
+            return Quaternion.Euler(CurrentSightEulerAngle) * Vector3.forward;
+        }
+    }
+
+    //잡을 지점
+    [SerializeField]
+    private Vector3 catchingLocalPosition;
+    protected Vector3 CatchingLocalPosition
+    {
+        get
+        {
+            return transform.rotation * catchingLocalPosition;
+        }
+    }
+    public Vector3 GetCatchingPosition()
+    {
+        return transform.position + CatchingLocalPosition;
+    }
 
 
+#if UNITY_EDITOR
+
+    public virtual Vector3 CatchingLocalPositionEdit
+    {
+        get
+        {
+            return transform.position + catchingLocalPosition;
+        }
+        set
+        {
+            catchingLocalPosition = value - transform.position;
+        }
+    }
+
+#endif
 
 
-    private void PutTool()
+    protected virtual void PutTool()
+    {
+        currentRigidbody.mass = initialMass;
+        currentHoldingUniqueTool.PutTool();
+        currentHoldingUniqueTool = null;
+    }
+    public virtual void PickUpTool(UniqueTool target)
+    {
+        target.PickUpTool(this);
+        currentHoldingUniqueTool = target;
+        currentRigidbody.mass += currentHoldingUniqueTool.InitialMass;
+    }
+
+    protected void OnMoveForward()
+    {
+    }
+    protected void OnMoveBackward()
+    {
+    }
+    protected void OnMoveLeft()
+    {
+    }
+    protected void OnMoveRight()
+    {
+    }
+
+    protected void OnJump()
+    {
+        Jump();
+    }
+    protected virtual void Jump()
+    {
+    }
+
+    protected void OnRun()
+    {
+    }
+    protected virtual void Run()
+    {
+    }
+
+    protected virtual void MoveHorizontalityFixedUpdate(float fixedDeltaTime)
     {
 
     }
-    private void PickUpTool(UniqueTool target)
-    {
 
-    }
-
-    private void OnMoveForward()
-    {
-    }
-    private void OnMoveBackward()
-    {
-    }
-    private void OnMoveLeft()
-    {
-    }
-    private void OnMoveRight()
-    {
-    }
-
-    private void OnJump()
-    {
-    }
-    private void Jump()
-    {
-    }
-
-    private void OnRun()
-    {
-    }
-    private void Run()
-    {
-    }
-
-    private void MoveHorizontalityFixedUpdate(float fixedDeltaTime)
-    {
-
-    }
-
-    private void ApplicationCrowdControl()
+    protected void ApplicationCrowdControl()
     {
 
     }
@@ -104,7 +160,7 @@ public class Character : MonoBehaviour
     {
 
     }
-    private void RenewalCrowdControlRemainTimeUpdate(float deltaTime)
+    protected void RenewalCrowdControlRemainTimeUpdate(float deltaTime)
     {
 
     }
@@ -113,4 +169,5 @@ public class Character : MonoBehaviour
     {
 
     }
+
 }

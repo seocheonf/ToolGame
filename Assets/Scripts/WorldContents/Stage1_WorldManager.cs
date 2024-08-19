@@ -2,17 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Stage1_WorldManager : MonoBehaviour
+public class Stage1_WorldManager : WorldManager
 {
-    // Start is called before the first frame update
-    void Start()
+    protected override IEnumerator Initiate()
     {
-        
+        return base.Initiate();
+        /*
+        OnFuncInteractionFunction a = test;
+
+        FuncInteractionData b = new FuncInteractionData(KeyCode.A, "asdf", test);
+        */
     }
 
-    // Update is called once per frame
-    void Update()
+    void test()
     {
-        
+
     }
 }
+ 

@@ -64,6 +64,9 @@ public class TestCapCap : MyComponent, ICameraTarget
 
     public FirstViewCameraData FirstViewCameraSet()
     {
+
+        tempt.SetInfo(transform.position, forward);
+
         tempt.targetPosition = transform.position;// + Vector3.back * 5;
         tempt.targetForward = forward;
 
@@ -71,6 +74,10 @@ public class TestCapCap : MyComponent, ICameraTarget
     }
     public ThirdViewCameraData ThirdViewCameraSet()
     {
+
+        tempt2.SetInfo(transform.position, Xrot, Yrot, 3, 10, 1, 5);
+
+        /*
         tempt2.targetPosition = transform.position;
         tempt2.Xrot = Xrot;
         tempt2.Yrot = Yrot;
@@ -78,7 +85,9 @@ public class TestCapCap : MyComponent, ICameraTarget
         tempt2.maxDistance = 10;
         tempt2.TPPOffsetY = 1f;
         tempt2.TPPOffsetZ = 5f;
+        */
 
         return tempt2;
     }
+
 }

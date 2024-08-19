@@ -178,6 +178,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            
             ObjectsStart?.Invoke();
             ObjectsStart = null;
 
@@ -189,7 +190,6 @@ public class GameManager : MonoBehaviour
         ObjectsDestroy = null;
         ManagersDestroy?.Invoke();
         ManagersDestroy = null;
-
     }
 
     private void FixedUpdate()
@@ -203,6 +203,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            
             ObjectsStart?.Invoke();
             ObjectsStart = null;
 

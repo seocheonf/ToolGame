@@ -4,6 +4,18 @@ using UnityEngine;
 
 public class MovablePositionObject : PhysicsInteractionObject
 {
+    /*
     protected float initialMass;
     protected float currentMass;
+    */
+    /*
+    protected override void Initialize()
+    {
+        base.Initialize();
+
+        initialMass = currentRigidbody.mass;
+        currentMass = currentRigidbody.mass;
+    }
+    */
+
 }
