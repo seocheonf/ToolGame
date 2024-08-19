@@ -1182,37 +1182,14 @@ GameObject:
   - component: {fileID: 843879754}
   - component: {fileID: 843879753}
   - component: {fileID: 843879752}
-  - component: {fileID: 843879750}
+  - component: {fileID: 843879757}
   m_Layer: 0
-  m_Name: SampleChar (1)
+  m_Name: HngmoPlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &843879750
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 843879749}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17d6ba50b5077b342845fcdad0c3e511, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  defaultMoveSpeed: 20
-  defaultAccelSpeed: 10
-  defaultMaxSpeed: 30
-  defaultJumpPower: 15
-  catchingLocalPosition: {x: 0.5307236, y: 0.5250571, z: 0}
-  maxSlopeAngle: 46
-  defaultRushPower: 10
-  defaultRushCoolTime: 0.33
-  sensitivity: 5
-  clampAngle: 60
-  sampleTool: {fileID: 1093168345}
 --- !u!54 &843879752
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1328,6 +1305,29 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -0.615, z: 0}
+--- !u!114 &843879757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 843879749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f143538b29552c4c909701c71ed0413, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultMoveSpeed: 20
+  defaultAccelSpeed: 10
+  defaultMaxSpeed: 30
+  defaultJumpPower: 15
+  catchingLocalPosition: {x: 0.5307236, y: 0.5250571, z: 0}
+  maxSlopeAngle: 46
+  defaultRushPower: 10
+  defaultRushCoolTime: 0.33
+  sensitivity: 5
+  clampAngle: 60
+  sampleTool: {fileID: 1093168345}
 --- !u!1 &931212398
 GameObject:
   m_ObjectHideFlags: 0

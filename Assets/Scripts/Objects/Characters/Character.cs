@@ -254,10 +254,16 @@ public class Character : MovablePositionObject
     {
         CheckWantMoveDirection();
         currentMoveDirection = (wantMoveDirection.x * transform.right + wantMoveDirection.z * transform.forward).normalized;
-        transform.position += FixedUpdate_Calculate_Move();
-        //currentRigidbody.MovePosition(transform.position + FixedUpdate_Calculate_Move());
-    }
+        currentRigidbody.MovePosition(transform.position + FixedUpdate_Calculate_Move());
 
+
+        if (Input.GetKey(KeyCode.CapsLock))
+        {
+            Debug.Log((transform.position - beforePosition).magnitude);
+        }
+        beforePosition = transform.position;
+    }
+    Vector3 beforePosition;
 
     private void Stun()
     {

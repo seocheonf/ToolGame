@@ -21,6 +21,7 @@ public class WorldManager : MonoBehaviour
     //나중에 중간에 월드를 빠져나갈 때, 한꺼번에 있던거 다 뺄 수 있게 애초에 이를 통해서 넣도록 함.
     public UpdateFunction WorldUpdates;
     public FixedUpdateFunction WorldFixedUpdates;
+    public UpdateFunction WorldLateUpdates;
 
 
     /// <summary>
@@ -39,6 +40,15 @@ public class WorldManager : MonoBehaviour
     {
         WorldFixedUpdates?.Invoke(fixedDeltaTime);
     }
+    /// <summary>
+    /// 각 월드의 Late 업데이트를 한번에 빼기 위해서, 그 월드의 Late 업데이트를 실행하는 함수에 한번 감싼 뒤, 이를 GameManager의 Late 업데이트에 관리.
+    /// </summary>
+    /// <param name="deltaTime">1프레임 시간</param>
+    private void InnerWorldLateUpdates(float deltaTime)
+    {
+        WorldLateUpdates?.Invoke(deltaTime);
+    }
+
 
     /// <summary>
     /// WorldManager가 처음 시작할 때, 게임 매니저를 대기하고 자신이 시작할 때 할 일을 게임 매니저 Update의 시작함수 델리게이트에 등록하는 함수. 일을 미뤄 시작 작업 타이밍을 조정하기 위함(게임의 정상 실행을 위해)
@@ -96,6 +106,8 @@ public class WorldManager : MonoBehaviour
         GameManager.ManagersUpdate += InnerWorldUpdates;
         GameManager.ManagersFixedUpdate -= InnerWorldFixedUpdates;
         GameManager.ManagersFixedUpdate += InnerWorldFixedUpdates;
+        GameManager.ManagersLateUpdate -= InnerWorldLateUpdates;
+        GameManager.ManagersLateUpdate += InnerWorldLateUpdates;
 
         //각 월드 매니저들이 완료 될 때 하도록 하자.
 

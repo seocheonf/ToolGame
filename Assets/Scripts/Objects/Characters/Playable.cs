@@ -30,8 +30,8 @@ public class Playable : Character, ICameraTarget
     private bool isRush; //러쉬 상태 일 경우 적에게 상태이상을 부여하기 위해 추가함 + 쿨타임 체크용도
 
     //캐릭터 시선
-    private float xRot;
-    private float yRot;
+    protected float xRot;
+    protected float yRot;
     [SerializeField] float sensitivity;
     [SerializeField] float clampAngle;
 
@@ -66,43 +66,7 @@ public class Playable : Character, ICameraTarget
 
         GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraType.ThirdView);
 
-
-        //김형모 테스트
-        FuncInteractionData AboutTool = (new FuncInteractionData(KeyCode.Mouse1, "우산 들기", ToolSet, null, null));
-        ControllerManager.AddInputFuncInteraction(AboutTool);
-
     }
-
-    //김형모 테스트------------
-    public UniqueTool sampleTool;
-    private void ToolSet()
-    {
-        Debug.Log("adsf");
-        if (currentHoldingUniqueTool == null)
-            PickUpTool(sampleTool);
-        else
-            PutTool();
-    }
-
-    public override void PickUpTool(UniqueTool target)
-    {
-        base.PickUpTool(target);
-        target.FakeCenterPosition = transform.position + CatchingLocalPosition;
-    }
-
-    public override Vector3 CurrentSightEulerAngle
-    {
-        get
-        {
-            Vector3 result = Vector3.zero;
-            result.x = -xRot;
-            result.y = yRot;
-            return result;
-        }
-    }
-
-
-    //김형모 테스트------------
 
     protected void PlayableManagerUpdate(float deltaTime)
     {
@@ -116,6 +80,11 @@ public class Playable : Character, ICameraTarget
         MoveHorizontalityFixedUpdate(fixedDeltaTime);
         ResetDirection();
         CharacterRotationSightFixedUpdate();
+        
+        if(currentRigidbody.velocity.magnitude >= 10)
+        {
+            Debug.Log("Hi");
+        }
     }
 
     protected override void Initialize()
