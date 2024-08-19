@@ -5,50 +5,50 @@ using UnityEngine;
 
 public class WorldManager : MonoBehaviour
 {
-    //°¢ ¿ùµå°¡ °ü¸®ÇÒ Ä«¸Ş¶ó Á¤º¸
+    //ê° ì›”ë“œê°€ ê´€ë¦¬í•  ì¹´ë©”ë¼ ì •ë³´
     private CameraManager worldCamera;
     public CameraManager WorldCamera => worldCamera;
 
-    //°¢ ¿ùµå°¡ °ü¸®ÇÒ Ç®¸µ Á¤º¸
+    //ê° ì›”ë“œê°€ ê´€ë¦¬í•  í’€ë§ ì •ë³´
     private PoolManager pool;
     public PoolManager Pool => pool;
 
-    //ÀÎ½ºÆåÅÍÃ¢¿¡¼­ ¹Ì¸® ¼³Á¤ÇÒ Ç®¸µ µ¥ÀÌÅÍ Á¤º¸µé
+    //ì¸ìŠ¤í™í„°ì°½ì—ì„œ ë¯¸ë¦¬ ì„¤ì •í•  í’€ë§ ë°ì´í„° ì •ë³´ë“¤
     [SerializeField]
     private List<PrefabPool> prefabPoolList;
 
-    //°¢ ¿ùµå°¡ Update»ó¿¡¼­ ÇØ¾ßÇÒ ÀÏµéÀÇ ¸ğÀ½
-    //³ªÁß¿¡ Áß°£¿¡ ¿ùµå¸¦ ºüÁ®³ª°¥ ¶§, ÇÑ²¨¹ø¿¡ ÀÖ´ø°Å ´Ù »¬ ¼ö ÀÖ°Ô ¾ÖÃÊ¿¡ ÀÌ¸¦ ÅëÇØ¼­ ³Öµµ·Ï ÇÔ.
+    //ê° ì›”ë“œê°€ Updateìƒì—ì„œ í•´ì•¼í•  ì¼ë“¤ì˜ ëª¨ìŒ
+    //ë‚˜ì¤‘ì— ì¤‘ê°„ì— ì›”ë“œë¥¼ ë¹ ì ¸ë‚˜ê°ˆ ë•Œ, í•œêº¼ë²ˆì— ìˆë˜ê±° ë‹¤ ëº„ ìˆ˜ ìˆê²Œ ì• ì´ˆì— ì´ë¥¼ í†µí•´ì„œ ë„£ë„ë¡ í•¨.
     public UpdateFunction WorldUpdates;
     public FixedUpdateFunction WorldFixedUpdates;
 
 
     /// <summary>
-    /// °¢ ¿ùµåÀÇ ¾÷µ¥ÀÌÆ®¸¦ ÇÑ¹ø¿¡ »©±â À§ÇØ¼­, ±× ¿ùµåÀÇ ¾÷µ¥ÀÌÆ®¸¦ ½ÇÇàÇÏ´Â ÇÔ¼ö¿¡ ÇÑ¹ø °¨½Ñ µÚ, ÀÌ¸¦ GameManagerÀÇ ¾÷µ¥ÀÌÆ®¿¡ °ü¸®.
+    /// ê° ì›”ë“œì˜ ì—…ë°ì´íŠ¸ë¥¼ í•œë²ˆì— ë¹¼ê¸° ìœ„í•´ì„œ, ê·¸ ì›”ë“œì˜ ì—…ë°ì´íŠ¸ë¥¼ ì‹¤í–‰í•˜ëŠ” í•¨ìˆ˜ì— í•œë²ˆ ê°ì‹¼ ë’¤, ì´ë¥¼ GameManagerì˜ ì—…ë°ì´íŠ¸ì— ê´€ë¦¬.
     /// </summary>
-    /// <param name="deltaTime">1ÇÁ·¹ÀÓ ½Ã°£</param>
+    /// <param name="deltaTime">1í”„ë ˆì„ ì‹œê°„</param>
     private void InnerWorldUpdates(float deltaTime)
     {
         WorldUpdates?.Invoke(deltaTime);
     }
     /// <summary>
-    /// °¢ ¿ùµåÀÇ Fixed ¾÷µ¥ÀÌÆ®¸¦ ÇÑ¹ø¿¡ »©±â À§ÇØ¼­, ±× ¿ùµåÀÇ Fixed ¾÷µ¥ÀÌÆ®¸¦ ½ÇÇàÇÏ´Â ÇÔ¼ö¿¡ ÇÑ¹ø °¨½Ñ µÚ, ÀÌ¸¦ GameManagerÀÇ Fixed ¾÷µ¥ÀÌÆ®¿¡ °ü¸®.
+    /// ê° ì›”ë“œì˜ Fixed ì—…ë°ì´íŠ¸ë¥¼ í•œë²ˆì— ë¹¼ê¸° ìœ„í•´ì„œ, ê·¸ ì›”ë“œì˜ Fixed ì—…ë°ì´íŠ¸ë¥¼ ì‹¤í–‰í•˜ëŠ” í•¨ìˆ˜ì— í•œë²ˆ ê°ì‹¼ ë’¤, ì´ë¥¼ GameManagerì˜ Fixed ì—…ë°ì´íŠ¸ì— ê´€ë¦¬.
     /// </summary>
-    /// <param name="fixedDeltaTime">1FixedÇÁ·¹ÀÓ ½Ã°£</param>
+    /// <param name="fixedDeltaTime">1Fixedí”„ë ˆì„ ì‹œê°„</param>
     private void InnerWorldFixedUpdates(float fixedDeltaTime)
     {
         WorldFixedUpdates?.Invoke(fixedDeltaTime);
     }
 
     /// <summary>
-    /// WorldManager°¡ Ã³À½ ½ÃÀÛÇÒ ¶§, °ÔÀÓ ¸Å´ÏÀú¸¦ ´ë±âÇÏ°í ÀÚ½ÅÀÌ ½ÃÀÛÇÒ ¶§ ÇÒ ÀÏÀ» °ÔÀÓ ¸Å´ÏÀú UpdateÀÇ ½ÃÀÛÇÔ¼ö µ¨¸®°ÔÀÌÆ®¿¡ µî·ÏÇÏ´Â ÇÔ¼ö. ÀÏÀ» ¹Ì·ï ½ÃÀÛ ÀÛ¾÷ Å¸ÀÌ¹ÖÀ» Á¶Á¤ÇÏ±â À§ÇÔ(°ÔÀÓÀÇ Á¤»ó ½ÇÇàÀ» À§ÇØ)
+    /// WorldManagerê°€ ì²˜ìŒ ì‹œì‘í•  ë•Œ, ê²Œì„ ë§¤ë‹ˆì €ë¥¼ ëŒ€ê¸°í•˜ê³  ìì‹ ì´ ì‹œì‘í•  ë•Œ í•  ì¼ì„ ê²Œì„ ë§¤ë‹ˆì € Updateì˜ ì‹œì‘í•¨ìˆ˜ ë¸ë¦¬ê²Œì´íŠ¸ì— ë“±ë¡í•˜ëŠ” í•¨ìˆ˜. ì¼ì„ ë¯¸ë¤„ ì‹œì‘ ì‘ì—… íƒ€ì´ë°ì„ ì¡°ì •í•˜ê¸° ìœ„í•¨(ê²Œì„ì˜ ì •ìƒ ì‹¤í–‰ì„ ìœ„í•´)
     /// </summary>
-    /// <returns>ÄÚ·çÆ¾¿ë</returns>
+    /// <returns>ì½”ë£¨í‹´ìš©</returns>
     private IEnumerator Start()
     {
 #if UNITY_EDITOR
-        //¿¡µğÅÍ »ó¿¡¼± °³¹ß ÆíÀÇ¸¦ À§ÇØ, °ÔÀÓ ¸Å´ÏÀú°¡ ¾øÀ¸¸é ÃÖÃÊ ¾ÀÀ¸·Î ÀÌµ¿ÇÏ´Â ±â´É
-        //ºôµå »ó¿¡¼± ±× »óÈ² ÀÚÃ¼°¡ ¿¡·¯ÀÌ±â¿¡ (¹°·Ğ ¹®Á¦ ¾øÀ» ¼ö ÀÖÀ¸³ª, ÃÖÃÊ ¾À °íÄ¡±âµµ ½±°í, ¾ÈÀüÇÏ°Ô °¡´Â °ÍÀÌ ÁÁÀ½)
+        //ì—ë””í„° ìƒì—ì„  ê°œë°œ í¸ì˜ë¥¼ ìœ„í•´, ê²Œì„ ë§¤ë‹ˆì €ê°€ ì—†ìœ¼ë©´ ìµœì´ˆ ì”¬ìœ¼ë¡œ ì´ë™í•˜ëŠ” ê¸°ëŠ¥
+        //ë¹Œë“œ ìƒì—ì„  ê·¸ ìƒí™© ìì²´ê°€ ì—ëŸ¬ì´ê¸°ì— (ë¬¼ë¡  ë¬¸ì œ ì—†ì„ ìˆ˜ ìˆìœ¼ë‚˜, ìµœì´ˆ ì”¬ ê³ ì¹˜ê¸°ë„ ì‰½ê³ , ì•ˆì „í•˜ê²Œ ê°€ëŠ” ê²ƒì´ ì¢‹ìŒ)
         if (GameManager.Instance == null)
         {
             UnityEngine.SceneManagement.SceneManager.LoadScene(0);
@@ -56,17 +56,17 @@ public class WorldManager : MonoBehaviour
         }
 #endif
 
-        //GameManager¿Í WorldManager°¡ ÇÏ³ªÀÇ ¾À¿¡ ¸ğµÎ Á¸ÀçÇÒ ¶§¸¸ ÇÊ¿äÇÑ(À¯ÀÇ¹ÌÇÑ) ±â´É
-        //¿¹¿Ü Ã³¸®
+        //GameManagerì™€ WorldManagerê°€ í•˜ë‚˜ì˜ ì”¬ì— ëª¨ë‘ ì¡´ì¬í•  ë•Œë§Œ í•„ìš”í•œ(ìœ ì˜ë¯¸í•œ) ê¸°ëŠ¥
+        //ì˜ˆì™¸ ì²˜ë¦¬
         yield return new WaitUntil(() => { return GameManager.Instance != null; });
 
-        //º»ÀÎÀÌ ÅÂ¾î³µÀ» ¶§ ÇØ¾ßÇÒ ÀÏµéÀ» °ÔÀÓ ¸Å´ÏÀú¿¡ Àü´ŞÇÏ¿© ¹Ì·ï ½ÇÇà
+        //ë³¸ì¸ì´ íƒœì–´ë‚¬ì„ ë•Œ í•´ì•¼í•  ì¼ë“¤ì„ ê²Œì„ ë§¤ë‹ˆì €ì— ì „ë‹¬í•˜ì—¬ ë¯¸ë¤„ ì‹¤í–‰
         GameManager.ManagersStart += WorldManagerStart;
 
     }
     
     /// <summary>
-    /// ¿ùµå ¸Å´ÏÀú°¡ ÅÂ¾î³µÀ» ¶§ ÇÒ ÀÏ
+    /// ì›”ë“œ ë§¤ë‹ˆì €ê°€ íƒœì–´ë‚¬ì„ ë•Œ í•  ì¼
     /// </summary>
     private void WorldManagerStart()
     {
@@ -74,14 +74,14 @@ public class WorldManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ¿ùµå ¸Å´ÏÀú¸¦ ÃÊ±âÈ­ÇÏ¸é¼­ ÇØ¾ßÇÒ ÀÏ
+    /// ì›”ë“œ ë§¤ë‹ˆì €ë¥¼ ì´ˆê¸°í™”í•˜ë©´ì„œ í•´ì•¼í•  ì¼
     /// </summary>
     /// <returns></returns>
     protected virtual IEnumerator Initiate()
     {
         GameManager.TurnOnBasicLoadingCavnas("World Loading...");
 
-        //¿ì¼± ÁÖ¹Îµî·Ï ½Å°íÇÏÀÚ.
+        //ìš°ì„  ì£¼ë¯¼ë“±ë¡ ì‹ ê³ í•˜ì.
         GameManager.Instance.SetCurrentWorld(this);
 
         pool = new PoolManager();
@@ -91,22 +91,24 @@ public class WorldManager : MonoBehaviour
         worldCamera = new CameraManager();
         yield return worldCamera.Initiate();
 
-        //¾÷µ¥ÀÌÆ® µî·Ï
+        //ì—…ë°ì´íŠ¸ ë“±ë¡
         GameManager.ManagersUpdate -= InnerWorldUpdates;
         GameManager.ManagersUpdate += InnerWorldUpdates;
         GameManager.ManagersFixedUpdate -= InnerWorldFixedUpdates;
         GameManager.ManagersFixedUpdate += InnerWorldFixedUpdates;
 
-        //°¢ ¿ùµå ¸Å´ÏÀúµéÀÌ ¿Ï·á µÉ ¶§ ÇÏµµ·Ï ÇÏÀÚ.
+        //ê° ì›”ë“œ ë§¤ë‹ˆì €ë“¤ì´ ì™„ë£Œ ë  ë•Œ í•˜ë„ë¡ í•˜ì.
+
+        //ì„ì‹œ
         GameManager.TurnOffBasicLoadingCanvas();
     }
 
     /// <summary>
-    /// ¿ùµå ¸Å´ÏÀú°¡ Á×À» ¶§ ÇØ¾ßÇÒ ÀÏ
+    /// ì›”ë“œ ë§¤ë‹ˆì €ê°€ ì£½ì„ ë•Œ í•´ì•¼í•  ì¼
     /// </summary>
     public virtual void WorldManagerDestroy()
     {
-        //¾÷µ¥ÀÌÆ® ÇØÃ¼
+        //ì—…ë°ì´íŠ¸ í•´ì²´
         GameManager.ManagersUpdate -= InnerWorldUpdates;
         GameManager.ManagersFixedUpdate -= InnerWorldFixedUpdates;
     }

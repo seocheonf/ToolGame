@@ -1387,9 +1387,9 @@ MonoBehaviour:
   - myPrefab: 2
     number: 10
   - myPrefab: 0
-    number: 700
+    number: 1
   - myPrefab: 1
-    number: 500
+    number: 1
   testChangeChange: {fileID: 2075133537}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
