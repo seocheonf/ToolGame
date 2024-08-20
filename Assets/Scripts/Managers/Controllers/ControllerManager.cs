@@ -4,6 +4,7 @@ using UnityEngine;
 
 public delegate void FuncInteractionFunction();
 
+
 public class ControllerManager : Manager
 {
 
@@ -13,12 +14,16 @@ public class ControllerManager : Manager
     //키에 대응되는 기능은 반드시 하나만 보장되어야 함.
     private static Dictionary<KeyCode, FuncInteractionData> inputFuncInteractionDictionary;
 
+    private static Queue<FuncInteractionData> addFuncInteractionQueue;
+    private static Queue<FuncInteractionData> removeFuncInteractionQueue;
+
     public override IEnumerator Initiate()
     {
         yield return base.Initiate();
 
         inputFuncInteractionDictionary = new Dictionary<KeyCode, FuncInteractionData>();
-
+        addFuncInteractionQueue = new Queue<FuncInteractionData>();
+        removeFuncInteractionQueue = new Queue<FuncInteractionData>();
     }
 
     public override void ManagerUpdate(float deltaTime)
@@ -27,7 +32,8 @@ public class ControllerManager : Manager
 
         //Cursor.lockState = CursorLockMode.Locked;
 
-        mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+        mouseMovement.x = Input.GetAxis("Mouse X");
+        mouseMovement.y = Input.GetAxis("Mouse Y");
 
         foreach (var each in inputFuncInteractionDictionary)
         {
@@ -45,6 +51,17 @@ public class ControllerManager : Manager
             }
         }
 
+        while (removeFuncInteractionQueue.TryDequeue(out FuncInteractionData result))
+        {
+            RealRemoveInputFuncInteraction(result);
+        }
+
+        while (addFuncInteractionQueue.TryDequeue(out FuncInteractionData result))
+        {
+            RealAddInputFuncInteraction(result);
+        }
+
+
     }
 
     /// <summary>
@@ -53,18 +70,38 @@ public class ControllerManager : Manager
     /// <param name="funcInteractionData">추가하고자 하는 [키:기능]쌍 정보</param>
     public static void AddInputFuncInteraction(FuncInteractionData funcInteractionData)
     {
-        if(!inputFuncInteractionDictionary.TryAdd(funcInteractionData.keyCode, funcInteractionData))
+        addFuncInteractionQueue.Enqueue(funcInteractionData);
+    }
+
+    /// <summary>
+    /// 키 입력에 대응하는 기능을 실제로 등록하는 함수
+    /// </summary>
+    /// <param name="funcInteractionData">추가하고자 하는 [키:기능]쌍 정보</param>
+    private static void RealAddInputFuncInteraction(FuncInteractionData funcInteractionData)
+    {
+        if (!inputFuncInteractionDictionary.TryAdd(funcInteractionData.keyCode, funcInteractionData))
         {
+            Debug.LogError("이미 할당된 키에 중복으로 할당되었어요!!!");
             inputFuncInteractionDictionary[funcInteractionData.keyCode] = funcInteractionData;
         }
     }
+
     /// <summary>
     /// 키 입력 처리를 제거하는 함수. [키:기능]쌍 정보를 받아 [키]에 해당하는 입력 처리를 제거한다.
     /// </summary>
     /// <param name="funcInteractionData">제거하고자 하는 [키:기능]쌍 정보</param>
     public static void RemoveInputFuncInteraction(FuncInteractionData funcInteractionData)
     {
-        if(!inputFuncInteractionDictionary.Remove(funcInteractionData.keyCode))
+        removeFuncInteractionQueue.Enqueue(funcInteractionData);
+    }
+
+    /// <summary>
+    /// 키 입력 처리를 실제로 제거하는 함수. [키:기능]쌍 정보를 받아 [키]에 해당하는 입력 처리를 제거한다.
+    /// </summary>
+    /// <param name="funcInteractionData">제거하고자 하는 [키:기능]쌍 정보</param>
+    private static void RealRemoveInputFuncInteraction(FuncInteractionData funcInteractionData)
+    {
+        if (!inputFuncInteractionDictionary.Remove(funcInteractionData.keyCode))
         {
             Debug.LogError("이전에 등록된 [키-기능] 쌍이 없어요!");
         }

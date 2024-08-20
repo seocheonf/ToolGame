@@ -24,5 +24,7 @@ public abstract class Manager
     public virtual void ManagerUpdate(float deltaTime) { }
     //Manager가 FixedUpdate단에서 지속적으로 해야할 일
     public virtual void ManagerFixedUpdate(float fixedDeltaTime) { }
+    //Manager가 LateUpdate단에서 지속적으로 해야할 일
+    public virtual void ManagerLateUpdate(float deltaTime) { }
 
 }

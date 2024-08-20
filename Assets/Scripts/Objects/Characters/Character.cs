@@ -2,70 +2,91 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//Àû¿ëÁßÀÎ »óÅÂÀÌ»ó¿¡ ´ëÇÑ Á¤º¸
+//ì ìš©ì¤‘ì¸ ìƒíƒœì´ìƒì— ëŒ€í•œ ì •ë³´
 public class AffectedCrowdControl
 {
     public readonly CrowdControlState crowdControlState;
     public float remainTime;
-    public int tolerance;
 
-    public AffectedCrowdControl(CrowdControlState crowdControlState, float remainTime, int tolerance = 0)
+    public AffectedCrowdControl(CrowdControlState crowdControlState, float remainTime)
     {
         this.crowdControlState = crowdControlState;
         this.remainTime = remainTime;
-        this.tolerance = tolerance;
     }
 }
 
 public class Character : MovablePositionObject
 {
-    // TODO : ³ªÁß¿¡ ÄÚµå ÇÕÃÆÀ» ¶§ RigidBody ¹Ù²ãÁà¾ß ÇÔ
-    private UniqueTool currentHoldingUniqueTool;
+
     protected CapsuleCollider characterCollider;
-    protected Rigidbody rb;   
+    protected UniqueTool currentHoldingUniqueTool;
 
-    private Vector3 wantMoveDirection;
-    private Vector3 currentMoveDirection;
+    protected Vector3 wantMoveDirection;
+    protected Vector3 currentMoveDirection;
 
-    private bool isMoveForward;
-    private bool isMoveBackward;
-    private bool isMoveLeft;
-    private bool isMoveRight;
+    protected bool isMoveForward;
+    protected bool isMoveBackward;
+    protected bool isMoveLeft;
+    protected bool isMoveRight;
 
-    private bool isAir;
+    protected bool isAir;
 
-    private GeneralState currentGeneralState;   //ÇöÀç »óÅÂ
+    protected GeneralState currentGeneralState;
 
-    CrowdControlState currentCrowdControlState;     //ÇöÀç °É·ÁÀÖ´Â CC±â
+    CrowdControlState currentCrowdControlState;     //í˜„ì¬ ê±¸ë ¤ìˆëŠ” CCê¸°
     List<AffectedCrowdControl> affectedCrowdControlList;
-    Dictionary<CrowdControlState, AffectedCrowdControl> affectedCrowdControlDict = new();   //List -> Dictionary ·Î ±³Ã¼
+    Dictionary<CrowdControlState, AffectedCrowdControl> affectedCrowdControlDict = new();   //List -> Dictionary ë¡œ êµì²´
 
-    //´Ş¸®±â ¼Óµµ ºñÀ²...? (ÀÏ´Ü ³»°¡ ´Ş¸®±â ±¸ÇöÇßÀ» ¶© ºñÀ²À» ¾È¾²±äÇßÀ½)
-    private float defaultRunningRatio;
-    private float runningRatio;
+    //ë‹¬ë¦¬ê¸° ì†ë„ ë¹„ìœ¨...? (ì¼ë‹¨ ë‚´ê°€ ë‹¬ë¦¬ê¸° êµ¬í˜„í–ˆì„ ë• ë¹„ìœ¨ì„ ì•ˆì“°ê¸´í–ˆìŒ)
+    protected float defaultRunningRatio;
+    protected float runningRatio;
 
-    //ÇöÀç ¼Óµµ (±¸ÇöÇßÀ» ¶© ÇöÀç ¼Óµµ¸¦ ¾È¾²±ä ÇßÀ½)
-    private float currentSpeed; //¾Æ¸¶ rigidbody.velocity.magnitude °¡ currentSpeed ¶û °°À»°ÅÀÓ
+    //í˜„ì¬ ì†ë„ (êµ¬í˜„í–ˆì„ ë• í˜„ì¬ ì†ë„ë¥¼ ì•ˆì“°ê¸´ í–ˆìŒ)
+    protected float currentSpeed; //ì•„ë§ˆ rigidbody.velocity.magnitude ê°€ currentSpeed ë‘ ê°™ì„ê±°ì„
 
-    //±âº» ¿òÁ÷ÀÓ ¼Óµµ
-    [SerializeField] float defaultMoveSpeed;
-    private float moveSpeed;
+    //ê¸°ë³¸ ì›€ì§ì„ ì†ë„
+    [SerializeField] protected float defaultMoveSpeed;
+    protected float moveSpeed;
 
-    //´Ş¸®±â ¼Óµµ
-    [SerializeField] float defaultAccelSpeed;
-    private float accelSpeed;
+    //ë‹¬ë¦¬ê¸° ì†ë„
+    [SerializeField] protected float defaultAccelSpeed;
+    protected float accelSpeed;
     protected bool isAccel = false;
 
-    //ÃÖ´ë¼Óµµ (Ãß°¡)
+    //ìµœëŒ€ì†ë„ (ì¶”ê°€)
     [SerializeField] float defaultMaxSpeed;
     private float maxSpeed;
 
-    [SerializeField] float defaultJumpPower;
-    private float jumpPower;
+    [SerializeField] protected float defaultJumpPower;
+    protected float jumpPower;
+  
 
-    private Vector3 currentSightAngle;
+    protected Vector3 currentSightEulerAngle;
+    //ì˜¤ì¼ëŸ¬ê°
+    public virtual Vector3 CurrentSightEulerAngle
+    {
+        get
+        {
+            return currentSightEulerAngle;
+        }
+    }
+    //ì¿¼í„°ë‹ˆì–¸ê°
+    public virtual Quaternion CurrentSightQuaternionAngle
+    {
+        get
+        {
+            return Quaternion.Euler(CurrentSightEulerAngle);
+        }
+    }
+    public virtual Vector3 CurrentSightForward
+    {
+        get
+        {
+            return Quaternion.Euler(CurrentSightEulerAngle) * Vector3.forward;
+        }
+    }
 
-    //°æ»ç·ÎÀÎÁö È®ÀÎÇÏ´Â º¯¼öµé (Ãß°¡)
+    //ê²½ì‚¬ë¡œì¸ì§€ í™•ì¸í•˜ëŠ” ë³€ìˆ˜ë“¤ (ì¶”ê°€)
     private GameObject ground;
     protected Ray moveRay;
     Dictionary<GameObject, Vector3> attachedCollision = new();
@@ -73,7 +94,22 @@ public class Character : MovablePositionObject
     private bool _isGround = false;
     public bool IsGround => _isGround;
 
-    //¶¥À» ÀÎ½ÄÇÒ ¼ö ÀÖ´Â °æ»ç·ÎÀÇ ÃÖ´ë°¢µµ ¼³Á¤ (Ãß°¡)
+    //ì¡ì„ ì§€ì 
+    [SerializeField]
+    private Vector3 catchingLocalPosition;
+    protected Vector3 CatchingLocalPosition
+    {
+        get
+        {
+            return transform.rotation * catchingLocalPosition;
+        }
+    }
+    public Vector3 GetCatchingPosition()
+    {
+        return transform.position + CatchingLocalPosition;
+    }
+
+    //ë•…ì„ ì¸ì‹í•  ìˆ˜ ìˆëŠ” ê²½ì‚¬ë¡œì˜ ìµœëŒ€ê°ë„ ì„¤ì • (ì¶”ê°€)
     [SerializeField] float maxSlopeAngle;
 
     protected Vector3 _groundNormal = Vector3.down;
@@ -88,17 +124,38 @@ public class Character : MovablePositionObject
     }
     protected Vector3 planeMovementVector;
     protected Vector3 groundMovementVelocity;
+    
+#if UNITY_EDITOR
 
-    private void PutTool()
+    public virtual Vector3 CatchingLocalPositionEdit
     {
-
+        get
+        {
+            return transform.position + catchingLocalPosition;
+        }
+        set
+        {
+            catchingLocalPosition = value - transform.position;
+        }
     }
-    private void PickUpTool(UniqueTool target)
+
+#endif
+
+
+    protected virtual void PutTool()
     {
-
+        base.currentRigidbody.mass = initialMass;
+        currentHoldingUniqueTool.PutTool();
+        currentHoldingUniqueTool = null;
+    }
+    public virtual void PickUpTool(UniqueTool target)
+    {
+        target.PickUpTool(this);
+        currentHoldingUniqueTool = target;
+        base.currentRigidbody.mass += currentHoldingUniqueTool.InitialMass;
     }
 
-    #region ÀÌµ¿°è¿­ ÇÔ¼ö 
+    #region ì´ë™ê³„ì—´ í•¨ìˆ˜ 
     protected void OnMoveForward()
     {
         isMoveForward = true;
@@ -144,6 +201,7 @@ public class Character : MovablePositionObject
         isMoveLeft = false;
         isMoveRight = false;
     }
+    
     #endregion
 
     protected void OnJump()
@@ -153,13 +211,12 @@ public class Character : MovablePositionObject
 
     protected virtual void Jump()
     {
-        jumpPower = defaultJumpPower;
         if (IsGround)
         {
-            Vector3 result = rb.velocity;
+            Vector3 result = currentRigidbody.velocity;
             result.y = jumpPower;
 
-            rb.velocity = result;
+            currentRigidbody.velocity = result;
         }
     }
 
@@ -182,6 +239,7 @@ public class Character : MovablePositionObject
         }
 
     }
+    
     protected virtual void Run()
     {
         isAccel = true;
@@ -191,40 +249,26 @@ public class Character : MovablePositionObject
     {
         isAccel = false;
     }
-
+    
     protected void MoveHorizontalityFixedUpdate(float fixedDeltaTime)
     {
         CheckWantMoveDirection();
         currentMoveDirection = (wantMoveDirection.x * transform.right + wantMoveDirection.z * transform.forward).normalized;
-        if (currentMoveDirection.magnitude == 0)
-        {
-            Vector3 speedLimit = rb.velocity;
-            speedLimit.x = Mathf.Lerp(speedLimit.x, 0, 0.1f);
-            speedLimit.z = Mathf.Lerp(speedLimit.z, 0, 0.1f);
-            rb.velocity = speedLimit;
-        }
-        else
-        {
-            rb.MovePosition(transform.position + FixedUpdate_Calculate_Move());
-            
-            if (rb.velocity.magnitude > maxSpeed)
-            {
-                rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpeed);
-            }
-        }
+        currentRigidbody.MovePosition(transform.position + FixedUpdate_Calculate_Move());
     }
+    Vector3 beforePosition;
 
     private void Stun()
     {
-        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        currentRigidbody.constraints = RigidbodyConstraints.FreezeRotation;
     }
 
     private void ElectricShock()
     {
-        rb.constraints = RigidbodyConstraints.None;
+        currentRigidbody.constraints = RigidbodyConstraints.None;
     }
 
-    private void ApplicationCrowdControl()
+    protected void ApplicationCrowdControl()
     {
         switch (currentGeneralState)
         {
@@ -313,7 +357,7 @@ public class Character : MovablePositionObject
         }
     }
 
-    #region °æ»ç·Î °ü·Ã ÇÔ¼ö
+    #region ê²½ì‚¬ë¡œ ê´€ë ¨ í•¨ìˆ˜
 
     protected void CalculateGround()
     {
@@ -380,4 +424,15 @@ public class Character : MovablePositionObject
     }
 
     #endregion
+
+
+
+    protected override void Initialize()
+    {
+        base.Initialize();
+        accelSpeed = defaultAccelSpeed;
+        moveSpeed = defaultMoveSpeed;
+        jumpPower = defaultJumpPower;
+        
+    }
 }
