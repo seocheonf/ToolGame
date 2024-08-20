@@ -50,7 +50,7 @@ public class Playable : Character, ICameraTarget
         FuncInteractionData forward = new();
         forward.keyCode = KeyCode.W;
         forward.description = "앞으로 이동";
-        forward.DurationFuncInteraction = OnMoveForward;
+        forward.OnFuncInteraction = OnMoveForward;
         ControllerManager.AddInputFuncInteraction(forward);
 
         FuncInteractionData backward = new();
