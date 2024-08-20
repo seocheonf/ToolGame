@@ -131,6 +131,8 @@ public class Playable : Character, ICameraTarget
     private void UnSit()
     {
         Destroy(joint);
+        //юс╫ц©К
+        currentRigidbody.constraints = RigidbodyConstraints.FreezeRotation;
     }
 
 
@@ -217,7 +219,7 @@ public class Playable : Character, ICameraTarget
     public FirstViewCameraData FirstViewCameraSet()
     {
         FirstViewCameraData tempt = new FirstViewCameraData();
-        tempt.SetInfo(transform.position, transform.forward);
+        tempt.SetInfo(transform.position, Quaternion.Euler(-xRot, yRot, 0) * Vector3.forward);
         return tempt;
     }
 

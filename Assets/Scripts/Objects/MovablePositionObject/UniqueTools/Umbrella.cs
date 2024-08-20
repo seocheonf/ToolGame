@@ -266,11 +266,8 @@ public class Umbrella : UniqueTool
         UmbrellaHookTarget resultTarget = null;
         foreach(Collider each in hithit)
         {
-            Debug.Log(each.name);
-            Debug.Log("Ca");
             if(each.TryGetComponent(out UmbrellaHookTarget result))
             {
-                Debug.Log("Catch");
                 Vector3 dirSub = FakeCenterPosition - each.transform.position;
                 float magSub = dirSub.magnitude;
                 if (magSub < dir.magnitude)
@@ -282,15 +279,9 @@ public class Umbrella : UniqueTool
         }
         if (resultTarget == null)
         {
-            Debug.Log("empty");
             return;
         }
-
-        Debug.Log("name : " + resultTarget.name);
-        return;
-
-
-
+        
         // 우산을 접고
         SetUmbrellaMode(false);
         // 우산 잡는 위치를 바꾸고
@@ -303,8 +294,21 @@ public class Umbrella : UniqueTool
         // 우산의 Angle조정을 자유로 결정
         SetUmbrellaDirection(UmbrellaDirection.Free);
 
+
+        // Joint를 거는 과정
+        SetSpringJoint(resultTarget);
+
+
+
         ChangeCondition(ref currentCondition, UmbrellaCondition.Hook, conditionFuncInteractionDictionary);
     }
+
+    private void SetSpringJoint(UmbrellaHookTarget target)
+    {
+        // 대상에게 joint를 걸어서 회전시킴.
+        currentRigidbody
+    }
+
 
     //우산의 방향성 설정
     private void SetUmbrellaDirection(UmbrellaDirection dir)
@@ -404,8 +408,6 @@ public class Umbrella : UniqueTool
                 ReverseUmbrella();
                 break;
             case UmbrellaCondition.Hook:
-                //HookOnUmbrella();
-                break;
             default:
                 currentCondition = UmbrellaCondition.Open;
                 OpenUmbrella();

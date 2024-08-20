@@ -87,6 +87,7 @@ public class Character : MovablePositionObject
     }
 
     //경사로인지 확인하는 변수들 (추가)
+    [SerializeField]
     private GameObject ground;
     protected Ray moveRay;
     Dictionary<GameObject, Vector3> attachedCollision = new();
@@ -144,7 +145,7 @@ public class Character : MovablePositionObject
 
     protected virtual void PutTool()
     {
-        base.currentRigidbody.mass = initialMass;
+        currentRigidbody.mass = initialMass;
         currentHoldingUniqueTool.PutTool();
         currentHoldingUniqueTool = null;
     }
@@ -152,7 +153,9 @@ public class Character : MovablePositionObject
     {
         target.PickUpTool(this);
         currentHoldingUniqueTool = target;
-        base.currentRigidbody.mass += currentHoldingUniqueTool.InitialMass;
+        currentRigidbody.mass += currentHoldingUniqueTool.InitialMass;
+
+        target.FakeCenterPosition = transform.position + CatchingLocalPosition;
     }
 
     #region 이동계열 함수 
@@ -256,7 +259,6 @@ public class Character : MovablePositionObject
         currentMoveDirection = (wantMoveDirection.x * transform.right + wantMoveDirection.z * transform.forward).normalized;
         currentRigidbody.MovePosition(transform.position + FixedUpdate_Calculate_Move());
     }
-    Vector3 beforePosition;
 
     private void Stun()
     {
@@ -408,6 +410,8 @@ public class Character : MovablePositionObject
 
         float originDistance = CurrentMovementVelocity.magnitude;
 
+        originDistance += characterCollider.radius;
+        
         if (Physics.Raycast(moveRay, out RaycastHit hit, originDistance))
         {
             float possibleDistance = hit.distance - characterCollider.radius;
@@ -419,7 +423,7 @@ public class Character : MovablePositionObject
 
             CurrentMovementVelocity = (originVector * possibleDistance) + (slidingVector * impossibleDistance);
         }
-
+        
         return CurrentMovementVelocity;
     }
 
@@ -435,4 +439,8 @@ public class Character : MovablePositionObject
         jumpPower = defaultJumpPower;
         
     }
+
+
+
+
 }
