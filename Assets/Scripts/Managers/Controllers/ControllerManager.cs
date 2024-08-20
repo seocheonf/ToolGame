@@ -30,7 +30,7 @@ public class ControllerManager : Manager
     {
         base.ManagerUpdate(deltaTime);
 
-        //Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.Locked;
 
         mouseMovement.x = Input.GetAxis("Mouse X");
         mouseMovement.y = Input.GetAxis("Mouse Y");

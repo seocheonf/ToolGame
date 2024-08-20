@@ -6,6 +6,8 @@ using UnityEngine;
 public class Playable : Character, ICameraTarget
 {
     private FixedJoint joint = null;   //앉기 기능때문에 추가
+    [SerializeField] float sitRaycastDistance;
+
     //9크기
     private UniqueTool[] currentStoreUniqueTool;
 
@@ -34,6 +36,7 @@ public class Playable : Character, ICameraTarget
     protected float yRot;
     [SerializeField] float sensitivity;
     [SerializeField] float clampAngle;
+    [SerializeField] float sightForwardLength;
 
     protected override void MyStart()
     {
@@ -64,12 +67,19 @@ public class Playable : Character, ICameraTarget
         FuncInteractionData rush = new(KeyCode.R, "돌진 기능", OnRush, null, null);
         ControllerManager.AddInputFuncInteraction(rush);
 
+        FuncInteractionData pickupTools = new(KeyCode.Mouse0, "도구 집는 기능", TargetUniqueTool, null, null);
+        ControllerManager.AddInputFuncInteraction(pickupTools);
+
+        FuncInteractionData putTools = new(KeyCode.Mouse1, "도구 놓는 기능", PutTool, null, null);
+        ControllerManager.AddInputFuncInteraction(putTools);
+
         GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraType.ThirdView);
 
     }
 
     protected void PlayableManagerUpdate(float deltaTime)
     {
+        ApplicationGeneralState();
         RunUpdate();
         RushCoolTimeUpdate(deltaTime);
         RenewalCrowdControlRemainTimeUpdate(deltaTime);
@@ -86,11 +96,7 @@ public class Playable : Character, ICameraTarget
     {
         base.Initialize();
 
-
         rushPower = defaultRushPower;
-
-
-
 
         GameManager.ObjectsUpdate -= PlayableManagerUpdate;
         GameManager.ObjectsFixedUpdate -= PlayableManagerFixedUpdate;
@@ -104,8 +110,6 @@ public class Playable : Character, ICameraTarget
         base.MyDestroy();
         GameManager.ObjectsUpdate -= PlayableManagerUpdate;
         GameManager.ObjectsFixedUpdate -= PlayableManagerFixedUpdate;
-
-
     }
 
     private void OnSit()
@@ -117,13 +121,14 @@ public class Playable : Character, ICameraTarget
     {
         RaycastHit hit;
         Debug.DrawRay(transform.position, Vector3.down * 2, UnityEngine.Color.magenta);
-        if (Physics.Raycast(currentRigidbody.transform.position, Vector3.down, out hit, 2f))
+        if (Physics.Raycast(currentRigidbody.transform.position, Vector3.down, out hit, sitRaycastDistance))
         {
             if (hit.collider.GetComponent<Rigidbody>())
             {
                 if (joint == null) joint = gameObject.AddComponent<FixedJoint>();
                 currentRigidbody.constraints = RigidbodyConstraints.None;
                 joint.connectedBody = hit.collider.GetComponent<Rigidbody>();
+                isSit = true;
             }
         }
     }
@@ -131,6 +136,8 @@ public class Playable : Character, ICameraTarget
     private void UnSit()
     {
         Destroy(joint);
+        isSit = false;
+        
     }
 
 
@@ -141,7 +148,6 @@ public class Playable : Character, ICameraTarget
 
     private void Rush()
     {
-        Debug.Log("rush");
         if (IsGround && !isRush)
         {
             isRush = true;
@@ -169,11 +175,20 @@ public class Playable : Character, ICameraTarget
 
     private void TargetGameObjectUpdate()
     {
-
+        
     }
     private void TargetUniqueTool()
     {
-
+        Debug.DrawRay(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward * sightForwardLength, UnityEngine.Color.red);
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward, out hit, sightForwardLength))
+        {
+            if (hit.collider.GetComponent<UniqueTool>())
+            {
+                currentTargetUniqueTool = hit.collider.GetComponent<UniqueTool>();
+                PickUpTool(currentTargetUniqueTool);
+            }
+        }
     }
     private void TargetOuterFuncInteraction()
     {
@@ -203,6 +218,34 @@ public class Playable : Character, ICameraTarget
 
     }
 
+    protected override void ApplicationGeneralState()
+    {
+        switch (currentGeneralState)
+        {
+            case GeneralState.Normal:
+                if (isSit || isRush) 
+                {
+                    currentGeneralState = GeneralState.Action;
+                    break;
+                }
+                MoveLookAt();
+                CheckWantMoveDirection();
+                currentRigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+                break;
+            case GeneralState.CrowdControl:
+                ApplicationCrowdControl();
+                break;
+            case GeneralState.Action:
+                if (!isSit && !isRush) currentGeneralState = GeneralState.Normal;
+                break;
+        }
+    }
+
+    private void MoveLookAt()
+    {
+        transform.eulerAngles = new Vector3(0, yRot, 0);
+    }
+
     private void CharacterRotationSightFixedUpdate()
     {
         xRot += ControllerManager.MouseMovement.y * sensitivity;
@@ -210,9 +253,7 @@ public class Playable : Character, ICameraTarget
 
         xRot = Mathf.Clamp(xRot, -clampAngle, clampAngle);
 
-        transform.eulerAngles = new Vector3(0, yRot, 0);
-
-
+        //transform.eulerAngles = new Vector3(0, yRot, 0);
     }
     public FirstViewCameraData FirstViewCameraSet()
     {
@@ -228,6 +269,16 @@ public class Playable : Character, ICameraTarget
         return tempt;
     }
 
+    public override Vector3 CurrentSightEulerAngle
+    {
+        get
+        {
+            Vector3 result = Vector3.zero;
+            result.x = -xRot;
+            result.y = yRot;
 
-    
+            return result;
+        }
+    }
+
 }
