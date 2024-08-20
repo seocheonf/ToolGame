@@ -14,7 +14,7 @@ public class CameraManager : Manager
     private Camera mainCamera;
 
     //카메라가 해야할 일의 전환을 위한 델리게이트
-    private FixedUpdateFunction CameraFixedUpdate;
+    private UpdateFunction CameraLateUpdate;
 
     //카메라의 타입. 타입에 따라 행위가 달라짐
     private CameraType currentCameraType;
@@ -31,17 +31,17 @@ public class CameraManager : Manager
             {
                 case CameraType.FirstView :
                     {
-                        CameraFixedUpdate = FirstViewCameraFixedUpdate;
+                        CameraLateUpdate = FirstViewCameraLateUpdate;
                         break;
                     }
                 case CameraType.ThirdView:
                     {
-                        CameraFixedUpdate = ThirdViewCameraFixedUpdate;
+                        CameraLateUpdate = ThirdViewCameraLateUpdate;
                         break;
                     }
                 default :
                     {
-                        CameraFixedUpdate = DefaultCameraFixedUpdate;
+                        CameraLateUpdate = DefaultCameraLateUpdate;
                         break;
                     }
             };
@@ -69,8 +69,11 @@ public class CameraManager : Manager
         VarInitialize();
 
         //자신의 업데이트가 누구와 함께 살고 죽는가를 생각해보자.
-        GameManager.Instance.CurrentWorld.WorldFixedUpdates -= ManagerFixedUpdate;
-        GameManager.Instance.CurrentWorld.WorldFixedUpdates += ManagerFixedUpdate;
+        GameManager.Instance.CurrentWorld.WorldLateUpdates -= ManagerLateUpdate;
+        GameManager.Instance.CurrentWorld.WorldLateUpdates += ManagerLateUpdate;
+
+        //GameManager.Instance.CurrentWorld.WorldUpdates -= ManagerFixedUpdate;
+        //GameManager.Instance.CurrentWorld.WorldUpdates += ManagerFixedUpdate;
 
         GameManager.TurnOnBasicLoadingCavnas("Camera Loading Complete!!");
 
@@ -213,8 +216,8 @@ public class CameraManager : Manager
     /// <summary>
     /// 1인칭 카메라 상태에서 수행해야할 카메라 동작
     /// </summary>
-    /// <param name="fixedDeltaTime">FixedUpdate 수행 시간 간격</param>
-    private void FirstViewCameraFixedUpdate(float fixedDeltaTime)
+    /// <param name="deltaTime">LateUpdate 수행 시간 간격</param>
+    private void FirstViewCameraLateUpdate(float deltaTime)
     {
 #if UNITY_EDITOR
         if(cameraTargetLStack.Count <= 0)
@@ -232,8 +235,8 @@ public class CameraManager : Manager
     /// <summary>
     /// 3인칭 카메라 상태에서 수행해야할 카메라 동작
     /// </summary>
-    /// <param name="fixedDeltaTime">FixedUpdate 수행 시간 간격</param>
-    private void ThirdViewCameraFixedUpdate(float fixedDeltaTime)
+    /// <param name="deltaTime">LateUdpate 수행 시간 간격</param>
+    private void ThirdViewCameraLateUpdate(float deltaTime)
     {
 #if UNITY_EDITOR
         if (cameraTargetLStack.Count <= 0)
@@ -256,7 +259,7 @@ public class CameraManager : Manager
         finalDir *= targetData.maxDistance;
 
 
-        if (Physics.Linecast(mainCamera.transform.position, targetData.targetPosition + finalDir, out hit))
+        if (Physics.Linecast(mainCamera.transform.position, targetData.targetPosition + finalDir, out hit) && !hit.collider.isTrigger)
         {
             finalDistance = Mathf.Clamp(hit.distance, targetData.minDistance, targetData.maxDistance);
         }
@@ -273,19 +276,26 @@ public class CameraManager : Manager
     /// <summary>
     /// 기본 카메라 상태에서 수행해야할 카메라 동작
     /// </summary>
-    /// <param name="fixedDeltaTime">FixedUpdate 수행 시간 간격</param>
-    private void DefaultCameraFixedUpdate(float fixedDeltaTime)
+    /// <param name="deltaTime">LateUpdate 수행 시간 간격</param>
+    private void DefaultCameraLateUpdate(float deltaTime)
     {
 
     }
 
+    public override void ManagerLateUpdate(float deltaTime)
+    {
+        base.ManagerLateUpdate(deltaTime);
+
+        CameraLateUpdate?.Invoke(deltaTime);
+    }
+    /*
     public override void ManagerFixedUpdate(float fixedDeltaTime)
     {
         base.ManagerFixedUpdate(fixedDeltaTime);
 
-        CameraFixedUpdate?.Invoke(fixedDeltaTime);
+        CameraLateUpdate?.Invoke(fixedDeltaTime);
     }
-
+    */
     #endregion
 }
 

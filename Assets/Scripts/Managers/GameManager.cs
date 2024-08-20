@@ -51,6 +51,10 @@ public class GameManager : MonoBehaviour
     public static FixedUpdateFunction ManagersFixedUpdate;
     public static FixedUpdateFunction ObjectsFixedUpdate;
 
+    //매 LateUpdate마다 지속적으로 해야할 일들의 묶음
+    //일반적으로 렌더링 직전 해야할 일들을 정의함.
+    public static UpdateFunction ManagersLateUpdate;
+
     //사라질 때 한번 해야할 일들의 묶음
     public static DestroyFunction ManagersDestroy;
     public static DestroyFunction ObjectsDestroy;
@@ -216,6 +220,12 @@ public class GameManager : MonoBehaviour
         ManagersDestroy = null;
     }
 
+    private void LateUpdate()
+    {
+        if (isScriptEntireUpdateStop) return;
+
+        if (!isScriptManagersUpdateStop) ManagersLateUpdate?.Invoke(Time.deltaTime);        
+    }
 
     /// <summary>
     /// 기본 로딩 캔버스를 문구와 함께 나타낸다. GameManager 스크립트상의 Update를 정지시킨다.

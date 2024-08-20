@@ -30,8 +30,8 @@ public class Playable : Character, ICameraTarget
     private bool isRush; //러쉬 상태 일 경우 적에게 상태이상을 부여하기 위해 추가함 + 쿨타임 체크용도
 
     //캐릭터 시선
-    private float xRot;
-    private float yRot;
+    protected float xRot;
+    protected float yRot;
     [SerializeField] float sensitivity;
     [SerializeField] float clampAngle;
 
@@ -67,7 +67,6 @@ public class Playable : Character, ICameraTarget
         GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraType.ThirdView);
 
     }
-
 
     protected void PlayableManagerUpdate(float deltaTime)
     {
