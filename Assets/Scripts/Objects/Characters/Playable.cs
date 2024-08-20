@@ -80,11 +80,6 @@ public class Playable : Character, ICameraTarget
         MoveHorizontalityFixedUpdate(fixedDeltaTime);
         ResetDirection();
         CharacterRotationSightFixedUpdate();
-        
-        if(currentRigidbody.velocity.magnitude >= 10)
-        {
-            Debug.Log("Hi");
-        }
     }
 
     protected override void Initialize()
