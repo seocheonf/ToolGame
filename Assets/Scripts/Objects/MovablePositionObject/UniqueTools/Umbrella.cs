@@ -2,6 +2,7 @@ using SpecialInteraction;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
@@ -22,7 +23,7 @@ public class Umbrella : UniqueTool
     {
         Sight,
         Fixed,
-        Free
+        Hook
     }
     private UmbrellaDirection currentStandardaAngle;
 
@@ -292,7 +293,7 @@ public class Umbrella : UniqueTool
             FakeCenterPosition = holdingCharacter.GetCatchingPosition();
 
         // 우산의 Angle조정을 자유로 결정
-        SetUmbrellaDirection(UmbrellaDirection.Free);
+        SetUmbrellaDirection(UmbrellaDirection.Hook);
 
 
         // Joint를 거는 과정
@@ -303,10 +304,18 @@ public class Umbrella : UniqueTool
         ChangeCondition(ref currentCondition, UmbrellaCondition.Hook, conditionFuncInteractionDictionary);
     }
 
+    SpringJoint hookJoint;
     private void SetSpringJoint(UmbrellaHookTarget target)
     {
         // 대상에게 joint를 걸어서 회전시킴.
-        currentRigidbody
+        hookJoint = currentRigidbody.AddComponent<SpringJoint>();
+        //손잡이 부분의 월드좌표를 캐릭터 기준 local로 변환하여 anchor로 잡는 것
+        //hookJoint.anchor = holdingCharacter.transform.InverseTransformPoint(transform.position + transform.rotation * catchedLocalPositionKnob);
+        hookJoint.anchor = holdingCharacter.CatchingLocalPositionOrigin;
+        hookJoint.spring = 20f;
+        hookJoint.connectedBody = target.HookRigid;
+        hookJoint.autoConfigureConnectedAnchor = false;
+        hookJoint.connectedAnchor = Vector3.zero;
     }
 
 
@@ -502,6 +511,29 @@ public class Umbrella : UniqueTool
         FakeCenterPosition = tempt;
         */
     }
+    
+    private void ChangeUmbrellaDirectionHook()
+    {
+
+        float umbLength = (catchedLocalPositionKnobReverse - catchedLocalPositionKnob).magnitude;
+        Vector3 dir = FakeCenterPosition - hookJoint.connectedBody.transform.position;
+        FakeCenterUp = dir;
+        
+        Vector3 dirWithChar = holdingCharacter.GetCatchingPosition() - hookJoint.connectedBody.transform.position;
+        //dirWithChar의 길이가 umbLength가 되게하는 캐릭터의 위치. 
+
+        //손 월드 위치
+        //hookJoint.connectedBody.transform.position + dirWithChar.normalized * umbLength
+        //손 월드 위치구하는 공식
+        //transform.position + holdingCharacter.transform.rotation * holdingCharacter.CatchingLocalPositionOrigin
+
+        //hookJoint.connectedBody.transform.position + dirWithChar.normalized * umbLength = transform.position + holdingCharacter.transform.rotation * holdingCharacter.CatchingLocalPositionOrigin
+        //transform.position = hookJoint.connectedBody.transform.position + dirWithChar.normalized * umbLength - holdingCharacter.transform.rotation * holdingCharacter.CatchingLocalPositionOrigin;
+
+        //holdingCharacter.transform.position = hookJoint.connectedBody.transform.position + dirWithChar.normalized * umbLength - holdingCharacter.transform.rotation * holdingCharacter.CatchingLocalPositionOrigin;
+        holdingCharacter.CurrentRigidbody.MovePosition(hookJoint.connectedBody.transform.position + dirWithChar.normalized * umbLength - holdingCharacter.transform.rotation * holdingCharacter.CatchingLocalPositionOrigin);
+
+    }
 
     private void ChangeUmbrellaDirectionFixedUpdate(float fixedDeltaTime)
     {
@@ -513,7 +545,11 @@ public class Umbrella : UniqueTool
                     //ChangeUmbrellaDirectionFixed(currentFixedAngle);
                     break;
                 case UmbrellaDirection.Sight:
+                    //이것도 한번만 하게 할 수 있을 듯.
                     ChangeUmbrellaDirectionSight();
+                    break;
+                case UmbrellaDirection.Hook:
+                    ChangeUmbrellaDirectionHook();
                     break;
             }
         }

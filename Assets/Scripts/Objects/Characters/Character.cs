@@ -98,6 +98,7 @@ public class Character : MovablePositionObject
     //잡을 지점
     [SerializeField]
     private Vector3 catchingLocalPosition;
+    public Vector3 CatchingLocalPositionOrigin => catchingLocalPosition;
     protected Vector3 CatchingLocalPosition
     {
         get
@@ -257,6 +258,7 @@ public class Character : MovablePositionObject
     {
         CheckWantMoveDirection();
         currentMoveDirection = (wantMoveDirection.x * transform.right + wantMoveDirection.z * transform.forward).normalized;
+        //transform.position += FixedUpdate_Calculate_Move();
         currentRigidbody.MovePosition(transform.position + FixedUpdate_Calculate_Move());
     }
 
