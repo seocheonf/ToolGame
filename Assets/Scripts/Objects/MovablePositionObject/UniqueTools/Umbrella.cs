@@ -141,7 +141,7 @@ public class Umbrella : UniqueTool
         conditionFuncInteractionDictionary[UmbrellaCondition.Reverse].Add(new FuncInteractionData(KeyCode.CapsLock, "갈고리 걸기", TryHookOnUmbrella, null, null));
 
         //걸려 있을 때 할 일 대기
-        //conditionFuncInteractionDictionary[UmbrellaCondition.Open].Add(new FuncInteractionData(KeyCode., "우산", null, null, null));
+        conditionFuncInteractionDictionary[UmbrellaCondition.Hook].Add(new FuncInteractionData(KeyCode.CapsLock, "갈고리 풀기", TryReverseUmbrellaInHook, null, null));
 
     }
 
@@ -227,7 +227,6 @@ public class Umbrella : UniqueTool
         HookOnUmbrella();
     }
 
-
     private void OnDrawGizmos()
     {
         if (!Application.isPlaying)
@@ -298,41 +297,85 @@ public class Umbrella : UniqueTool
         // Joint를 거는 과정
         SetSpringJoint(resultTarget);
 
-
-
         ChangeCondition(ref currentCondition, UmbrellaCondition.Hook, conditionFuncInteractionDictionary);
     }
 
-    SpringJoint hookJoint;
-    HingeJoint hookHinge;
-    UmbrellaHookTarget hookTarget;
+    //Hook상태에서 Reverse로 전환할 때 실행할 함수
+    private void TryReverseUmbrellaInHook()
+    {
+        if (currentCondition != UmbrellaCondition.Hook)
+            return;
+
+        ReverseUmbrellaInHook();
+    }
+    private void ReverseUmbrellaInHook()
+    {
+        HookOffUmbrella();
+        ReverseUmbrella();
+    }
+
+    //Hook상태를 풀고 싶을 때 실행할 함수
+    private void HookOffUmbrella()
+    {
+        UnSetSpringJoint();
+        hookTarget = null;
+    }
+
+    //hook을 설정하는 함수
+    //우산이 연결시킨 힌지 정보
+    private HingeJoint hookHinge;
+    //내가 걸려있는 hookTarget정보
+    private UmbrellaHookTarget hookTarget;
     private void SetSpringJoint(UmbrellaHookTarget target)
     {
-
         hookHinge = holdingCharacter.CurrentRigidbody.AddComponent<HingeJoint>();
         hookHinge.autoConfigureConnectedAnchor = false;
         hookHinge.connectedAnchor = Vector3.zero;
         hookHinge.connectedBody = target.HookRigid;
         hookHinge.anchor = holdingCharacter.CatchingLocalPositionOrigin;
         float umbLength = (catchedLocalPositionKnobReverse - catchedLocalPositionKnob).magnitude;
-        Debug.Log(umbLength);
         target.hinge.anchor = Vector3.up * umbLength;
         hookTarget = target;
+    }
+    //hook을 푸는 함수
+    private void UnSetSpringJoint()
+    {
+        Destroy(hookHinge);
+        hookHinge = null;
+    }
+    
 
-        /*
-        // 대상에게 joint를 걸어서 회전시킴.
-        hookJoint = currentRigidbody.AddComponent<SpringJoint>();
-        //손잡이 부분의 월드좌표를 캐릭터 기준 local로 변환하여 anchor로 잡는 것
+    private void SetSpringJointAlone(UmbrellaHookTarget target)
+    {
+        hookHinge = gameObject.AddComponent<HingeJoint>();
+        hookHinge.autoConfigureConnectedAnchor = false;
+        hookHinge.connectedAnchor = Vector3.zero;
+        hookHinge.connectedBody = target.HookRigid;
+        hookHinge.anchor = catchedLocalPositionKnob;
+        target.hinge.anchor = Vector3.zero;
+        hookTarget = target;
+    }
+    private void UnSetSpringJointAlone()
+    {
+        UnSetSpringJoint();
+    }
 
-
-        
-        //hookJoint.anchor = holdingCharacter.transform.InverseTransformPoint(transform.position + transform.rotation * catchedLocalPositionKnob);
-        hookJoint.anchor = holdingCharacter.CatchingLocalPositionOrigin;
-        hookJoint.spring = 20f;
-        hookJoint.connectedBody = target.HookRigid;
-        hookJoint.autoConfigureConnectedAnchor = false;
-        hookJoint.connectedAnchor = Vector3.zero;
-        */
+    //우산안에서 들거나 놓을 때 해야할 일들
+    private void PickUpToolTask()
+    {
+        if(currentStandardaAngle == UmbrellaDirection.Hook)
+        {
+            UnSetSpringJointAlone();
+            SetSpringJoint(hookTarget);
+        }
+    }
+    private void PutToolTask()
+    {
+        if (currentStandardaAngle == UmbrellaDirection.Hook)
+        {
+            UnSetSpringJoint();
+            SetSpringJointAlone(hookTarget);
+        }
     }
 
 
@@ -531,69 +574,8 @@ public class Umbrella : UniqueTool
     
     private void ChangeUmbrellaDirectionHook()
     {
-
-        float umbLength = (catchedLocalPositionKnobReverse - catchedLocalPositionKnob).magnitude;
-        //Vector3 dir = FakeCenterPosition - hookJoint.connectedBody.transform.position;
-
         Vector3 dir = FakeCenterPosition - hookTarget.transform.parent.position;
         FakeCenterUp = dir;
-
-
-        //
-        //Vector3 wantDirection = Vector3.zero;
-        //if (Input.GetKey(KeyCode.LeftArrow))
-        //{
-        //    //wantDirection += Vector3.left;
-
-        //    //holdingCharacter.CurrentRigidbody.MovePosition(transform.position + Vector3.left);
-        //    holdingCharacter.AddForce(Vector3.left, ForceType.VelocityForce);
-        //    //holdingCharacter.CurrentRigidbody.AddForce(Vector3.left * 5f, ForceMode.Impulse);
-        //}
-        //if (Input.GetKey(KeyCode.RightArrow))
-        //{
-        //    //wantDirection += Vector3.right;
-
-        //    //holdingCharacter.CurrentRigidbody.MovePosition(transform.position + Vector3.right);
-        //    holdingCharacter.AddForce(Vector3.right, ForceType.VelocityForce);
-        //    //holdingCharacter.CurrentRigidbody.AddForce(Vector3.right * 5f, ForceMode.Impulse);
-        //}
-        //if (Input.GetKey(KeyCode.UpArrow))
-        //{
-        //    //wantDirection += Vector3.forward;
-
-        //    //holdingCharacter.CurrentRigidbody.MovePosition(transform.position + Vector3.forward);
-        //    holdingCharacter.AddForce(Vector3.forward, ForceType.VelocityForce);
-        //    //holdingCharacter.CurrentRigidbody.AddForce(Vector3.forward * 5f, ForceMode.Impulse);
-        //}
-        //if (Input.GetKey(KeyCode.DownArrow))
-        //{
-        //    //wantDirection += Vector3.back;
-
-        //    //holdingCharacter.CurrentRigidbody.MovePosition(transform.position + Vector3.back);
-        //    holdingCharacter.AddForce(Vector3.back, ForceType.VelocityForce);
-        //    //holdingCharacter.CurrentRigidbody.AddForce(Vector3.back * 5f, ForceMode.Impulse);
-        //}
-        //if ((holdingCharacter.GetCatchingPosition() - hookTarget.transform.position).magnitude >= umbLength)
-        //     return;
-        //wantDirection *= 0.5f;
-        //holdingCharacter.CurrentRigidbody.MovePosition(holdingCharacter.transform.position + wantDirection);
-        //
-
-
-        //Vector3 dirWithChar = holdingCharacter.GetCatchingPosition() - hookJoint.connectedBody.transform.position;
-        //dirWithChar의 길이가 umbLength가 되게하는 캐릭터의 위치. 
-
-        //손 월드 위치
-        //hookJoint.connectedBody.transform.position + dirWithChar.normalized * umbLength
-        //손 월드 위치구하는 공식
-        //transform.position + holdingCharacter.transform.rotation * holdingCharacter.CatchingLocalPositionOrigin
-
-        //hookJoint.connectedBody.transform.position + dirWithChar.normalized * umbLength = transform.position + holdingCharacter.transform.rotation * holdingCharacter.CatchingLocalPositionOrigin
-        //transform.position = hookJoint.connectedBody.transform.position + dirWithChar.normalized * umbLength - holdingCharacter.transform.rotation * holdingCharacter.CatchingLocalPositionOrigin;
-
-        //holdingCharacter.transform.position = hookJoint.connectedBody.transform.position + dirWithChar.normalized * umbLength - holdingCharacter.transform.rotation * holdingCharacter.CatchingLocalPositionOrigin;
-        //holdingCharacter.CurrentRigidbody.MovePosition(hookJoint.connectedBody.transform.position + dirWithChar.normalized * umbLength - holdingCharacter.transform.rotation * holdingCharacter.CatchingLocalPositionOrigin);
-
     }
 
     private void ChangeUmbrellaDirectionFixedUpdate(float fixedDeltaTime)
@@ -614,6 +596,7 @@ public class Umbrella : UniqueTool
                     break;
             }
         }
+
     }
 
 
@@ -730,6 +713,8 @@ public class Umbrella : UniqueTool
 
     public override void PutTool()
     {
+        PutToolTask();
+
         //타겟 리지드바디 초기화
         currentRigidbody = initialRigidbody;
 
@@ -745,6 +730,7 @@ public class Umbrella : UniqueTool
 
     public override void PickUpTool(Character source)
     {
+
         //기존 본인 설정 세팅
         transform.parent = source.transform;
         holdingCharacter = source;
@@ -759,6 +745,8 @@ public class Umbrella : UniqueTool
 
         //타겟 리지드바디 설정
         currentRigidbody = holdingCharacter.CurrentRigidbody;
+
+        PickUpToolTask();
     }
 
     protected override void MyDestroy()

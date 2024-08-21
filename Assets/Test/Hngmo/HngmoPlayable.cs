@@ -15,7 +15,6 @@ public class HngmoPlayable : Playable
     public UniqueTool sampleTool;
     private void ToolSet()
     {
-        Debug.Log("adsf");
         if (currentHoldingUniqueTool == null)
             PickUpTool(sampleTool);
         else
