@@ -258,10 +258,6 @@ public class Character : MovablePositionObject
     {
         CheckWantMoveDirection();
         currentMoveDirection = (wantMoveDirection.x * transform.right + wantMoveDirection.z * transform.forward).normalized;
-        if(currentMoveDirection.magnitude != 0)
-        {
-            Debug.Log("adf");
-        }
         //transform.position += FixedUpdate_Calculate_Move();
         currentRigidbody.MovePosition(transform.position + FixedUpdate_Calculate_Move());
     }
