@@ -120,9 +120,13 @@ public class Umbrella : UniqueTool
         GameManager.ObjectsFixedUpdate -= CustomUpdate;
         GameManager.ObjectsFixedUpdate += CustomUpdate;
 
+        GameManager.TemptFixedUpdate -= CustomFixedUpdate;
+        GameManager.TemptFixedUpdate += CustomFixedUpdate;
+
+
 
         //기능 준비 작업
-        for(UmbrellaCondition i = 0; i<UmbrellaCondition.Length; i++)
+        for (UmbrellaCondition i = 0; i<UmbrellaCondition.Length; i++)
         {
             conditionFuncInteractionDictionary[i] = new List<FuncInteractionData>();
         }
@@ -297,7 +301,10 @@ public class Umbrella : UniqueTool
 
 
         // Joint를 거는 과정
-        SetSpringJoint(resultTarget);
+        //SetSpringJoint(resultTarget);
+
+        // 유사 Joint를 거는 과정
+        SetCustomJoint(resultTarget);
 
 
 
@@ -316,6 +323,21 @@ public class Umbrella : UniqueTool
         hookJoint.connectedBody = target.HookRigid;
         hookJoint.autoConfigureConnectedAnchor = false;
         hookJoint.connectedAnchor = Vector3.zero;
+    }
+    UmbrellaHookTarget hookTarget;
+    private void SetCustomJoint(UmbrellaHookTarget target)
+    {
+        hookTarget = target;
+
+        float umbLength = (catchedLocalPositionKnobReverse - catchedLocalPositionKnob).magnitude;
+        
+        Vector3 dir = FakeCenterPosition - target.transform.position;
+        FakeCenterUp = dir;
+
+        Vector3 dirWithChar = holdingCharacter.GetCatchingPosition() - target.transform.position;
+
+        holdingCharacter.transform.position = target.transform.position + dirWithChar.normalized * umbLength - holdingCharacter.transform.rotation * holdingCharacter.CatchingLocalPositionOrigin;
+
     }
 
 
@@ -514,7 +536,7 @@ public class Umbrella : UniqueTool
     
     private void ChangeUmbrellaDirectionHook()
     {
-
+        /*
         float umbLength = (catchedLocalPositionKnobReverse - catchedLocalPositionKnob).magnitude;
         Vector3 dir = FakeCenterPosition - hookJoint.connectedBody.transform.position;
         FakeCenterUp = dir;
@@ -529,10 +551,34 @@ public class Umbrella : UniqueTool
 
         //hookJoint.connectedBody.transform.position + dirWithChar.normalized * umbLength = transform.position + holdingCharacter.transform.rotation * holdingCharacter.CatchingLocalPositionOrigin
         //transform.position = hookJoint.connectedBody.transform.position + dirWithChar.normalized * umbLength - holdingCharacter.transform.rotation * holdingCharacter.CatchingLocalPositionOrigin;
-
         //holdingCharacter.transform.position = hookJoint.connectedBody.transform.position + dirWithChar.normalized * umbLength - holdingCharacter.transform.rotation * holdingCharacter.CatchingLocalPositionOrigin;
         holdingCharacter.CurrentRigidbody.MovePosition(hookJoint.connectedBody.transform.position + dirWithChar.normalized * umbLength - holdingCharacter.transform.rotation * holdingCharacter.CatchingLocalPositionOrigin);
+        */
 
+        float umbLength = (catchedLocalPositionKnobReverse - catchedLocalPositionKnob).magnitude;
+        Vector3 dir = FakeCenterPosition - hookTarget.transform.position;
+        FakeCenterUp = dir;
+
+        Vector3 umbDir = Physics.gravity.normalized * umbLength;
+        Vector3 targetPosition = hookTarget.transform.position + umbDir;
+
+        Vector3 targetDirection = targetPosition - holdingCharacter.transform.position;
+
+        float nextMagnitude = 1 / targetDirection.magnitude;
+        targetDirection = targetDirection.normalized* nextMagnitude;
+
+
+        //holdingCharacter.CurrentRigidbody.MovePosition(hookTarget.transform.position + dir.normalized * umbLength - holdingCharacter.transform.rotation * holdingCharacter.CatchingLocalPositionOrigin);
+        holdingCharacter.AddForce(targetDirection, ForceType.VelocityForce);
+
+        return;
+        /*
+        Vector3 dirWithChar = holdingCharacter.GetCatchingPosition() - hookTarget.transform.position;
+
+        Vector3 tempt = hookTarget.transform.position + dirWithChar.normalized * umbLength - holdingCharacter.transform.rotation * holdingCharacter.CatchingLocalPositionOrigin;
+
+        holdingCharacter.AddForce(tempt - holdingCharacter.transform.position, ForceType.VelocityForce);
+        */
     }
 
     private void ChangeUmbrellaDirectionFixedUpdate(float fixedDeltaTime)
@@ -588,7 +634,7 @@ public class Umbrella : UniqueTool
     protected override void MainFixedUpdate(float fixedDeltaTime)
     {
         ChangeUmbrellaDirectionFixedUpdate(fixedDeltaTime);
-        if(GetDownSpeed() <= 0 && umbrellaMode)
+        if (GetDownSpeed() <= 0 && umbrellaMode)
         {
             float dotValue = Vector3.Dot(Vector3.up, transform.up);
             AccelDownForce(1 - dotValue * 0.05f);
@@ -596,6 +642,17 @@ public class Umbrella : UniqueTool
         base.MainFixedUpdate(fixedDeltaTime);
     }
 
+    private void CustomFixedUpdate(float fixedDeltaTime)
+    {
+
+        //ChangeUmbrellaDirectionFixedUpdate(fixedDeltaTime);
+        //if (GetDownSpeed() <= 0 && umbrellaMode)
+        //{
+        //    float dotValue = Vector3.Dot(Vector3.up, transform.up);
+        //    AccelDownForce(1 - dotValue * 0.05f);
+        //}
+
+    }
 
     /* Legacy
     private void CustomFixedUpdate(float fixedDeltaTime)

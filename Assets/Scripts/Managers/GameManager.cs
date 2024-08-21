@@ -55,6 +55,8 @@ public class GameManager : MonoBehaviour
     //일반적으로 렌더링 직전 해야할 일들을 정의함.
     public static UpdateFunction ManagersLateUpdate;
 
+    public static FixedUpdateFunction TemptFixedUpdate;
+
     //사라질 때 한번 해야할 일들의 묶음
     public static DestroyFunction ManagersDestroy;
     public static DestroyFunction ObjectsDestroy;
@@ -210,6 +212,7 @@ public class GameManager : MonoBehaviour
             ObjectsStart?.Invoke();
             ObjectsStart = null;
 
+            TemptFixedUpdate?.Invoke(Time.fixedDeltaTime);
             if (!isScriptObjectsUpdateStop) ObjectsFixedUpdate?.Invoke(Time.fixedDeltaTime);
             if (!isScriptManagersUpdateStop) ManagersFixedUpdate?.Invoke(Time.fixedDeltaTime);
         }
