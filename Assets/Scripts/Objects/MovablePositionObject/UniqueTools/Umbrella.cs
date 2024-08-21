@@ -623,8 +623,13 @@ public class Umbrella : UniqueTool
 
     }
 
+    int ttt = 0;
     private void CustomUpdate(float deltaTime)
     {
+        if(Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            ttt++;
+        }
         /*
         //ChangeUmbrellaDirectionUpdate(deltaTime);
         Vector3 wantDirection = Vector3.zero;
@@ -663,8 +668,41 @@ public class Umbrella : UniqueTool
         */
     }
 
+    Vector3 before;
     protected override void MainFixedUpdate(float fixedDeltaTime)
     {
+
+        if(ttt == 25)
+        {
+            ttt = 0;
+        }
+
+        if (ttt >= 20 && ttt < 25)
+        {
+            holdingCharacter.CurrentRigidbody.MovePosition(holdingCharacter.transform.position - Vector3.forward + holdingCharacter.CurrentRigidbody.velocity);
+            ttt++;
+        }
+
+        if (ttt > 1 && ttt < 20)
+        {
+            ttt++;
+        }
+
+        if (ttt == 1)
+        {
+            holdingCharacter.CurrentRigidbody.velocity += (Vector3.forward * 10f);
+            ttt++;
+        }
+        Debug.Log(holdingCharacter.CurrentRigidbody.velocity);
+
+        if(before != holdingCharacter.transform.position)
+        {
+            Debug.Log($"before : {before} / after : {holdingCharacter.transform.position}");
+            Debug.Log("magnitude : " + (holdingCharacter.transform.position - before).magnitude);
+        }
+
+        before = holdingCharacter.transform.position;
+
         ChangeUmbrellaDirectionFixedUpdate(fixedDeltaTime);
         if(GetDownSpeed() <= 0 && umbrellaMode)
         {
