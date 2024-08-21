@@ -425,7 +425,7 @@ public class Character : MovablePositionObject
 
         float originDistance = CurrentMovementVelocity.magnitude;
         originDistance += characterCollider.radius;
-        if (Physics.Raycast(moveRay, out RaycastHit hit, originDistance))
+        if (Physics.Raycast(moveRay, out RaycastHit hit, originDistance, -1 ,QueryTriggerInteraction.Ignore))
         {
             float possibleDistance = hit.distance - characterCollider.radius;
 
@@ -435,6 +435,7 @@ public class Character : MovablePositionObject
             Vector3 slidingVector = Vector3.ProjectOnPlane(originVector, hit.normal);
 
             CurrentMovementVelocity = (originVector * possibleDistance) + (slidingVector * impossibleDistance);
+            Debug.Log(hit.collider);
         }
 
         return CurrentMovementVelocity;

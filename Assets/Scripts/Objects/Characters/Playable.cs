@@ -175,7 +175,15 @@ public class Playable : Character, ICameraTarget
 
     private void TargetGameObjectUpdate()
     {
-        
+        Debug.DrawRay(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward * sightForwardLength, UnityEngine.Color.red);
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward, out hit, sightForwardLength))
+        {
+            if (hit.collider.GetComponent<UniqueTool>())
+            {
+                currentTargetUniqueTool = hit.collider.GetComponent<UniqueTool>();
+            }
+        }
     }
     private void TargetUniqueTool()
     {
