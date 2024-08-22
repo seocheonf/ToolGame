@@ -259,15 +259,7 @@ public class Character : MovablePositionObject
         CheckWantMoveDirection();
         currentMoveDirection = (wantMoveDirection.x * transform.right + wantMoveDirection.z * transform.forward).normalized;
         //transform.position += FixedUpdate_Calculate_Move();
-        Vector3 tempt = FixedUpdate_Calculate_Move();
-        if (currentMoveDirection.magnitude > 0.1f)
-        {
-            Debug.Log("move : " + tempt);
-            Debug.Log("velocity : " + currentRigidbody.velocity);
-        }
-        tempt += currentRigidbody.velocity;
-        //if(currentMoveDirection.magnitude > 0.1f)
-        //currentRigidbody.MovePosition(transform.position + tempt);
+        currentRigidbody.MovePosition(transform.position + FixedUpdate_Calculate_Move());
     }
 
     private void Stun()
