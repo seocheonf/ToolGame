@@ -155,7 +155,6 @@ public class Character : MovablePositionObject
         target.PickUpTool(this);
         currentHoldingUniqueTool = target;
         currentRigidbody.mass += currentHoldingUniqueTool.InitialMass;
-
         target.FakeCenterPosition = transform.position + CatchingLocalPosition;
     }
 
@@ -228,6 +227,15 @@ public class Character : MovablePositionObject
     {
         Run();
     }
+    protected virtual void Run()
+    {
+        isAccel = true;
+    }
+
+    protected void RunGetKeyUp()
+    {
+        isAccel = false;
+    }
 
     protected void RunUpdate()
     {
@@ -243,24 +251,17 @@ public class Character : MovablePositionObject
         }
 
     }
-    
-    protected virtual void Run()
-    {
-        isAccel = true;
-    }
 
-    protected void RunGetKeyUp()
-    {
-        isAccel = false;
-    }
 
     protected void MoveHorizontalityFixedUpdate(float fixedDeltaTime)
-    { 
+    {
         CheckWantMoveDirection();
         currentMoveDirection = (wantMoveDirection.x * transform.right + wantMoveDirection.z * transform.forward).normalized;
         //transform.position += FixedUpdate_Calculate_Move();
         currentRigidbody.MovePosition(transform.position + FixedUpdate_Calculate_Move());
     }
+
+    #region 상태이상계열 함수
 
     private void Stun()
     {
@@ -272,18 +273,34 @@ public class Character : MovablePositionObject
         currentRigidbody.constraints = RigidbodyConstraints.None;
     }
 
-    protected void ApplicationCrowdControl()
+    protected virtual void ApplicationGeneralState()
     {
         switch (currentGeneralState)
         {
             case GeneralState.Normal:
-
+                currentRigidbody.constraints = RigidbodyConstraints.FreezeRotation;
                 break;
             case GeneralState.CrowdControl:
+                ApplicationCrowdControl();
                 break;
             case GeneralState.Action:
                 break;
             default: 
+                break;
+        }
+    }
+
+    protected void ApplicationCrowdControl()
+    {
+        switch (currentCrowdControlState)
+        {
+            case CrowdControlState.Stun:
+                Stun();
+                break;
+            case CrowdControlState.ElectricShcok: 
+                ElectricShock(); 
+                break;
+            default:
                 break;
         }
     }
@@ -329,6 +346,8 @@ public class Character : MovablePositionObject
             currentGeneralState = GeneralState.Normal;
         }
     }
+
+    #endregion
 
     protected virtual void ChangeAngleUpdate()
     {
@@ -413,8 +432,7 @@ public class Character : MovablePositionObject
         float originDistance = CurrentMovementVelocity.magnitude;
 
         originDistance += characterCollider.radius;
-        
-        if (Physics.Raycast(moveRay, out RaycastHit hit, originDistance))
+        if (Physics.Raycast(moveRay, out RaycastHit hit, originDistance, -1 ,QueryTriggerInteraction.Ignore))
         {
             float possibleDistance = hit.distance - characterCollider.radius;
 
@@ -424,6 +442,7 @@ public class Character : MovablePositionObject
             Vector3 slidingVector = Vector3.ProjectOnPlane(originVector, hit.normal);
 
             CurrentMovementVelocity = (originVector * possibleDistance) + (slidingVector * impossibleDistance);
+            Debug.Log(hit.collider);
         }
         
         return CurrentMovementVelocity;

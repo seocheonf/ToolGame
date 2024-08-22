@@ -5,8 +5,10 @@ using UnityEngine;
 
 public class Playable : Character, ICameraTarget
 {
-    private FixedJoint joint = null;   //¾É±â ±â´É¶§¹®¿¡ Ãß°¡
-    //9Å©±â
+    private FixedJoint joint = null;   //ì•‰ê¸° ê¸°ëŠ¥ë•Œë¬¸ì— ì¶”ê°€
+    [SerializeField] float sitRaycastDistance;
+
+    //9í¬ê¸°
     private UniqueTool[] currentStoreUniqueTool;
 
     private UniqueTool currentTargetUniqueTool;
@@ -27,42 +29,49 @@ public class Playable : Character, ICameraTarget
 
     [SerializeField] float defaultRushCoolTime;
     private float rushCoolTime;
-    private bool isRush; //·¯½¬ »óÅÂ ÀÏ °æ¿ì Àû¿¡°Ô »óÅÂÀÌ»óÀ» ºÎ¿©ÇÏ±â À§ÇØ Ãß°¡ÇÔ + ÄğÅ¸ÀÓ Ã¼Å©¿ëµµ
+    private bool isRush; //ëŸ¬ì‰¬ ìƒíƒœ ì¼ ê²½ìš° ì ì—ê²Œ ìƒíƒœì´ìƒì„ ë¶€ì—¬í•˜ê¸° ìœ„í•´ ì¶”ê°€í•¨ + ì¿¨íƒ€ì„ ì²´í¬ìš©ë„
 
-    //Ä³¸¯ÅÍ ½Ã¼±
+    //ìºë¦­í„° ì‹œì„ 
     protected float xRot;
     protected float yRot;
     [SerializeField] float sensitivity;
     [SerializeField] float clampAngle;
+    [SerializeField] float sightForwardLength;
 
     protected override void MyStart()
     {
         base.MyStart();
         characterCollider = GetComponent<CapsuleCollider>();
 
-        FuncInteractionData jump = new(KeyCode.Space, "Á¡ÇÁ", OnJump, null, null);
+        FuncInteractionData jump = new(KeyCode.Space, "ì í”„", OnJump, null, null);
         ControllerManager.AddInputFuncInteraction(jump);
 
-        FuncInteractionData forward = new(KeyCode.W, "¾ÕÀ¸·Î ÀÌµ¿", null, OnMoveForward, null);
+        FuncInteractionData forward = new(KeyCode.W, "ì•ìœ¼ë¡œ ì´ë™", null, OnMoveForward, null);
         ControllerManager.AddInputFuncInteraction(forward);
 
-        FuncInteractionData backward = new(KeyCode.S, "µÚ·Î ÀÌµ¿", null, OnMoveBackward, null);
+        FuncInteractionData backward = new(KeyCode.S, "ë’¤ë¡œ ì´ë™", null, OnMoveBackward, null);
         ControllerManager.AddInputFuncInteraction(backward);
 
-        FuncInteractionData left = new(KeyCode.A, "¿ŞÂÊÀ¸·Î ÀÌµ¿", null, OnMoveLeft, null);
+        FuncInteractionData left = new(KeyCode.A, "ì™¼ìª½ìœ¼ë¡œ ì´ë™", null, OnMoveLeft, null);
         ControllerManager.AddInputFuncInteraction(left);
 
-        FuncInteractionData right = new(KeyCode.D, "¿À¸¥ÂÊÀ¸·Î ÀÌµ¿", null, OnMoveRight, null);
+        FuncInteractionData right = new(KeyCode.D, "ì˜¤ë¥¸ìª½ìœ¼ë¡œ ì´ë™", null, OnMoveRight, null);
         ControllerManager.AddInputFuncInteraction(right);
 
-        FuncInteractionData accel = new(KeyCode.LeftShift, "´ë½Ã ±â´É", null, OnRun, RunGetKeyUp);
+        FuncInteractionData accel = new(KeyCode.LeftShift, "ëŒ€ì‹œ ê¸°ëŠ¥", null, OnRun, RunGetKeyUp);
         ControllerManager.AddInputFuncInteraction(accel);
 
-        FuncInteractionData sit = new(KeyCode.LeftControl, "¾É±â ±â´É", null, OnSit, UnSit);
+        FuncInteractionData sit = new(KeyCode.LeftControl, "ì•‰ê¸° ê¸°ëŠ¥", null, OnSit, UnSit);
         ControllerManager.AddInputFuncInteraction(sit);
 
-        FuncInteractionData rush = new(KeyCode.R, "µ¹Áø ±â´É", OnRush, null, null);
+        FuncInteractionData rush = new(KeyCode.R, "ëŒì§„ ê¸°ëŠ¥", OnRush, null, null);
         ControllerManager.AddInputFuncInteraction(rush);
+
+        FuncInteractionData pickupTools = new(KeyCode.Mouse0, "ë„êµ¬ ì§‘ëŠ” ê¸°ëŠ¥", TargetUniqueTool, null, null);
+        ControllerManager.AddInputFuncInteraction(pickupTools);
+
+        FuncInteractionData putTools = new(KeyCode.Mouse1, "ë„êµ¬ ë†“ëŠ” ê¸°ëŠ¥", PutTool, null, null);
+        ControllerManager.AddInputFuncInteraction(putTools);
 
         GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraType.ThirdView);
 
@@ -70,6 +79,7 @@ public class Playable : Character, ICameraTarget
 
     protected void PlayableManagerUpdate(float deltaTime)
     {
+        ApplicationGeneralState();
         RunUpdate();
         RushCoolTimeUpdate(deltaTime);
         RenewalCrowdControlRemainTimeUpdate(deltaTime);
@@ -86,11 +96,7 @@ public class Playable : Character, ICameraTarget
     {
         base.Initialize();
 
-
         rushPower = defaultRushPower;
-
-
-
 
         GameManager.ObjectsUpdate -= PlayableManagerUpdate;
         GameManager.ObjectsFixedUpdate -= PlayableManagerFixedUpdate;
@@ -104,8 +110,6 @@ public class Playable : Character, ICameraTarget
         base.MyDestroy();
         GameManager.ObjectsUpdate -= PlayableManagerUpdate;
         GameManager.ObjectsFixedUpdate -= PlayableManagerFixedUpdate;
-
-
     }
 
     private void OnSit()
@@ -117,13 +121,14 @@ public class Playable : Character, ICameraTarget
     {
         RaycastHit hit;
         Debug.DrawRay(transform.position, Vector3.down * 2, UnityEngine.Color.magenta);
-        if (Physics.Raycast(currentRigidbody.transform.position, Vector3.down, out hit, 2f))
+        if (Physics.Raycast(currentRigidbody.transform.position, Vector3.down, out hit, sitRaycastDistance))
         {
             if (hit.collider.GetComponent<Rigidbody>())
             {
                 if (joint == null) joint = gameObject.AddComponent<FixedJoint>();
                 currentRigidbody.constraints = RigidbodyConstraints.None;
                 joint.connectedBody = hit.collider.GetComponent<Rigidbody>();
+                isSit = true;
             }
         }
     }
@@ -131,8 +136,8 @@ public class Playable : Character, ICameraTarget
     private void UnSit()
     {
         Destroy(joint);
-        //ÀÓ½Ã¿ë
         currentRigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+        isSit = false;
     }
 
 
@@ -143,7 +148,6 @@ public class Playable : Character, ICameraTarget
 
     private void Rush()
     {
-        Debug.Log("rush");
         if (IsGround && !isRush)
         {
             isRush = true;
@@ -171,11 +175,28 @@ public class Playable : Character, ICameraTarget
 
     private void TargetGameObjectUpdate()
     {
-
+        Debug.DrawRay(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward * sightForwardLength, UnityEngine.Color.red);
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward, out hit, sightForwardLength))
+        {
+            if (hit.collider.GetComponent<UniqueTool>())
+            {
+                currentTargetUniqueTool = hit.collider.GetComponent<UniqueTool>();
+            }
+        }
     }
     private void TargetUniqueTool()
     {
-
+        Debug.DrawRay(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward * sightForwardLength, UnityEngine.Color.red);
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward, out hit, sightForwardLength))
+        {
+            if (hit.collider.GetComponent<UniqueTool>())
+            {
+                currentTargetUniqueTool = hit.collider.GetComponent<UniqueTool>();
+                PickUpTool(currentTargetUniqueTool);
+            }
+        }
     }
     private void TargetOuterFuncInteraction()
     {
@@ -205,6 +226,34 @@ public class Playable : Character, ICameraTarget
 
     }
 
+    protected override void ApplicationGeneralState()
+    {
+        switch (currentGeneralState)
+        {
+            case GeneralState.Normal:
+                if (isSit || isRush) 
+                {
+                    currentGeneralState = GeneralState.Action;
+                    break;
+                }
+                MoveLookAt();
+                CheckWantMoveDirection();
+                currentRigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+                break;
+            case GeneralState.CrowdControl:
+                ApplicationCrowdControl();
+                break;
+            case GeneralState.Action:
+                if (!isSit && !isRush) currentGeneralState = GeneralState.Normal;
+                break;
+        }
+    }
+
+    private void MoveLookAt()
+    {
+        transform.eulerAngles = new Vector3(0, yRot, 0);
+    }
+
     private void CharacterRotationSightFixedUpdate()
     {
         xRot += ControllerManager.MouseMovement.y * sensitivity;
@@ -212,9 +261,7 @@ public class Playable : Character, ICameraTarget
 
         xRot = Mathf.Clamp(xRot, -clampAngle, clampAngle);
 
-        transform.eulerAngles = new Vector3(0, yRot, 0);
-
-
+        //transform.eulerAngles = new Vector3(0, yRot, 0);
     }
     public FirstViewCameraData FirstViewCameraSet()
     {
@@ -230,6 +277,16 @@ public class Playable : Character, ICameraTarget
         return tempt;
     }
 
+    public override Vector3 CurrentSightEulerAngle
+    {
+        get
+        {
+            Vector3 result = Vector3.zero;
+            result.x = -xRot;
+            result.y = yRot;
 
-    
+            return result;
+        }
+    }
+
 }
