@@ -15,18 +15,12 @@ public class HngmoPlayable : Playable
     public UniqueTool sampleTool;
     private void ToolSet()
     {
-        Debug.Log("adsf");
         if (currentHoldingUniqueTool == null)
             PickUpTool(sampleTool);
         else
             PutTool();
     }
 
-    public override void PickUpTool(UniqueTool target)
-    {
-        base.PickUpTool(target);
-        target.FakeCenterPosition = transform.position + CatchingLocalPosition;
-    }
 
     public override Vector3 CurrentSightEulerAngle
     {

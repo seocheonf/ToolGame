@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class Playable : Character, ICameraTarget
 {
-    private FixedJoint joint = null;   //¾É±â ±â´É¶§¹®¿¡ Ãß°¡
+    private FixedJoint joint = null;   //ì•‰ê¸° ê¸°ëŠ¥ë•Œë¬¸ì— ì¶”ê°€
     [SerializeField] float sitRaycastDistance;
 
-    //9Å©±â
+    //9í¬ê¸°
     private UniqueTool[] currentStoreUniqueTool;
 
     private UniqueTool currentTargetUniqueTool;
@@ -29,9 +29,9 @@ public class Playable : Character, ICameraTarget
 
     [SerializeField] float defaultRushCoolTime;
     private float rushCoolTime;
-    private bool isRush; //·¯½¬ »óÅÂ ÀÏ °æ¿ì Àû¿¡°Ô »óÅÂÀÌ»óÀ» ºÎ¿©ÇÏ±â À§ÇØ Ãß°¡ÇÔ + ÄğÅ¸ÀÓ Ã¼Å©¿ëµµ
+    private bool isRush; //ëŸ¬ì‰¬ ìƒíƒœ ì¼ ê²½ìš° ì ì—ê²Œ ìƒíƒœì´ìƒì„ ë¶€ì—¬í•˜ê¸° ìœ„í•´ ì¶”ê°€í•¨ + ì¿¨íƒ€ì„ ì²´í¬ìš©ë„
 
-    //Ä³¸¯ÅÍ ½Ã¼±
+    //ìºë¦­í„° ì‹œì„ 
     protected float xRot;
     protected float yRot;
     [SerializeField] float sensitivity;
@@ -43,34 +43,34 @@ public class Playable : Character, ICameraTarget
         base.MyStart();
         characterCollider = GetComponent<CapsuleCollider>();
 
-        FuncInteractionData jump = new(KeyCode.Space, "Á¡ÇÁ", OnJump, null, null);
+        FuncInteractionData jump = new(KeyCode.Space, "ì í”„", OnJump, null, null);
         ControllerManager.AddInputFuncInteraction(jump);
 
-        FuncInteractionData forward = new(KeyCode.W, "¾ÕÀ¸·Î ÀÌµ¿", null, OnMoveForward, null);
+        FuncInteractionData forward = new(KeyCode.W, "ì•ìœ¼ë¡œ ì´ë™", null, OnMoveForward, null);
         ControllerManager.AddInputFuncInteraction(forward);
 
-        FuncInteractionData backward = new(KeyCode.S, "µÚ·Î ÀÌµ¿", null, OnMoveBackward, null);
+        FuncInteractionData backward = new(KeyCode.S, "ë’¤ë¡œ ì´ë™", null, OnMoveBackward, null);
         ControllerManager.AddInputFuncInteraction(backward);
 
-        FuncInteractionData left = new(KeyCode.A, "¿ŞÂÊÀ¸·Î ÀÌµ¿", null, OnMoveLeft, null);
+        FuncInteractionData left = new(KeyCode.A, "ì™¼ìª½ìœ¼ë¡œ ì´ë™", null, OnMoveLeft, null);
         ControllerManager.AddInputFuncInteraction(left);
 
-        FuncInteractionData right = new(KeyCode.D, "¿À¸¥ÂÊÀ¸·Î ÀÌµ¿", null, OnMoveRight, null);
+        FuncInteractionData right = new(KeyCode.D, "ì˜¤ë¥¸ìª½ìœ¼ë¡œ ì´ë™", null, OnMoveRight, null);
         ControllerManager.AddInputFuncInteraction(right);
 
-        FuncInteractionData accel = new(KeyCode.LeftShift, "´ë½Ã ±â´É", null, OnRun, RunGetKeyUp);
+        FuncInteractionData accel = new(KeyCode.LeftShift, "ëŒ€ì‹œ ê¸°ëŠ¥", null, OnRun, RunGetKeyUp);
         ControllerManager.AddInputFuncInteraction(accel);
 
-        FuncInteractionData sit = new(KeyCode.LeftControl, "¾É±â ±â´É", null, OnSit, UnSit);
+        FuncInteractionData sit = new(KeyCode.LeftControl, "ì•‰ê¸° ê¸°ëŠ¥", null, OnSit, UnSit);
         ControllerManager.AddInputFuncInteraction(sit);
 
-        FuncInteractionData rush = new(KeyCode.R, "µ¹Áø ±â´É", OnRush, null, null);
+        FuncInteractionData rush = new(KeyCode.R, "ëŒì§„ ê¸°ëŠ¥", OnRush, null, null);
         ControllerManager.AddInputFuncInteraction(rush);
 
-        FuncInteractionData pickupTools = new(KeyCode.Mouse0, "µµ±¸ Áı´Â ±â´É", TargetUniqueTool, null, null);
+        FuncInteractionData pickupTools = new(KeyCode.Mouse0, "ë„êµ¬ ì§‘ëŠ” ê¸°ëŠ¥", TargetUniqueTool, null, null);
         ControllerManager.AddInputFuncInteraction(pickupTools);
 
-        FuncInteractionData putTools = new(KeyCode.Mouse1, "µµ±¸ ³õ´Â ±â´É", PutTool, null, null);
+        FuncInteractionData putTools = new(KeyCode.Mouse1, "ë„êµ¬ ë†“ëŠ” ê¸°ëŠ¥", PutTool, null, null);
         ControllerManager.AddInputFuncInteraction(putTools);
 
         GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraType.ThirdView);
@@ -136,8 +136,8 @@ public class Playable : Character, ICameraTarget
     private void UnSit()
     {
         Destroy(joint);
+        currentRigidbody.constraints = RigidbodyConstraints.FreezeRotation;
         isSit = false;
-        
     }
 
 
@@ -266,7 +266,7 @@ public class Playable : Character, ICameraTarget
     public FirstViewCameraData FirstViewCameraSet()
     {
         FirstViewCameraData tempt = new FirstViewCameraData();
-        tempt.SetInfo(transform.position, transform.forward);
+        tempt.SetInfo(transform.position, Quaternion.Euler(-xRot, yRot, 0) * Vector3.forward);
         return tempt;
     }
 
