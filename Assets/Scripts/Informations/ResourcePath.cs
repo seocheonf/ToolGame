@@ -8,8 +8,9 @@ public static class ResourcePath
         #region Object Prefab List
         "TestPrefab",
         "Monologue",
-        "CapCap"
+        "CapCap",
 
+        "UniqueTool/Umbrella"
 
         #endregion
 

@@ -37,12 +37,12 @@ public abstract class UniqueTool : MovablePositionObject
 
 #endif
 
+
     protected override void Initialize()
     {
         base.Initialize();
-
+        
         holdingFuncInteractionList = new List<FuncInteractionData>();
-
     }
 
     public virtual void PutTool()
