@@ -35,6 +35,15 @@ public abstract class UniqueTool : MovablePositionObject
         }
     }
 
+    protected virtual void Reset()
+    {
+        GameObject child = new GameObject("CastTarget");
+        child.layer = LayerMask.NameToLayer("Cast_UniqueTool");
+        child.transform.parent = transform;
+        child.transform.localPosition = Vector3.zero;
+        child.AddComponent<SphereCollider>().isTrigger = true;
+    }
+
 #endif
 
 

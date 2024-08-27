@@ -9,6 +9,7 @@ using SpecialInteraction;
 [CustomEditor(typeof(UniqueTool), true)]
 public class SetCatchedPointEdit : Editor
 {
+
     private void OnSceneGUI()
     {
 
@@ -17,6 +18,7 @@ public class SetCatchedPointEdit : Editor
         targetTool.CatchedLocalPositionEdit = Handles.PositionHandle(targetTool.CatchedLocalPositionEdit, Quaternion.identity);
         
     }
+
 }
 
 #endif
