@@ -39,11 +39,11 @@ public class TestCapCap : MyComponent, ICameraTarget
         /*
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraType.FirstView);
+            GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraViewType.FirstView);
         }
         if(Input.GetKeyDown(KeyCode.Tab))
         {
-            GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraType.ThirdView);
+            GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraViewType.ThirdView);
         }
         */
     }

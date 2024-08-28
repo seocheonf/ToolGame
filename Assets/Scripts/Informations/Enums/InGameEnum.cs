@@ -20,7 +20,7 @@ public enum GeneralState
     Length
 }
 
-public enum CameraType
+public enum CameraViewType
 {
     Default,
     FirstView,

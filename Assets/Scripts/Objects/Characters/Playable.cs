@@ -73,7 +73,7 @@ public class Playable : Character, ICameraTarget
         FuncInteractionData putTools = new(KeyCode.Mouse1, "도구 놓는 기능", PutTool, null, null);
         ControllerManager.AddInputFuncInteraction(putTools);
 
-        GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraType.ThirdView);
+        GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraViewType.ThirdView);
 
     }
 
