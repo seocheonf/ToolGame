@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,6 +9,10 @@ using UnityEditor.SceneManagement;
 #if TEXTURE_GRAPH
 using Pinwheel.TextureGraph;
 #endif
+
+//형모수정
+using UnityEngine.Rendering.PostProcessing;
+
 
 namespace Pinwheel.Poseidon
 {
@@ -152,6 +157,11 @@ namespace Pinwheel.Poseidon
                 DrawRefractionSettingsGUI();
                 DrawCausticSettingsGUI();
                 DrawEffectsGUI();
+
+                //형모수정
+                DrawEffectsGUI_UnderWaterSet_Unique();
+                DrawEffectsGUI_UnderWaterSet_Standard();
+
                 if (EditorGUI.EndChangeCheck())
                 {
                     EditorUtility.SetDirty(water);
@@ -171,6 +181,142 @@ namespace Pinwheel.Poseidon
             }
         }
 
+        //형모수정
+        private void DrawEffectsGUI()
+        {
+            PostProcessVolume ppVolume = water.gameObject.GetComponent<PostProcessVolume>();
+            if(ppVolume != null)
+            {
+                return;
+            }
+
+            string label = "Effects";
+            string id = "effects" + water.GetInstanceID();
+
+            PEditorCommon.Foldout(label, false, id, () =>
+            {
+                GUI.enabled = true;
+                if (PCommon.CurrentRenderPipeline == PRenderPipelineType.Builtin)
+                {
+                    bool isStackV2Installed = false;
+#if UNITY_POST_PROCESSING_STACK_V2
+                    isStackV2Installed = true;
+#endif
+                    if (!isStackV2Installed)
+                    {
+                        EditorGUILayout.LabelField("Water effect need the Post Processing Stack V2 to work. Please install it using the Package Manager", PEditorCommon.WordWrapItalicLabel);
+                    }
+                    GUI.enabled = isStackV2Installed;
+                }
+                if (GUILayout.Button("Add Effects"))
+                {
+                    ppVolume = water.gameObject.AddComponent<PostProcessVolume>();
+
+                    Collider col = water.gameObject.GetComponent<Collider>();
+                    if (col == null)
+                        ppVolume.gameObject.AddComponent<BoxCollider>().isTrigger = true;
+
+                }
+                GUI.enabled = true;
+            });
+        }
+        private void DrawEffectsGUI_UnderWaterSet_Unique()
+        {
+            PostProcessVolume ppVolume = water.gameObject.GetComponent<PostProcessVolume>();
+            
+            if(ppVolume != null && ppVolume.profile != null)
+            {
+                return;
+            }
+
+            string label = "UnderWater Effects Unique";
+            string id = "UnderWater_effects" + water.GetInstanceID();
+
+            PEditorCommon.Foldout(label, false, id, () =>
+            {
+                GUI.enabled = true;
+                if (PCommon.CurrentRenderPipeline == PRenderPipelineType.Builtin)
+                {
+                    bool isStackV2Installed = false;
+#if UNITY_POST_PROCESSING_STACK_V2
+                    isStackV2Installed = true;
+#endif
+                    if (!isStackV2Installed)
+                    {
+                        EditorGUILayout.LabelField("Water effect need the Post Processing Stack V2 to work. Please install it using the Package Manager", PEditorCommon.WordWrapItalicLabel);
+                    }
+                    GUI.enabled = isStackV2Installed;
+                }
+                if (GUILayout.Button("Add UnderWater Effects Unique"))
+                {
+                    PostProcessVolume ppVolume = water.gameObject.GetComponent<PostProcessVolume>();
+                    if (ppVolume == null)
+                        ppVolume = water.gameObject.AddComponent<PostProcessVolume>();
+
+                    Collider col = water.gameObject.GetComponent<Collider>();
+                    if(col == null)
+                        ppVolume.gameObject.AddComponent<BoxCollider>().isTrigger = true;
+
+
+                    PostProcessProfile ppProfileUnderWaterSet = CreateInstance<PostProcessProfile>();
+                    ppProfileUnderWaterSet.AddSettings(FX.PostProcessing.PUnderwater.StandardPUnderWater());
+
+                    ppVolume.profile = ppProfileUnderWaterSet;
+
+                    string fileName = "UnderWaterEffect_Profile_" + PCommon.GetUniqueID();
+                    string filePath = string.Format("Assets/Resources/OuterAssets/PostProcessEffects/{0}.asset", fileName);
+                    AssetDatabase.CreateAsset(ppProfileUnderWaterSet, filePath);
+
+
+                }
+                GUI.enabled = true;
+            });
+        }
+        private void DrawEffectsGUI_UnderWaterSet_Standard()
+        {
+            PostProcessVolume ppVolume = water.gameObject.GetComponent<PostProcessVolume>();
+
+            if (ppVolume != null && ppVolume.profile != null)
+            {
+                return;
+            }
+
+            string label = "UnderWater Effects Standard";
+            string id = "UnderWater_effects" + water.GetInstanceID();
+
+            PEditorCommon.Foldout(label, false, id, () =>
+            {
+                GUI.enabled = true;
+                if (PCommon.CurrentRenderPipeline == PRenderPipelineType.Builtin)
+                {
+                    bool isStackV2Installed = false;
+#if UNITY_POST_PROCESSING_STACK_V2
+                    isStackV2Installed = true;
+#endif
+                    if (!isStackV2Installed)
+                    {
+                        EditorGUILayout.LabelField("Water effect need the Post Processing Stack V2 to work. Please install it using the Package Manager", PEditorCommon.WordWrapItalicLabel);
+                    }
+                    GUI.enabled = isStackV2Installed;
+                }
+                if (GUILayout.Button("Add UnderWater Effects Standard"))
+                {
+                    PostProcessVolume ppVolume = water.gameObject.GetComponent<PostProcessVolume>();
+                    if (ppVolume == null)
+                        ppVolume = water.gameObject.AddComponent<PostProcessVolume>();
+
+                    Collider col = water.gameObject.GetComponent<Collider>();
+                    if (col == null)
+                        ppVolume.gameObject.AddComponent<BoxCollider>().isTrigger = true;
+
+                    ppVolume.profile = Resources.Load<PostProcessProfile>("OuterAssets/PostProcessEffects/UnderWater");
+                    
+                }
+                GUI.enabled = true;
+            });
+        }
+
+        /*
         private void DrawEffectsGUI()
         {
             PWaterFX fx = water.GetComponent<PWaterFX>();
@@ -203,6 +349,9 @@ namespace Pinwheel.Poseidon
                 GUI.enabled = true;
             });
         }
+        */
+
+        //형모수정
 
         private void DrawMeshSettingsGUI()
         {
