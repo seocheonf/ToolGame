@@ -73,6 +73,10 @@ public class Playable : Character, ICameraTarget
         FuncInteractionData putTools = new(KeyCode.Mouse1, "도구 놓는 기능", PutTool, null, null);
         ControllerManager.AddInputFuncInteraction(putTools);
 
+        FuncInteractionData clickSwitch = new(KeyCode.E, "레버 또는 버튼 누르는 기능", OnSwitchFuncInteraction, null, null);
+        ControllerManager.AddInputFuncInteraction(clickSwitch);
+        
+
         GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraType.ThirdView);
 
     }
@@ -175,7 +179,10 @@ public class Playable : Character, ICameraTarget
 
     private void TargetGameObjectUpdate()
     {
-        Debug.DrawRay(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward * sightForwardLength, UnityEngine.Color.red);
+        //Boxcast 로 바꿔야 함
+        //해봤자 땅에 닿아도 Raycast는 쏠 것이고 쏜 곳에 Boxcast를 만든 뒤에
+        //Boxcast안에 들어있는 오브젝트가 hit.collider.GetComponent<UniqueTool>() 인 경우에만 PickupTool() 하면 되기때문에
+        //그렇게 큰 어려움은 아닐듯 함 (아님 공룡박치기하고)
         RaycastHit hit;
         if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward, out hit, sightForwardLength))
         {
@@ -187,7 +194,6 @@ public class Playable : Character, ICameraTarget
     }
     private void TargetUniqueTool()
     {
-        Debug.DrawRay(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward * sightForwardLength, UnityEngine.Color.red);
         RaycastHit hit;
         if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward, out hit, sightForwardLength))
         {
@@ -223,7 +229,14 @@ public class Playable : Character, ICameraTarget
 
     private void OnSwitchFuncInteraction()
     {
-
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward, out hit, sightForwardLength))
+        {
+            if (hit.collider.GetComponent<LimitPositionObject>())
+            {
+                hit.collider.GetComponent<LimitPositionObject>().ObjectClick();
+            }
+        }
     }
 
     protected override void ApplicationGeneralState()
@@ -231,7 +244,7 @@ public class Playable : Character, ICameraTarget
         switch (currentGeneralState)
         {
             case GeneralState.Normal:
-                if (isSit || isRush) 
+                if (isSit || isRush)
                 {
                     currentGeneralState = GeneralState.Action;
                     break;
@@ -288,5 +301,13 @@ public class Playable : Character, ICameraTarget
             return result;
         }
     }
+#if UNITY_EDITOR
 
+    private void OnDrawGizmos()
+    {
+        Debug.DrawRay(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward * sightForwardLength, UnityEngine.Color.red);
+
+    }
+
+#endif
 }

@@ -10,10 +10,18 @@ public class Toaster : LimitPositionObject
     [SerializeField] float wantShootPower;
 
 
+    public override void ObjectOn() 
+    {
+        playerDetectArea.enabled = true;
+    }
+
+    public override void ObjectOff()
+    {
+        playerDetectArea.enabled = false;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
-
         if (other.GetComponent<Playable>())
         {
             GameObject freshToast;

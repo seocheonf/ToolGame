@@ -147,5 +147,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toaster: {fileID: 0}
-  giveCrowdControlState: 1
+  giveCrowdControlState: 0
   duration: 1
