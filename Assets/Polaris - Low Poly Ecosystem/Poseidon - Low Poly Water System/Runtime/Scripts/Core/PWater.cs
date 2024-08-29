@@ -19,37 +19,6 @@ namespace Pinwheel.Poseidon
     [ExecuteInEditMode]
     public class PWater : MonoBehaviour
     {
-        //형모수정
-
-        public int asdf;
-
-
-        [SerializeField]
-        private PostProcessVolume ppVolume;
-        public PostProcessVolume PPVolume
-        {
-            get
-            {
-                return ppVolume;
-            }
-            set
-            {
-                ppVolume = value;
-            }
-        }
-        [SerializeField]
-        private PostProcessProfile ppProfile;
-        public PostProcessProfile PPProfile
-        {
-            get
-            {
-                return ppProfile;
-            }
-            set
-            {
-                ppProfile = value;
-            }
-        }
 
         [SerializeField]
         private PWaterProfile profile;
@@ -1006,8 +975,8 @@ namespace Pinwheel.Poseidon
             if (Profile == null)
                 return;
             //형모수정--
-            Camera currentCam = Camera.main;
-            //Camera currentCam = Camera.current;
+            //Camera currentCam = Camera.main;
+            Camera currentCam = Camera.current;
             //형모수정--
             if (currentCam == null)
                 return;

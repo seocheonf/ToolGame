@@ -18,17 +18,6 @@ namespace Pinwheel.Poseidon
     [CustomEditor(typeof(PWater))]
     public class PWaterInspector : Editor
     {
-        /// <summary>
-        /// //////////////////////////
-        /// </summary>
-        private SerializedProperty _waterPPVolume;
-        //private SerializedProperty _waterPPProfile;
-
-
-
-
-
-
 
         private PWater water;
         private bool willDrawDebugGUI = false;
@@ -98,11 +87,6 @@ namespace Pinwheel.Poseidon
         private void OnEnable()
         {
 
-            _waterPPVolume = serializedObject.FindProperty("ppVolume");
-            //_waterPPProfile = serializedObject.FindProperty("ppProfile"); 
-
-
-
             LoadPrefs();
             water = target as PWater;
             if (water.Profile != null)
@@ -118,14 +102,6 @@ namespace Pinwheel.Poseidon
             Camera.onPreCull += OnRenderCamera;
             RenderPipelineManager.beginCameraRendering += OnRenderCameraSRP;
 
-
-            /*
-            if(water.TryGetComponent(out PostProcessVolume result))
-            {
-                result = _waterPPVolume.objectReferenceValue as PostProcessVolume;
-                result.profile = _waterPPProfile.objectReferenceValue as PostProcessProfile;
-            }
-            */
         }
 
         private void OnDisable()
@@ -183,11 +159,11 @@ namespace Pinwheel.Poseidon
                 DrawReflectionSettingsGUI();
                 DrawRefractionSettingsGUI();
                 DrawCausticSettingsGUI();
-                DrawEffectsGUI();
-
+                //DrawEffectsGUI();
+                DrawEffectsGUI2();
                 //형모수정
-                DrawEffectsGUI_UnderWaterSet_Unique();
-                DrawEffectsGUI_UnderWaterSet_Standard();
+                //DrawEffectsGUI_UnderWaterSet_Unique();
+                //DrawEffectsGUI_UnderWaterSet_Standard();
 
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -245,14 +221,6 @@ namespace Pinwheel.Poseidon
                     if (col == null)
                         ppVolume.gameObject.AddComponent<BoxCollider>().isTrigger = true;
 
-                    //serializedObject.Update();
-                    //serializedObject.ApplyModifiedProperties();
-
-                    //serializedObject.Update();//============
-                    //water.PPVolume = ppVolume;
-                    //_waterPPVolume.objectReferenceValue = ppVolume;
-                    //serializedObject.ApplyModifiedProperties();//============
-
                 }
                 GUI.enabled = true;
             });
@@ -306,11 +274,6 @@ namespace Pinwheel.Poseidon
                     string fileName = "UnderWaterEffect_Profile_" + PCommon.GetUniqueID();
                     string filePath = string.Format("Assets/Resources/OuterAssets/PostProcessEffects/{0}.asset", fileName);
                     AssetDatabase.CreateAsset(ppProfileUnderWaterSet, filePath);
-                    
-                    //serializedObject.Update();//============
-                    //water.PPVolume = ppVolume;
-                    //_waterPPVolume.objectReferenceValue = ppVolume;
-                    //serializedObject.ApplyModifiedProperties();//============
 
                 }
                 GUI.enabled = true;
@@ -358,25 +321,13 @@ namespace Pinwheel.Poseidon
 
                     ppVolume.profile = Resources.Load<PostProcessProfile>("OuterAssets/PostProcessEffects/UnderWater");
 
-                    //serializedObject.Update();//============
-                    //water.PPVolume = ppVolume;
-                    //Debug.Log(_waterPPVolume.objectReferenceValue);
-                    //Debug.Log((_waterPPVolume.objectReferenceValue as PostProcessVolume).profile);
-                    //_waterPPVolume.objectReferenceValue = ppVolume;
-                    //serializedObject.ApplyModifiedProperties();//============
-                    //Debug.Log(_waterPPVolume.objectReferenceValue);
-                    //Debug.Log((_waterPPVolume.objectReferenceValue as PostProcessVolume).profile);
-
-                    _waterPPVolume.objectReferenceValue = ppVolume;
-                    serializedObject.ApplyModifiedProperties();
-
                 }
                 GUI.enabled = true;
             });
         }
 
-        /*
-        private void DrawEffectsGUI()
+        
+        private void DrawEffectsGUI2()
         {
             PWaterFX fx = water.GetComponent<PWaterFX>();
             if (fx != null)
@@ -408,7 +359,7 @@ namespace Pinwheel.Poseidon
                 GUI.enabled = true;
             });
         }
-        */
+        
 
         //형모수정
 

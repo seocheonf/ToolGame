@@ -8,28 +8,28 @@ namespace Pinwheel.Poseidon
     //형모수정 - 주석
     public static class PEditorMenus
     {
-        //[MenuItem("GameObject/3D Object/Poseidon/Calm Water")]
-        //public static PWater CreateCalmWaterObject(MenuCommand cmd)
-        //{
-        //    GameObject g = new GameObject("Calm Water");
-        //    if (cmd != null && cmd.context != null)
-        //    {
-        //        GameObject root = cmd.context as GameObject;
-        //        GameObjectUtility.SetParentAndAlign(g, root);
-        //    }
+        [MenuItem("GameObject/3D Object/Poseidon/Calm Water")]
+        public static PWater CreateCalmWaterObject(MenuCommand cmd)
+        {
+            GameObject g = new GameObject("Calm Water");
+            if (cmd != null && cmd.context != null)
+            {
+                GameObject root = cmd.context as GameObject;
+                GameObjectUtility.SetParentAndAlign(g, root);
+            }
 
-        //    PWater waterComponent = g.AddComponent<PWater>();
-        //    PWaterProfile profile = PWaterProfile.CreateInstance<PWaterProfile>();
-        //    string fileName = "WaterProfile_" + PCommon.GetUniqueID();
-        //    string filePath = string.Format("Assets/{0}.asset", fileName);
-        //    AssetDatabase.CreateAsset(profile, filePath);
+            PWater waterComponent = g.AddComponent<PWater>();
+            PWaterProfile profile = PWaterProfile.CreateInstance<PWaterProfile>();
+            string fileName = "WaterProfile_" + PCommon.GetUniqueID();
+            string filePath = string.Format("Assets/{0}.asset", fileName);
+            AssetDatabase.CreateAsset(profile, filePath);
 
-        //    profile.CopyFrom(PPoseidonSettings.Instance.CalmWaterProfile);
-        //    waterComponent.Profile = profile;
-        //    waterComponent.TileSize = new Vector2(100, 100);
+            profile.CopyFrom(PPoseidonSettings.Instance.CalmWaterProfile);
+            waterComponent.Profile = profile;
+            waterComponent.TileSize = new Vector2(100, 100);
 
-        //    return waterComponent;
-        //}
+            return waterComponent;
+        }
 
         //형모수정 ------------------------------------------------
 

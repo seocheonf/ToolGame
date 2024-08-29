@@ -719,24 +719,6 @@ namespace Pinwheel.Poseidon
             }
         }
 
-        //형모수정
-        /*
-        [SerializeField]
-        private PostProcessProfile ppProfile;
-        public PostProcessProfile PPProfile
-        {
-            get
-            {
-                return ppProfile;
-            }
-            set
-            {
-                ppProfile = value;
-            }
-        }
-        */
-        //
-
         public void Reset()
         {
             PWaterProfile defaultProfile = PPoseidonSettings.Instance.CalmWaterProfile;

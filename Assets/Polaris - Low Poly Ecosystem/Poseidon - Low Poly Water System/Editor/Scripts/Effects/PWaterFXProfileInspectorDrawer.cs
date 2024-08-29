@@ -1,5 +1,4 @@
-//형모수정
-/*
+
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -114,4 +113,3 @@ namespace Pinwheel.Poseidon.FX
         }
     }
 }
-*/
