@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Rendering;
 using UnityEngine.Serialization;
+using UnityEngine.Rendering.PostProcessing;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -716,6 +718,24 @@ namespace Pinwheel.Poseidon
                 return propertyBlock;
             }
         }
+
+        //형모수정
+        /*
+        [SerializeField]
+        private PostProcessProfile ppProfile;
+        public PostProcessProfile PPProfile
+        {
+            get
+            {
+                return ppProfile;
+            }
+            set
+            {
+                ppProfile = value;
+            }
+        }
+        */
+        //
 
         public void Reset()
         {

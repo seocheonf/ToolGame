@@ -13,12 +13,23 @@ using Pinwheel.TextureGraph;
 //형모수정
 using UnityEngine.Rendering.PostProcessing;
 
-
 namespace Pinwheel.Poseidon
 {
     [CustomEditor(typeof(PWater))]
     public class PWaterInspector : Editor
     {
+        /// <summary>
+        /// //////////////////////////
+        /// </summary>
+        private SerializedProperty _waterPPVolume;
+        //private SerializedProperty _waterPPProfile;
+
+
+
+
+
+
+
         private PWater water;
         private bool willDrawDebugGUI = false;
 
@@ -86,6 +97,12 @@ namespace Pinwheel.Poseidon
 
         private void OnEnable()
         {
+
+            _waterPPVolume = serializedObject.FindProperty("ppVolume");
+            //_waterPPProfile = serializedObject.FindProperty("ppProfile"); 
+
+
+
             LoadPrefs();
             water = target as PWater;
             if (water.Profile != null)
@@ -100,6 +117,15 @@ namespace Pinwheel.Poseidon
             SceneView.duringSceneGui += DuringSceneGUI;
             Camera.onPreCull += OnRenderCamera;
             RenderPipelineManager.beginCameraRendering += OnRenderCameraSRP;
+
+
+            /*
+            if(water.TryGetComponent(out PostProcessVolume result))
+            {
+                result = _waterPPVolume.objectReferenceValue as PostProcessVolume;
+                result.profile = _waterPPProfile.objectReferenceValue as PostProcessProfile;
+            }
+            */
         }
 
         private void OnDisable()
@@ -134,6 +160,7 @@ namespace Pinwheel.Poseidon
 
         public override void OnInspectorGUI()
         {
+
             if (water.transform.rotation != Quaternion.identity)
             {
                 string warning = "The water object is designed to work without rotation. Some features may not work correctly.";
@@ -181,6 +208,7 @@ namespace Pinwheel.Poseidon
             }
         }
 
+        
         //형모수정
         private void DrawEffectsGUI()
         {
@@ -211,20 +239,29 @@ namespace Pinwheel.Poseidon
                 if (GUILayout.Button("Add Effects"))
                 {
                     ppVolume = water.gameObject.AddComponent<PostProcessVolume>();
+                    
 
                     Collider col = water.gameObject.GetComponent<Collider>();
                     if (col == null)
                         ppVolume.gameObject.AddComponent<BoxCollider>().isTrigger = true;
 
+                    //serializedObject.Update();
+                    //serializedObject.ApplyModifiedProperties();
+
+                    //serializedObject.Update();//============
+                    //water.PPVolume = ppVolume;
+                    //_waterPPVolume.objectReferenceValue = ppVolume;
+                    //serializedObject.ApplyModifiedProperties();//============
+
                 }
                 GUI.enabled = true;
             });
+
         }
         private void DrawEffectsGUI_UnderWaterSet_Unique()
         {
             PostProcessVolume ppVolume = water.gameObject.GetComponent<PostProcessVolume>();
-            
-            if(ppVolume != null && ppVolume.profile != null)
+            if(ppVolume?.profile?.settings?.Count > 0)
             {
                 return;
             }
@@ -251,7 +288,10 @@ namespace Pinwheel.Poseidon
                 {
                     PostProcessVolume ppVolume = water.gameObject.GetComponent<PostProcessVolume>();
                     if (ppVolume == null)
+                    {
                         ppVolume = water.gameObject.AddComponent<PostProcessVolume>();
+                        ppVolume.profile = null;
+                    }
 
                     Collider col = water.gameObject.GetComponent<Collider>();
                     if(col == null)
@@ -266,7 +306,11 @@ namespace Pinwheel.Poseidon
                     string fileName = "UnderWaterEffect_Profile_" + PCommon.GetUniqueID();
                     string filePath = string.Format("Assets/Resources/OuterAssets/PostProcessEffects/{0}.asset", fileName);
                     AssetDatabase.CreateAsset(ppProfileUnderWaterSet, filePath);
-
+                    
+                    //serializedObject.Update();//============
+                    //water.PPVolume = ppVolume;
+                    //_waterPPVolume.objectReferenceValue = ppVolume;
+                    //serializedObject.ApplyModifiedProperties();//============
 
                 }
                 GUI.enabled = true;
@@ -276,7 +320,7 @@ namespace Pinwheel.Poseidon
         {
             PostProcessVolume ppVolume = water.gameObject.GetComponent<PostProcessVolume>();
 
-            if (ppVolume != null && ppVolume.profile != null)
+            if (ppVolume?.profile?.settings?.Count > 0)
             {
                 return;
             }
@@ -303,14 +347,29 @@ namespace Pinwheel.Poseidon
                 {
                     PostProcessVolume ppVolume = water.gameObject.GetComponent<PostProcessVolume>();
                     if (ppVolume == null)
+                    {
                         ppVolume = water.gameObject.AddComponent<PostProcessVolume>();
+                        ppVolume.profile = null;
+                    }
 
                     Collider col = water.gameObject.GetComponent<Collider>();
                     if (col == null)
                         ppVolume.gameObject.AddComponent<BoxCollider>().isTrigger = true;
 
                     ppVolume.profile = Resources.Load<PostProcessProfile>("OuterAssets/PostProcessEffects/UnderWater");
-                    
+
+                    //serializedObject.Update();//============
+                    //water.PPVolume = ppVolume;
+                    //Debug.Log(_waterPPVolume.objectReferenceValue);
+                    //Debug.Log((_waterPPVolume.objectReferenceValue as PostProcessVolume).profile);
+                    //_waterPPVolume.objectReferenceValue = ppVolume;
+                    //serializedObject.ApplyModifiedProperties();//============
+                    //Debug.Log(_waterPPVolume.objectReferenceValue);
+                    //Debug.Log((_waterPPVolume.objectReferenceValue as PostProcessVolume).profile);
+
+                    _waterPPVolume.objectReferenceValue = ppVolume;
+                    serializedObject.ApplyModifiedProperties();
+
                 }
                 GUI.enabled = true;
             });

@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Rendering.PostProcessing;
+
 #if POSEIDON_URP
 using UnityEngine.Rendering.Universal;
 #endif
@@ -17,6 +19,38 @@ namespace Pinwheel.Poseidon
     [ExecuteInEditMode]
     public class PWater : MonoBehaviour
     {
+        //형모수정
+
+        public int asdf;
+
+
+        [SerializeField]
+        private PostProcessVolume ppVolume;
+        public PostProcessVolume PPVolume
+        {
+            get
+            {
+                return ppVolume;
+            }
+            set
+            {
+                ppVolume = value;
+            }
+        }
+        [SerializeField]
+        private PostProcessProfile ppProfile;
+        public PostProcessProfile PPProfile
+        {
+            get
+            {
+                return ppProfile;
+            }
+            set
+            {
+                ppProfile = value;
+            }
+        }
+
         [SerializeField]
         private PWaterProfile profile;
         public PWaterProfile Profile
@@ -534,6 +568,7 @@ namespace Pinwheel.Poseidon
             GenerateMesh();
         }
 
+
         private void OnEnable()
         {
             Camera.onPreCull += OnPreCullCamera;
@@ -614,6 +649,7 @@ namespace Pinwheel.Poseidon
 
         private void Update()
         {
+
             //for (int i = 0; i < ObsoletedGameObject.Count; ++i)
             //{
             //    GameObject o = ObsoletedGameObject[i];
