@@ -2,7 +2,8 @@ public enum ForceType
 {
     VelocityForce,
     ImpulseForce,
-    DurationForce
+    DurationForce,
+    UnityDuration
 }
 
 public enum CrowdControlState

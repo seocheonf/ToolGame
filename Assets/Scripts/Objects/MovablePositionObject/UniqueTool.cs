@@ -1,3 +1,4 @@
+using SpecialInteraction;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -53,6 +54,19 @@ public abstract class UniqueTool : MovablePositionObject
         
         holdingFuncInteractionList = new List<FuncInteractionData>();
     }
+
+    public override void GetSpecialInteraction(WaterData source)
+    {
+        //들리지 않았을 때만 물의 효과를 받아라.
+        if (holdingCharacter == null)
+        {
+            //조류
+            AddForce(new ForceInfo(source.Direction * source.intensity, ForceType.DurationForce));
+            //부력
+            AddForce(new ForceInfo(Vector3.up * source.amount, ForceType.UnityDuration));
+        }
+    }
+
 
     public virtual void PutTool()
     {

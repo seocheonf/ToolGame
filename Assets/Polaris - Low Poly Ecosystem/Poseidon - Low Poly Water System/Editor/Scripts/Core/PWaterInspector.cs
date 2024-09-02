@@ -159,9 +159,9 @@ namespace Pinwheel.Poseidon
                 DrawReflectionSettingsGUI();
                 DrawRefractionSettingsGUI();
                 DrawCausticSettingsGUI();
-                //DrawEffectsGUI();
-                DrawEffectsGUI2();
                 //형모수정
+                DrawEffectsGUI();
+                //DrawEffectsGUI2();
                 //DrawEffectsGUI_UnderWaterSet_Unique();
                 //DrawEffectsGUI_UnderWaterSet_Standard();
 
@@ -220,6 +220,8 @@ namespace Pinwheel.Poseidon
                     Collider col = water.gameObject.GetComponent<Collider>();
                     if (col == null)
                         ppVolume.gameObject.AddComponent<BoxCollider>().isTrigger = true;
+                    else
+                        col.isTrigger = true;
 
                 }
                 GUI.enabled = true;

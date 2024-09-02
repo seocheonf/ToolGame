@@ -33,7 +33,6 @@ namespace SpecialInteraction
         public PhysicsInteractionObject origin;
     }
 
-    [RequireComponent(typeof(Collider), typeof(Rigidbody))]
     public class Wind : SpecialInteractionObject
     {
         [SerializeField]
@@ -112,10 +111,6 @@ namespace SpecialInteraction
                 result.GetSpecialInteraction(windData);
             }
         }
-
-        public override void GetSpecialInteraction(WindData source) {}
-        public override void GetSpecialInteraction(WaterData source) {}
-        public override void GetSpecialInteraction(FireData source) {}
 
     }
 

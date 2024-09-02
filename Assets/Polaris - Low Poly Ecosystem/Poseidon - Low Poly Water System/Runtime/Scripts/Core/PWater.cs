@@ -975,8 +975,8 @@ namespace Pinwheel.Poseidon
             if (Profile == null)
                 return;
             //형모수정--
-            //Camera currentCam = Camera.main;
-            Camera currentCam = Camera.current;
+            Camera currentCam = Camera.main;
+            //Camera currentCam = Camera.current;
             //형모수정--
             if (currentCam == null)
                 return;
