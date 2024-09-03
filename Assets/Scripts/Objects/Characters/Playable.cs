@@ -1,3 +1,4 @@
+using SpecialInteraction;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -76,9 +77,13 @@ public class Playable : Character, ICameraTarget
         GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraViewType.ThirdView);
 
     }
-
+    public Wind wind;
     protected void PlayableManagerUpdate(float deltaTime)
     {
+        if(Input.GetKeyDown(KeyCode.Return))
+        {
+            wind.WindSetActive(!wind.WindActive);
+        }
         ApplicationGeneralState();
         RunUpdate();
         RushCoolTimeUpdate(deltaTime);

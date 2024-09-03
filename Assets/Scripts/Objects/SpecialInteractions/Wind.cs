@@ -80,17 +80,17 @@ namespace SpecialInteraction
         protected override void Initialize()
         {
             base.Initialize();
-            GameManager.ObjectsFixedUpdate -= CustomFixedUpdate;
-            GameManager.ObjectsFixedUpdate += CustomFixedUpdate;
-            windCollider.enabled = true;
+
+            WindStart();
         }
 
         protected override void MyDestroy()
         {
             base.MyDestroy();
-            GameManager.ObjectsFixedUpdate -= CustomFixedUpdate;
-            windCollider.enabled = false;
+
+            WindDestory();
         }
+
 
         private void CustomFixedUpdate(float fixedDeltaTime)
         {
@@ -110,6 +110,46 @@ namespace SpecialInteraction
             {
                 result.GetSpecialInteraction(windData);
             }
+        }
+
+
+
+
+        [SerializeField]
+        ParticleSystem windParticle;
+
+        private bool windActive = false;
+        public bool WindActive => windActive;
+        public void WindSetActive(bool isActive)
+        {
+            if (isActive == this.windActive)
+                return;
+
+            if(isActive)
+            {
+                WindStart();
+            }
+            else
+            {
+                WindDestory();
+            }
+        }
+
+        protected void WindStart()
+        {
+            windActive = true;
+            GameManager.ObjectsFixedUpdate -= CustomFixedUpdate;
+            GameManager.ObjectsFixedUpdate += CustomFixedUpdate;
+            windCollider.enabled = true;
+            windParticle.Play();
+        }
+
+        protected void WindDestory()
+        {
+            windActive = false;
+            GameManager.ObjectsFixedUpdate -= CustomFixedUpdate;
+            windCollider.enabled = false;
+            windParticle.Stop();
         }
 
     }
