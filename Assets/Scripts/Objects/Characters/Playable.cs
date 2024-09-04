@@ -104,17 +104,17 @@ public class Playable : Character, ICameraTarget
         rushPower = defaultRushPower;
 
         GameManager.ObjectsUpdate -= PlayableManagerUpdate;
-        GameManager.ObjectsFixedUpdate -= PlayableManagerFixedUpdate;
+        GameManager.CharactersFixedUpdate -= PlayableManagerFixedUpdate;
 
         GameManager.ObjectsUpdate += PlayableManagerUpdate;
-        GameManager.ObjectsFixedUpdate += PlayableManagerFixedUpdate;
+        GameManager.CharactersFixedUpdate += PlayableManagerFixedUpdate;
     }
 
     protected override void MyDestroy()
     {
         base.MyDestroy();
         GameManager.ObjectsUpdate -= PlayableManagerUpdate;
-        GameManager.ObjectsFixedUpdate -= PlayableManagerFixedUpdate;
+        GameManager.CharactersFixedUpdate -= PlayableManagerFixedUpdate;
     }
 
     private void OnSit()

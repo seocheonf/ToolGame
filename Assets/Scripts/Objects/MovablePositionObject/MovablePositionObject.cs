@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MovablePositionObject : PhysicsInteractionObject
+public abstract class MovablePositionObject : PhysicsInteractionObject
 {
     /*
     protected float initialMass;

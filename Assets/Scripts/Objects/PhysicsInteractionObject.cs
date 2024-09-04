@@ -67,6 +67,11 @@ public abstract class PhysicsInteractionObject : MyComponent
 
     public virtual void GetSpecialInteraction(SpecialInteraction.WindData source)
     {
+        if(source.origin == this)
+        {
+            return;
+        }
+
         AddForce(new ForceInfo(source.Direction * source.intensity, ForceType.DurationForce));
     }
     public virtual void GetSpecialInteraction(SpecialInteraction.WaterData source)
@@ -157,17 +162,24 @@ public abstract class PhysicsInteractionObject : MyComponent
         initialMass = initialRigidbody.mass;
         currentMass = currentRigidbody.mass;
 
-        //기능 등록 작업
-        GameManager.ObjectsFixedUpdate -= MainFixedUpdate;
-        GameManager.ObjectsFixedUpdate += MainFixedUpdate;
+        RegisterFuncInInitialize();
     }
+
+    /// <summary>
+    /// 기능 등록 작업을 정의합니다.
+    /// </summary>
+    protected abstract void RegisterFuncInInitialize();
+
+    /// <summary>
+    /// 기능 해제 작업을 정의합니다.
+    /// </summary>
+    protected abstract void RemoveFuncInDestroy();
 
     protected override void MyDestroy()
     {
         base.MyDestroy();
 
-        //기능 해제 작업
-        GameManager.ObjectsFixedUpdate -= MainFixedUpdate;
+        RemoveFuncInDestroy();
     }
 
     public virtual Vector3 GetVelocity()

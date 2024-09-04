@@ -39,6 +39,8 @@ namespace SpecialInteraction
         WindData windData;
         [SerializeField]
         Collider windCollider;
+        [SerializeField]
+        bool initialOnOff;
         
         const float reactionRatio = 0.3f;
 
@@ -81,7 +83,10 @@ namespace SpecialInteraction
         {
             base.Initialize();
 
-            WindStart();
+            if (initialOnOff)
+                WindStart();
+            else
+                WindDestory();
         }
 
         protected override void MyDestroy()
@@ -116,7 +121,7 @@ namespace SpecialInteraction
 
 
         [SerializeField]
-        ParticleSystem windParticle;
+        ParticleSystem[] windParticle;
 
         private bool windActive = false;
         public bool WindActive => windActive;
@@ -141,7 +146,10 @@ namespace SpecialInteraction
             GameManager.ObjectsFixedUpdate -= CustomFixedUpdate;
             GameManager.ObjectsFixedUpdate += CustomFixedUpdate;
             windCollider.enabled = true;
-            windParticle.Play();
+            foreach (ParticleSystem each in windParticle)
+            {
+                each.Play();
+            }
         }
 
         protected void WindDestory()
@@ -149,7 +157,10 @@ namespace SpecialInteraction
             windActive = false;
             GameManager.ObjectsFixedUpdate -= CustomFixedUpdate;
             windCollider.enabled = false;
-            windParticle.Stop();
+            foreach (ParticleSystem each in windParticle)
+            {
+                each.Stop();
+            }
         }
 
     }

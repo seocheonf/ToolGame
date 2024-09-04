@@ -12,5 +12,14 @@ namespace SpecialInteraction
         public override void GetSpecialInteraction(WindData source) { }
         public override void GetSpecialInteraction(WaterData source) { }
         public override void GetSpecialInteraction(FireData source) { }
+
+        protected override void RegisterFuncInInitialize()
+        {
+
+        }
+        protected override void RemoveFuncInDestroy()
+        {
+
+        }
     }
 }

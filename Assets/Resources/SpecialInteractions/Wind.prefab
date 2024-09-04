@@ -14349,7 +14349,9 @@ MonoBehaviour:
     offset: {x: 0, y: 0.70710677, z: 0, w: 0.70710677}
     origin: {fileID: 0}
   windCollider: {fileID: 7559342923328246073}
-  windParticle: {fileID: 1922440048622393769}
+  initialOnOff: 1
+  windParticle:
+  - {fileID: 1922440048622393769}
 --- !u!54 &163326893751568281
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -49,6 +49,7 @@ public class GameManager : MonoBehaviour
 
     //매 FixedUpdate마다 지속적으로 해야할 일들의 묶음
     public static FixedUpdateFunction ManagersFixedUpdate;
+    public static FixedUpdateFunction CharactersFixedUpdate;
     public static FixedUpdateFunction ObjectsFixedUpdate;
 
     //매 LateUpdate마다 지속적으로 해야할 일들의 묶음
@@ -210,7 +211,11 @@ public class GameManager : MonoBehaviour
             ObjectsStart?.Invoke();
             ObjectsStart = null;
 
-            if (!isScriptObjectsUpdateStop) ObjectsFixedUpdate?.Invoke(Time.fixedDeltaTime);
+            if (!isScriptObjectsUpdateStop)
+            {
+                CharactersFixedUpdate?.Invoke(Time.fixedDeltaTime);
+                ObjectsFixedUpdate?.Invoke(Time.fixedDeltaTime);
+            }
             if (!isScriptManagersUpdateStop) ManagersFixedUpdate?.Invoke(Time.fixedDeltaTime);
         }
 

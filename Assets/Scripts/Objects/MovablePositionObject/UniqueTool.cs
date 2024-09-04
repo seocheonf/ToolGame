@@ -208,4 +208,14 @@ public abstract class UniqueTool : MovablePositionObject
         FakeCenterPosition = tempt;
     }
 
+
+    protected override void RegisterFuncInInitialize()
+    {
+        GameManager.ObjectsFixedUpdate -= MainFixedUpdate;
+        GameManager.ObjectsFixedUpdate += MainFixedUpdate;
+    }
+    protected override void RemoveFuncInDestroy()
+    {
+        GameManager.ObjectsFixedUpdate -= MainFixedUpdate;
+    }
 }
