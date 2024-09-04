@@ -25,9 +25,9 @@ public class Toast : MovablePositionObject
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.GetComponent<Playable>())
+        if (collision.collider.GetComponent<Character>())
         {
-            collision.collider.GetComponent<Playable>().SetCrowdControl(giveCrowdControlState, duration);
+            collision.collider.GetComponent<Character>().SetCrowdControl(giveCrowdControlState, duration);
         }
     }
 

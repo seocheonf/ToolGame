@@ -118,7 +118,8 @@ public class Playable : Character, ICameraTarget
 
     private void OnSit()
     {
-        Sit();
+        if (currentGeneralState == GeneralState.Normal) Sit();
+        else UnSit();
     }
 
     private void Sit()

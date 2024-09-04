@@ -88,7 +88,6 @@ public class Character : MovablePositionObject
     }
 
     //경사로인지 확인하는 변수들 (추가)
-    [SerializeField]
     private GameObject ground;
     protected Ray moveRay;
     Dictionary<GameObject, Vector3> attachedCollision = new();
@@ -215,9 +214,8 @@ public class Character : MovablePositionObject
 
     protected virtual void Jump()
     {
-        //TODO : 토스트에서 적절하게 점프해서 맞은채로 날라가면 무한다이노점프가 가능함 이게 뭐고 (아직 해결중임)
         Debug.Log(IsGround);
-        if (IsGround)
+        if (IsGround && attachedCollision.Count != 0)
         {
             Vector3 result = currentRigidbody.velocity;
             result.y = jumpPower;
@@ -256,7 +254,7 @@ public class Character : MovablePositionObject
     }
 
 
-    protected void MoveHorizontalityFixedUpdate(float fixedDeltaTime)
+    protected virtual void MoveHorizontalityFixedUpdate(float fixedDeltaTime)
     {
         //CheckWantMoveDirection();
         currentMoveDirection = (wantMoveDirection.x * transform.right + wantMoveDirection.z * transform.forward).normalized;

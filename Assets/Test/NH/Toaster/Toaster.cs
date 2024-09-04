@@ -22,7 +22,7 @@ public class Toaster : LimitPositionObject
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<Playable>())
+        if (other.GetComponent<Character>())
         {
             GameObject freshToast;
             freshToast = Instantiate(toast, toastMakeTransform);
