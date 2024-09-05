@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Button : LimitPositionObject, IOnOffFuncInteraction
+public class DurationButton : LimitPositionObject, IOnOffFuncInteraction
 {
     [SerializeField] GameObject buttonSwitch;
     [SerializeField] LimitPositionObject targetObject;
