@@ -84,7 +84,7 @@ public abstract class PhysicsInteractionObject : MyComponent
     }
     public virtual void GetSpecialInteraction(SpecialInteraction.FireData source)
     {
-
+        
     }
 
     public virtual void AccelDownForce(float ratio)
