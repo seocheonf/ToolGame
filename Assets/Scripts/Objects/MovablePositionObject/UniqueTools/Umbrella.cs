@@ -713,6 +713,12 @@ public class Umbrella : UniqueTool
 
     public override void PutTool()
     {
+        if (holdingCharacter == null)
+        {
+            Debug.LogError("도구가 들려있지 않은데 놓지 마세요!!");
+            return;
+        }
+
         PutToolTask();
 
         //타겟 리지드바디 초기화
@@ -730,6 +736,11 @@ public class Umbrella : UniqueTool
 
     public override void PickUpTool(Character source)
     {
+        if (holdingCharacter != null)
+        {
+            Debug.LogError("도구가 이미 들려있는데 들려고 하지 마세요!!");
+            return;
+        }
 
         //기존 본인 설정 세팅
         transform.parent = source.transform;

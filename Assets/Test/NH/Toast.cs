@@ -31,5 +31,12 @@ public class Toast : MovablePositionObject
         }
     }
 
-    
+    protected override void RegisterFuncInInitialize()
+    {
+
+    }
+    protected override void RemoveFuncInDestroy()
+    {
+
+    }
 }

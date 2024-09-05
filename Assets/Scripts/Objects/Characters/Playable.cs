@@ -1,3 +1,4 @@
+using SpecialInteraction;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -73,12 +74,16 @@ public class Playable : Character, ICameraTarget
         FuncInteractionData putTools = new(KeyCode.Mouse1, "도구 놓는 기능", PutTool, null, null);
         ControllerManager.AddInputFuncInteraction(putTools);
 
-        GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraType.ThirdView);
+        GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraViewType.ThirdView);
 
     }
-
+    public Wind wind;
     protected void PlayableManagerUpdate(float deltaTime)
     {
+        if(Input.GetKeyDown(KeyCode.Return))
+        {
+            wind.WindSetActive(!wind.WindActive);
+        }
         ApplicationGeneralState();
         RunUpdate();
         RushCoolTimeUpdate(deltaTime);
@@ -99,17 +104,17 @@ public class Playable : Character, ICameraTarget
         rushPower = defaultRushPower;
 
         GameManager.ObjectsUpdate -= PlayableManagerUpdate;
-        GameManager.ObjectsFixedUpdate -= PlayableManagerFixedUpdate;
+        GameManager.CharactersFixedUpdate -= PlayableManagerFixedUpdate;
 
         GameManager.ObjectsUpdate += PlayableManagerUpdate;
-        GameManager.ObjectsFixedUpdate += PlayableManagerFixedUpdate;
+        GameManager.CharactersFixedUpdate += PlayableManagerFixedUpdate;
     }
 
     protected override void MyDestroy()
     {
         base.MyDestroy();
         GameManager.ObjectsUpdate -= PlayableManagerUpdate;
-        GameManager.ObjectsFixedUpdate -= PlayableManagerFixedUpdate;
+        GameManager.CharactersFixedUpdate -= PlayableManagerFixedUpdate;
     }
 
     private void OnSit()

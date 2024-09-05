@@ -33,13 +33,14 @@ namespace SpecialInteraction
         public PhysicsInteractionObject origin;
     }
 
-    [RequireComponent(typeof(Collider), typeof(Rigidbody))]
     public class Wind : SpecialInteractionObject
     {
         [SerializeField]
         WindData windData;
         [SerializeField]
         Collider windCollider;
+        [SerializeField]
+        bool initialOnOff;
         
         const float reactionRatio = 0.3f;
 
@@ -81,17 +82,20 @@ namespace SpecialInteraction
         protected override void Initialize()
         {
             base.Initialize();
-            GameManager.ObjectsFixedUpdate -= CustomFixedUpdate;
-            GameManager.ObjectsFixedUpdate += CustomFixedUpdate;
-            windCollider.enabled = true;
+
+            if (initialOnOff)
+                WindStart();
+            else
+                WindDestory();
         }
 
         protected override void MyDestroy()
         {
             base.MyDestroy();
-            GameManager.ObjectsFixedUpdate -= CustomFixedUpdate;
-            windCollider.enabled = false;
+
+            WindDestory();
         }
+
 
         private void CustomFixedUpdate(float fixedDeltaTime)
         {
@@ -113,9 +117,51 @@ namespace SpecialInteraction
             }
         }
 
-        public override void GetSpecialInteraction(WindData source) {}
-        public override void GetSpecialInteraction(WaterData source) {}
-        public override void GetSpecialInteraction(FireData source) {}
+
+
+
+        [SerializeField]
+        ParticleSystem[] windParticle;
+
+        private bool windActive = false;
+        public bool WindActive => windActive;
+        public void WindSetActive(bool isActive)
+        {
+            if (isActive == this.windActive)
+                return;
+
+            if(isActive)
+            {
+                WindStart();
+            }
+            else
+            {
+                WindDestory();
+            }
+        }
+
+        protected void WindStart()
+        {
+            windActive = true;
+            GameManager.ObjectsFixedUpdate -= CustomFixedUpdate;
+            GameManager.ObjectsFixedUpdate += CustomFixedUpdate;
+            windCollider.enabled = true;
+            foreach (ParticleSystem each in windParticle)
+            {
+                each.Play();
+            }
+        }
+
+        protected void WindDestory()
+        {
+            windActive = false;
+            GameManager.ObjectsFixedUpdate -= CustomFixedUpdate;
+            windCollider.enabled = false;
+            foreach (ParticleSystem each in windParticle)
+            {
+                each.Stop();
+            }
+        }
 
     }
 

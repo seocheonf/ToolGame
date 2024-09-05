@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using UnityEngine;
+using UnityEngine.Timeline;
 
 public class ForceInfo
 {
@@ -41,7 +42,7 @@ public abstract class PhysicsInteractionObject : MyComponent
     protected float currentMass;
     public float CurrentMass => currentMass;
 
-    const float massRatio = 0.01f;
+    const float massRatio = 0.05f;
 
     private void Awake()
     {
@@ -55,6 +56,10 @@ public abstract class PhysicsInteractionObject : MyComponent
         Initialize();
     }
 
+    /// <summary>
+    /// Main이 되는 FixedUpdate. 기본적으로 대기중인 힘을 적용하는 기능이 구현되어 있다.
+    /// </summary>
+    /// <param name="fixedDeltaTime">1fixed frame당 시간</param>
     protected virtual void MainFixedUpdate(float fixedDeltaTime)
     {
         ApplyForceQueue();
@@ -62,11 +67,20 @@ public abstract class PhysicsInteractionObject : MyComponent
 
     public virtual void GetSpecialInteraction(SpecialInteraction.WindData source)
     {
-        AddForce(new ForceInfo(source.Direction * source.intensity, ForceType.VelocityForce));
+        if(source.origin == this)
+        {
+            return;
+        }
+
+        AddForce(new ForceInfo(source.Direction * source.intensity, ForceType.DurationForce));
     }
     public virtual void GetSpecialInteraction(SpecialInteraction.WaterData source)
     {
-
+        //조류
+        AddForce(new ForceInfo(source.Direction * source.intensity, ForceType.DurationForce));
+        //부력
+        AddForce(new ForceInfo(Vector3.up * source.amount, ForceType.UnityDuration));
+        //AddForce(new ForceInfo(Vector3.up * (source.amount / CurrentMass) * (GetDownSpeed() * -1 * 0.5f), ForceType.DurationForce));
     }
     public virtual void GetSpecialInteraction(SpecialInteraction.FireData source)
     {
@@ -111,6 +125,9 @@ public abstract class PhysicsInteractionObject : MyComponent
             case ForceType.DurationForce:
                 AddForceDuration(direction);
                 break;
+            case ForceType.UnityDuration:
+                AddForceUnityDuration(direction);
+                break;
         }
     }
     protected void ApplyForceQueue()
@@ -127,11 +144,15 @@ public abstract class PhysicsInteractionObject : MyComponent
     }
     private void AddForceImpulse(Vector3 direction)
     {
-
+        currentRigidbody.velocity += direction * 2f;
     }
     private void AddForceDuration(Vector3 direction)
     {
-
+        currentRigidbody.velocity += direction * 0.2f; 
+    }
+    private void AddForceUnityDuration(Vector3 direction)
+    {
+        currentRigidbody.AddForce(direction, ForceMode.Acceleration);
     }
 
     protected virtual void Initialize()
@@ -141,17 +162,24 @@ public abstract class PhysicsInteractionObject : MyComponent
         initialMass = initialRigidbody.mass;
         currentMass = currentRigidbody.mass;
 
-        //기능 등록 작업
-        GameManager.ObjectsFixedUpdate -= MainFixedUpdate;
-        GameManager.ObjectsFixedUpdate += MainFixedUpdate;
+        RegisterFuncInInitialize();
     }
+
+    /// <summary>
+    /// 기능 등록 작업을 정의합니다.
+    /// </summary>
+    protected abstract void RegisterFuncInInitialize();
+
+    /// <summary>
+    /// 기능 해제 작업을 정의합니다.
+    /// </summary>
+    protected abstract void RemoveFuncInDestroy();
 
     protected override void MyDestroy()
     {
         base.MyDestroy();
 
-        //기능 해제 작업
-        GameManager.ObjectsFixedUpdate -= MainFixedUpdate;
+        RemoveFuncInDestroy();
     }
 
     public virtual Vector3 GetVelocity()

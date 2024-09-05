@@ -462,6 +462,14 @@ public class Character : MovablePositionObject
     }
 
 
-
+    protected override void RegisterFuncInInitialize()
+    {
+        GameManager.CharactersFixedUpdate -= MainFixedUpdate;
+        GameManager.CharactersFixedUpdate += MainFixedUpdate;
+    }
+    protected override void RemoveFuncInDestroy()
+    {
+        GameManager.CharactersFixedUpdate -= MainFixedUpdate;
+    }
 
 }

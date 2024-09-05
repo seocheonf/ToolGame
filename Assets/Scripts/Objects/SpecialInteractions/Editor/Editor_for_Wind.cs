@@ -7,7 +7,7 @@ using UnityEngine;
 using SpecialInteraction;
 
 [CustomEditor(typeof(Wind))]
-public class DirectionSetting : Editor
+public class DirectionSettingWind : Editor
 {
     private void OnSceneGUI()
     {

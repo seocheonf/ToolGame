@@ -29,7 +29,7 @@ public class HngmoCharacter : Character, ICameraTarget
 
         ControllerManager.AddInputFuncInteraction(AboutTool);
 
-        GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraType.ThirdView);
+        GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraViewType.ThirdView);
     }
 
     protected override void MyDestroy()

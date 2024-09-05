@@ -7,6 +7,7 @@ public class test : MonoBehaviour
 {
     public MeshCollider target;
     public TextMeshProUGUI textTa;
+    public int asdf;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,5 +19,13 @@ public class test : MonoBehaviour
     {
 
         //textTa.text = $"{target.isTrigger} / {target.enabled} / {target.material} / {target.convex} / {target.sharedMesh} / {target.contactOffset}";
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.attachedRigidbody != null)
+        {
+            other.attachedRigidbody.AddForce(Vector3.up * asdf);
+        }
     }
 }

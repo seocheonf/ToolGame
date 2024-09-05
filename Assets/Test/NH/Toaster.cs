@@ -23,4 +23,5 @@ public class Toaster : LimitPositionObject
             Destroy(freshToast, 3f);
         }
     }
+
 }

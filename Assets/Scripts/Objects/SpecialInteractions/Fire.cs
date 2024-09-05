@@ -11,6 +11,13 @@ namespace SpecialInteraction
 
     public class Fire : SpecialInteractionObject
     {
-
+        protected override void RegisterFuncInInitialize()
+        {
+            
+        }
+        protected override void RemoveFuncInDestroy()
+        {
+            
+        }
     }
 }

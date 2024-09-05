@@ -2,7 +2,8 @@ public enum ForceType
 {
     VelocityForce,
     ImpulseForce,
-    DurationForce
+    DurationForce,
+    UnityDuration
 }
 
 public enum CrowdControlState
@@ -20,7 +21,7 @@ public enum GeneralState
     Length
 }
 
-public enum CameraType
+public enum CameraViewType
 {
     Default,
     FirstView,

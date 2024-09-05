@@ -17,9 +17,9 @@ public class CameraManager : Manager
     private UpdateFunction CameraLateUpdate;
 
     //카메라의 타입. 타입에 따라 행위가 달라짐
-    private CameraType currentCameraType;
+    private CameraViewType currentCameraType;
     //카메라 타입이 변함에 따라, 카메라가 수행해야 할 일도 전환되어야 함.
-    private CameraType CurrentCameraType
+    private CameraViewType CurrentCameraType
     {
         get
         {
@@ -29,12 +29,12 @@ public class CameraManager : Manager
         {
             switch(value)
             {
-                case CameraType.FirstView :
+                case CameraViewType.FirstView :
                     {
                         CameraLateUpdate = FirstViewCameraLateUpdate;
                         break;
                     }
-                case CameraType.ThirdView:
+                case CameraViewType.ThirdView:
                     {
                         CameraLateUpdate = ThirdViewCameraLateUpdate;
                         break;
@@ -86,7 +86,7 @@ public class CameraManager : Manager
     {
         mainCamera = Camera.main;
         
-        currentCameraType = CameraType.Default;
+        currentCameraType = CameraViewType.Default;
 
         cameraTargetLStack = new List<CameraTargetInfo>();
 
@@ -97,7 +97,7 @@ public class CameraManager : Manager
     /// 카메라 타입을 설정하는 함수
     /// </summary>
     /// <param name="cameraType">설정하고자 하는 카메라 타입</param>
-    public void CameraSet(CameraType cameraType)
+    public void CameraSet(CameraViewType cameraType)
     {
         CurrentCameraType = cameraType;
 
@@ -117,7 +117,7 @@ public class CameraManager : Manager
     /// </summary>
     /// <param name="cameraTarget">추가하고자 하는 카메라 타겟</param>
     /// <param name="cameraType">설정하고자 하는 카메라 타입</param>
-    public void CameraSet(ICameraTarget cameraTarget, CameraType cameraType)
+    public void CameraSet(ICameraTarget cameraTarget, CameraViewType cameraType)
     {
         CameraTargetInfo info = new CameraTargetInfo(cameraTarget, cameraType);
 
@@ -151,7 +151,7 @@ public class CameraManager : Manager
         if(target == null)
         {
             Debug.LogError("지우려는 대상이 없어요!");
-            CurrentCameraType = CameraType.Default;
+            CurrentCameraType = CameraViewType.Default;
             return;
         }
 #endif
@@ -171,7 +171,7 @@ public class CameraManager : Manager
         if (tempt == 0)
         {
             //하나라도 없다면
-            CurrentCameraType = CameraType.Default;
+            CurrentCameraType = CameraViewType.Default;
         }
         else
         {
@@ -201,7 +201,7 @@ public class CameraManager : Manager
         if (tempt == 0)
         {
             //하나라도 없다면
-            CurrentCameraType = CameraType.Default;
+            CurrentCameraType = CameraViewType.Default;
         }
         else
         {
@@ -388,9 +388,9 @@ public class CustomViewCameraData
 public class CameraTargetInfo
 {
     public ICameraTarget cameraTarget;
-    public CameraType cameraType;
+    public CameraViewType cameraType;
 
-    public CameraTargetInfo(ICameraTarget cameraTarget, CameraType cameraType)
+    public CameraTargetInfo(ICameraTarget cameraTarget, CameraViewType cameraType)
     {
         this.cameraTarget = cameraTarget;
         this.cameraType = cameraType;

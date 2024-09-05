@@ -1,3 +1,4 @@
+using SpecialInteraction;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,18 +36,46 @@ public abstract class UniqueTool : MovablePositionObject
         }
     }
 
+    protected virtual void Reset()
+    {
+        GameObject child = new GameObject("CastTarget");
+        child.layer = LayerMask.NameToLayer("Cast_UniqueTool");
+        child.transform.parent = transform;
+        child.transform.localPosition = Vector3.zero;
+        child.AddComponent<SphereCollider>().isTrigger = true;
+    }
+
 #endif
+
 
     protected override void Initialize()
     {
         base.Initialize();
-
+        
         holdingFuncInteractionList = new List<FuncInteractionData>();
-
     }
+
+    public override void GetSpecialInteraction(WaterData source)
+    {
+        //들리지 않았을 때만 물의 효과를 받아라.
+        if (holdingCharacter == null)
+        {
+            //조류
+            AddForce(new ForceInfo(source.Direction * source.intensity, ForceType.DurationForce));
+            //부력
+            AddForce(new ForceInfo(Vector3.up * source.amount, ForceType.UnityDuration));
+        }
+    }
+
 
     public virtual void PutTool()
     {
+        if(holdingCharacter == null)
+        {
+            Debug.LogError("도구가 들려있지 않은데 놓지 마세요!!");
+            return;
+        }
+
         //타겟 리지드바디 초기화
         currentRigidbody = initialRigidbody;
 
@@ -69,6 +98,12 @@ public abstract class UniqueTool : MovablePositionObject
     }
     public virtual void PickUpTool(Character source)
     {
+        if(holdingCharacter != null)
+        {
+            Debug.LogError("도구가 이미 들려있는데 들려고 하지 마세요!!");
+            return;
+        }
+
         //기존 본인 설정 세팅
         transform.parent = source.transform;
         holdingCharacter = source;
@@ -173,4 +208,14 @@ public abstract class UniqueTool : MovablePositionObject
         FakeCenterPosition = tempt;
     }
 
+
+    protected override void RegisterFuncInInitialize()
+    {
+        GameManager.ObjectsFixedUpdate -= MainFixedUpdate;
+        GameManager.ObjectsFixedUpdate += MainFixedUpdate;
+    }
+    protected override void RemoveFuncInDestroy()
+    {
+        GameManager.ObjectsFixedUpdate -= MainFixedUpdate;
+    }
 }
