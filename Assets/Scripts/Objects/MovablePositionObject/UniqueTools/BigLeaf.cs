@@ -152,7 +152,7 @@ public class BigLeaf : UniqueTool
     private void ChangeBigLeafDirectionSight(float fixedDeltaTime)
     {
         //캐릭터의 시야를 바라보게 설정
-        Vector3 tempt = holdingCharacter.CurrentSightEulerAngle;
+        Vector3 tempt = holdingCharacter.CurrentSightEulerAngle_Interaction;
         //Debug.Log($"{tempt} / {holdingCharacter.transform.eulerAngles}");
 
         //Debug.Log($"{tempt.y - holdingCharacter.transform.eulerAngles.y}");

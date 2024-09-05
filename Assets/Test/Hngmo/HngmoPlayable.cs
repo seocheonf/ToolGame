@@ -22,7 +22,7 @@ public class HngmoPlayable : Playable
     }
 
 
-    public override Vector3 CurrentSightEulerAngle
+    public override Vector3 CurrentSightEulerAngle_Origin
     {
         get
         {

@@ -17,6 +17,7 @@ public abstract class UniqueTool : MovablePositionObject
     {
         get
         {
+            Debug.Log(transform.eulerAngles);
             return transform.rotation * catchedLocalPosition;
         }
     }

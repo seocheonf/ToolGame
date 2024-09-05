@@ -236,14 +236,14 @@ public class Umbrella : UniqueTool
             return;
 
         //holdingCharacter.CurrentSightEulerAngle <= 이놈은 시야각을 나타내는 오일러 각
-        Vector3 sightForward = holdingCharacter.CurrentSightForward;
+        Vector3 sightForward = holdingCharacter.CurrentSightForward_Interaction;
 
         {
             Gizmos.color = Color.red;
 
             Gizmos.DrawLine(FakeCenterPosition, FakeCenterPosition + sightForward * 5f);
 
-            Matrix4x4 rotationMatrix = Matrix4x4.TRS(FakeCenterPosition + sightForward * 5f, Quaternion.Euler(holdingCharacter.CurrentSightEulerAngle), Vector3.one);
+            Matrix4x4 rotationMatrix = Matrix4x4.TRS(FakeCenterPosition + sightForward * 5f, Quaternion.Euler(holdingCharacter.CurrentSightEulerAngle_Interaction), Vector3.one);
             Gizmos.matrix = rotationMatrix;
 
             Gizmos.DrawWireCube(Vector3.zero, Vector3.one * 4);
@@ -258,8 +258,8 @@ public class Umbrella : UniqueTool
         if (holdingCharacter == null)
             return;
         
-        Vector3 sightForward = holdingCharacter.CurrentSightForward;
-        Collider[] hithit = Physics.OverlapBox(FakeCenterPosition + sightForward * 5f, Vector3.one * 2, holdingCharacter.CurrentSightQuaternionAngle);
+        Vector3 sightForward = holdingCharacter.CurrentSightForward_Interaction;
+        Collider[] hithit = Physics.OverlapBox(FakeCenterPosition + sightForward * 5f, Vector3.one * 2, holdingCharacter.CurrentSightQuaternionAngle_Interaction);
 
         //가장 가까운 놈 캐칭
         Vector3 dir = Vector3.one * float.MaxValue;
@@ -560,7 +560,7 @@ public class Umbrella : UniqueTool
     private void ChangeUmbrellaDirectionSight()
     {
         //캐릭터의 시야를 바라보게 설정
-        SetFakeCenterEulerAngle(holdingCharacter.CurrentSightEulerAngle);
+        SetFakeCenterEulerAngle(holdingCharacter.CurrentSightEulerAngle_Interaction);
         //대상의 방향을 추가로 조정하는 과정. 기본 우산의 forward를 고려하는 것과, 추가 회전을 통해 눈에 잘 보이게 하기 위한 작업
         SetFakeCenterQuaternionProductRotation(Quaternion.Euler(-120, 22.5f, 0));
 
