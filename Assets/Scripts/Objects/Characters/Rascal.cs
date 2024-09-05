@@ -6,7 +6,6 @@ public class Rascal : Character
 {
     [SerializeField] Vector2 center;
     [SerializeField] Collider playerDetectArea;
-    [SerializeField] protected GameObject player;
     [SerializeField] float radius;
     [SerializeField] float maxCoolTime;
 
@@ -72,7 +71,6 @@ public class Rascal : Character
                 currentRigidbody.rotation = Quaternion.identity;
                 currentRigidbody.constraints = RigidbodyConstraints.FreezeRotation;
                 if ((destination - new Vector3(transform.position.x, 0, transform.position.z)).magnitude <= 0.25f) GetRandomPos();
-                if (isPlayerIn) MoveForPlayer();
                 break;
             case GeneralState.CrowdControl:
                 ApplicationCrowdControl();
@@ -98,6 +96,7 @@ public class Rascal : Character
         if (other.GetComponent<Playable>())
         {
             isPlayerIn = true;
+            MoveForPlayer(other.GetComponent<Playable>());
         }
     }
     
@@ -106,6 +105,7 @@ public class Rascal : Character
         if (other.GetComponent<Playable>())
         {
             isPlayerIn = true;
+            MoveForPlayer(other.GetComponent<Playable>());
         }
     }
     
@@ -117,7 +117,7 @@ public class Rascal : Character
         GetRandomPos();
     }
 
-    void MoveForPlayer()
+    void MoveForPlayer(Playable player)
     {
         if (isPlayerIn)
         {

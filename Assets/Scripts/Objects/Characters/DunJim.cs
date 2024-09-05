@@ -5,6 +5,7 @@ using UnityEngine;
 public class DunJim : Rascal
 {
     FixedJoint joint = null;
+    protected Playable throwPlayer;
     [SerializeField] Transform grabPosition;
     [SerializeField] float wantUpPower;
     [SerializeField] float wantPower;
@@ -12,10 +13,14 @@ public class DunJim : Rascal
     
     private void OnCollisionEnter(Collision collision)
     {
-        Playable player = collision.collider.GetComponent<Playable>();
+        if (!throwPlayer)
+        {
+            throwPlayer = collision.collider.GetComponent<Playable>();
+        }
+
         if (collision.collider.GetComponent<Playable>())
         {
-            ThrowPlayer(player);   
+            ThrowPlayer(throwPlayer);
         }
     }
 
@@ -52,6 +57,6 @@ public class DunJim : Rascal
 
     private void Update()
     {
-        ThrowTimeUpdate(player.GetComponent<Playable>(), Time.deltaTime);
+        ThrowTimeUpdate(throwPlayer, Time.deltaTime);
     }
 }

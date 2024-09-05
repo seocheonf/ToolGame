@@ -7,7 +7,7 @@ public class RespawnArea : MonoBehaviour
     public Transform respawn; 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<Rigidbody>())
+        if (other.GetComponent<Character>())
         {
             other.transform.position = respawn.transform.position;
             other.GetComponent<Rigidbody>().velocity = Vector3.zero;
