@@ -10,6 +10,7 @@ public class RespawnArea : MonoBehaviour
         if (other.GetComponent<Rigidbody>())
         {
             other.transform.position = respawn.transform.position;
+            other.GetComponent<Rigidbody>().velocity = Vector3.zero;
         }
     }
 }

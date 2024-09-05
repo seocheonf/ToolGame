@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 //적용중인 상태이상에 대한 정보
@@ -87,7 +88,6 @@ public class Character : MovablePositionObject
     }
 
     //경사로인지 확인하는 변수들 (추가)
-    [SerializeField]
     private GameObject ground;
     protected Ray moveRay;
     Dictionary<GameObject, Vector3> attachedCollision = new();
@@ -214,7 +214,8 @@ public class Character : MovablePositionObject
 
     protected virtual void Jump()
     {
-        if (IsGround)
+        Debug.Log(IsGround);
+        if (IsGround && attachedCollision.Count != 0)
         {
             Vector3 result = currentRigidbody.velocity;
             result.y = jumpPower;
@@ -253,9 +254,9 @@ public class Character : MovablePositionObject
     }
 
 
-    protected void MoveHorizontalityFixedUpdate(float fixedDeltaTime)
+    protected virtual void MoveHorizontalityFixedUpdate(float fixedDeltaTime)
     {
-        CheckWantMoveDirection();
+        //CheckWantMoveDirection();
         currentMoveDirection = (wantMoveDirection.x * transform.right + wantMoveDirection.z * transform.forward).normalized;
         //transform.position += FixedUpdate_Calculate_Move();
         currentRigidbody.MovePosition(transform.position + FixedUpdate_Calculate_Move());
@@ -356,18 +357,23 @@ public class Character : MovablePositionObject
 
     private void OnCollisionEnter(Collision collision)
     {
-        attachedCollision.Add(collision.gameObject, collision.GetContact(0).normal);
+        //땅이 아닌 레버나 버튼이나 가스레인지 장식물 (원형기둥) 에 닿을때마다 이미 들어있으니 가세요라 오류 수정해야됨 (해결함)
+        if (collision.relativeVelocity.sqrMagnitude > 15) { return; } 
+        if (attachedCollision.ContainsKey(collision.gameObject)) { }
+        else attachedCollision.Add(collision.gameObject, collision.GetContact(0).normal);
         CalculateGround();
+        Debug.Log($"{collision.relativeVelocity.sqrMagnitude} Enter");
     }
 
     private void OnCollisionStay(Collision collision)
     {
+        //명륜진사갈비급 오브젝트 콜라이더 Dictionary 무한 오류 제공 이벤트 수정해야됨 (근데 없다고 함 < ?????????) (해결함)
         Vector3 normal = collision.GetContact(0).normal;
-        if (attachedCollision[collision.gameObject] != null)
+        if (!attachedCollision.ContainsKey(collision.gameObject)) // <= if (attachedCollision[collision.gameObject] != null) 원래 문구
         {
             attachedCollision[collision.gameObject] = normal;
-            CalculateGround();
-        }
+        }        
+        CalculateGround();
     }
 
     private void OnCollisionExit(Collision collision)
