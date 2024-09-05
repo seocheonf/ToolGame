@@ -76,13 +76,8 @@ public class Playable : Character, ICameraTarget
 
         GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraViewType.ThirdView);
     }
-    public Wind wind;
     protected void PlayableManagerUpdate(float deltaTime)
     {
-        if(Input.GetKeyDown(KeyCode.Return))
-        {
-            wind.WindSetActive(!wind.WindActive);
-        }
         ApplicationGeneralState();
         RunUpdate();
         RushCoolTimeUpdate(deltaTime);
@@ -188,7 +183,7 @@ public class Playable : Character, ICameraTarget
     {
         RaycastHit hit;
         int layerMask = (1 << LayerMask.NameToLayer("Cast_UniqueTool")) + (1 << LayerMask.NameToLayer("Block"));
-        if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward, out hit, sightForwardLength, layerMask))
+        if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward_Interaction, out hit, sightForwardLength))
         {
             currentTargetUniqueTool = hit.collider.GetComponentInParent<UniqueTool>();
             PickUpTool(currentTargetUniqueTool);
@@ -235,7 +230,7 @@ public class Playable : Character, ICameraTarget
     private void OnSwitchFuncInteraction()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward, out hit, sightForwardLength))
+        if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward_Interaction, out hit, sightForwardLength))
         {
             if (hit.collider.GetComponent<LimitPositionObject>())
             {
@@ -294,7 +289,7 @@ public class Playable : Character, ICameraTarget
         return tempt;
     }
 
-    public override Vector3 CurrentSightEulerAngle
+    public override Vector3 CurrentSightEulerAngle_Origin
     {
         get
         {
@@ -309,7 +304,7 @@ public class Playable : Character, ICameraTarget
 
     private void OnDrawGizmos()
     {
-        Debug.DrawRay(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward * sightForwardLength, UnityEngine.Color.red);
+        Debug.DrawRay(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward_Interaction * sightForwardLength, UnityEngine.Color.red);
 
     }
 
