@@ -96,12 +96,13 @@ public class BigLeaf : UniqueTool
                 break;
         }
 
-        if(holdingCharacter != null)
-        {
-            ControllerManager.RemoveInputFuncInteraction(holdingFuncInteractionList);
-            holdingFuncInteractionList = conditionFuncInteractionDictionary[CurrentCondition];
-            ControllerManager.AddInputFuncInteraction(holdingFuncInteractionList);
-        } 
+        //±ò½ÓÇÑÅ×½ºÆ®//
+        //if (holdingCharacter != null)
+        //{
+        //    ControllerManager.RemoveInputFuncInteraction(holdingFuncInteractionList);
+        //    holdingFuncInteractionList = conditionFuncInteractionDictionary[CurrentCondition];
+        //    ControllerManager.AddInputFuncInteraction(holdingFuncInteractionList);
+        //} 
 
     }
 
@@ -244,4 +245,10 @@ public class BigLeaf : UniqueTool
         base.PutTool();
     }
 
+
+    //±ò½ÓÇÑÅ×½ºÆ®//
+    public override List<FuncInteractionData> GetHoldingFuncInteractionDataList()
+    {
+        return conditionFuncInteractionDictionary[currentCondition];
+    }
 }
