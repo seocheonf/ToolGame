@@ -180,10 +180,14 @@ public class Character : MovablePositionObject
 
     protected virtual void PutTool()
     {
-        currentRigidbody.mass = initialMass;
-        currentHoldingUniqueTool.PutTool();
-        currentHoldingUniqueTool = null;
+        if (currentHoldingUniqueTool != null)
+        {
+            currentRigidbody.mass = initialMass;
+            currentHoldingUniqueTool.PutTool();
+            currentHoldingUniqueTool = null;
+        }
     }
+
     public virtual void PickUpTool(UniqueTool target)
     {
         target.PickUpTool(this);
@@ -191,6 +195,8 @@ public class Character : MovablePositionObject
         currentRigidbody.mass += currentHoldingUniqueTool.InitialMass;
         target.FakeCenterPosition = transform.position + CatchingLocalPosition;
     }
+
+
 
     #region 이동계열 함수 
     protected void OnMoveForward()
@@ -248,7 +254,6 @@ public class Character : MovablePositionObject
 
     protected virtual void Jump()
     {
-        Debug.Log(IsGround);
         if (IsGround && attachedCollision.Count != 0)
         {
             Vector3 result = currentRigidbody.velocity;

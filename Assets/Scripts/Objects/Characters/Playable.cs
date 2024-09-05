@@ -20,7 +20,7 @@ public class Playable : Character, ICameraTarget
     private List<FuncInteractionData> currentOuterFuncInteractionList;
 
     private bool isSit;
-
+    private bool isPickUpTool = false;
     private int currentSightOrdinal;
 
     private bool isJump;
@@ -68,11 +68,8 @@ public class Playable : Character, ICameraTarget
         FuncInteractionData rush = new(KeyCode.R, "돌진 기능", OnRush, null, null);
         ControllerManager.AddInputFuncInteraction(rush);
 
-        FuncInteractionData pickupTools = new(KeyCode.Mouse0, "도구 집는 기능", TargetUniqueTool, null, null);
-        ControllerManager.AddInputFuncInteraction(pickupTools);
-
-        FuncInteractionData putTools = new(KeyCode.Mouse1, "도구 놓는 기능", PutTool, null, null);
-        ControllerManager.AddInputFuncInteraction(putTools);
+        FuncInteractionData onOffPickupTool = new(KeyCode.Mouse1, "도구 잡고 놓는 기능", OnOffPickUpTool, null, null);
+        ControllerManager.AddInputFuncInteraction(onOffPickupTool);
 
         FuncInteractionData clickSwitch = new(KeyCode.E, "레버 또는 버튼 누르는 기능", OnSwitchFuncInteraction, null, null);
         ControllerManager.AddInputFuncInteraction(clickSwitch);
@@ -92,6 +89,7 @@ public class Playable : Character, ICameraTarget
         MoveHorizontalityFixedUpdate(fixedDeltaTime);
         ResetDirection();
         CharacterRotationSightFixedUpdate();
+        if(currentGeneralState == GeneralState.Normal && !isSit && !isRush) MoveLookAt();
     }
 
     protected override void Initialize()
@@ -178,31 +176,34 @@ public class Playable : Character, ICameraTarget
 
     private void TargetGameObjectUpdate()
     {
-        //Boxcast 로 바꿔야 함
-        //해봤자 땅에 닿아도 Raycast는 쏠 것이고 쏜 곳에 Boxcast를 만든 뒤에
-        //Boxcast안에 들어있는 오브젝트가 hit.collider.GetComponent<UniqueTool>() 인 경우에만 PickupTool() 하면 되기때문에
-        //그렇게 큰 어려움은 아닐듯 함 (아님 공룡박치기하고)
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward_Interaction, out hit, sightForwardLength))
-        {
-            if (hit.collider.GetComponent<UniqueTool>())
-            {
-                currentTargetUniqueTool = hit.collider.GetComponent<UniqueTool>();
-            }
-        }
+
     }
+
     private void TargetUniqueTool()
     {
         RaycastHit hit;
+        int layerMask = (1 << LayerMask.NameToLayer("Cast_UniqueTool")) + (1 << LayerMask.NameToLayer("Block"));
         if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward_Interaction, out hit, sightForwardLength))
         {
-            if (hit.collider.GetComponent<UniqueTool>())
-            {
-                currentTargetUniqueTool = hit.collider.GetComponent<UniqueTool>();
-                PickUpTool(currentTargetUniqueTool);
-            }
+            currentTargetUniqueTool = hit.collider.GetComponentInParent<UniqueTool>();
+            PickUpTool(currentTargetUniqueTool);
+            isPickUpTool = true;
         }
     }
+
+    private void OnOffPickUpTool()
+    {
+        if (isPickUpTool)
+        {
+            PutTool();
+            isPickUpTool = false;
+        }
+        else
+        {
+            TargetUniqueTool();
+        }
+    }
+
     private void TargetOuterFuncInteraction()
     {
 
@@ -248,7 +249,6 @@ public class Playable : Character, ICameraTarget
                     currentGeneralState = GeneralState.Action;
                     break;
                 }
-                MoveLookAt();
                 CheckWantMoveDirection();
                 currentRigidbody.constraints = RigidbodyConstraints.FreezeRotation;
                 break;
