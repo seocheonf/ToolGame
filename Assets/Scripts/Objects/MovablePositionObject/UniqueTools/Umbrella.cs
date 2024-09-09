@@ -138,10 +138,10 @@ public class Umbrella : UniqueTool
 
         //뒤집혀 있을 때 할 일 대기
         conditionFuncInteractionDictionary[UmbrellaCondition.Reverse].Add(new FuncInteractionData(KeyCode.Tab, "우산 뒤집기", TryCloseUmbrella, null, null));
-        conditionFuncInteractionDictionary[UmbrellaCondition.Reverse].Add(new FuncInteractionData(KeyCode.CapsLock, "갈고리 걸기", TryHookOnUmbrella, null, null));
+        conditionFuncInteractionDictionary[UmbrellaCondition.Reverse].Add(new FuncInteractionData(KeyCode.Mouse0, "갈고리 걸기", TryHookOnUmbrella, null, null));
 
         //걸려 있을 때 할 일 대기
-        conditionFuncInteractionDictionary[UmbrellaCondition.Hook].Add(new FuncInteractionData(KeyCode.CapsLock, "갈고리 풀기", TryReverseUmbrellaInHook, null, null));
+        conditionFuncInteractionDictionary[UmbrellaCondition.Hook].Add(new FuncInteractionData(KeyCode.Mouse0, "갈고리 풀기", TryReverseUmbrellaInHook, null, null));
 
     }
 
