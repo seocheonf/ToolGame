@@ -138,10 +138,10 @@ public class Umbrella : UniqueTool
 
         //뒤집혀 있을 때 할 일 대기
         conditionFuncInteractionDictionary[UmbrellaCondition.Reverse].Add(new FuncInteractionData(KeyCode.Tab, "우산 뒤집기", TryCloseUmbrella, null, null));
-        conditionFuncInteractionDictionary[UmbrellaCondition.Reverse].Add(new FuncInteractionData(KeyCode.CapsLock, "갈고리 걸기", TryHookOnUmbrella, null, null));
+        conditionFuncInteractionDictionary[UmbrellaCondition.Reverse].Add(new FuncInteractionData(KeyCode.Mouse0, "갈고리 걸기", TryHookOnUmbrella, null, null));
 
         //걸려 있을 때 할 일 대기
-        conditionFuncInteractionDictionary[UmbrellaCondition.Hook].Add(new FuncInteractionData(KeyCode.CapsLock, "갈고리 풀기", TryReverseUmbrellaInHook, null, null));
+        conditionFuncInteractionDictionary[UmbrellaCondition.Hook].Add(new FuncInteractionData(KeyCode.Mouse0, "갈고리 풀기", TryReverseUmbrellaInHook, null, null));
 
     }
 
@@ -236,14 +236,14 @@ public class Umbrella : UniqueTool
             return;
 
         //holdingCharacter.CurrentSightEulerAngle <= 이놈은 시야각을 나타내는 오일러 각
-        Vector3 sightForward = holdingCharacter.CurrentSightForward;
+        Vector3 sightForward = holdingCharacter.CurrentSightForward_Interaction;
 
         {
             Gizmos.color = Color.red;
 
             Gizmos.DrawLine(FakeCenterPosition, FakeCenterPosition + sightForward * 5f);
 
-            Matrix4x4 rotationMatrix = Matrix4x4.TRS(FakeCenterPosition + sightForward * 5f, Quaternion.Euler(holdingCharacter.CurrentSightEulerAngle), Vector3.one);
+            Matrix4x4 rotationMatrix = Matrix4x4.TRS(FakeCenterPosition + sightForward * 5f, Quaternion.Euler(holdingCharacter.CurrentSightEulerAngle_Interaction), Vector3.one);
             Gizmos.matrix = rotationMatrix;
 
             Gizmos.DrawWireCube(Vector3.zero, Vector3.one * 4);
@@ -258,8 +258,8 @@ public class Umbrella : UniqueTool
         if (holdingCharacter == null)
             return;
         
-        Vector3 sightForward = holdingCharacter.CurrentSightForward;
-        Collider[] hithit = Physics.OverlapBox(FakeCenterPosition + sightForward * 5f, Vector3.one * 2, holdingCharacter.CurrentSightQuaternionAngle);
+        Vector3 sightForward = holdingCharacter.CurrentSightForward_Interaction;
+        Collider[] hithit = Physics.OverlapBox(FakeCenterPosition + sightForward * 5f, Vector3.one * 2, holdingCharacter.CurrentSightQuaternionAngle_Interaction);
 
         //가장 가까운 놈 캐칭
         Vector3 dir = Vector3.one * float.MaxValue;
@@ -545,13 +545,20 @@ public class Umbrella : UniqueTool
 
     private void ChangeCondition<T>(ref T currentCondition, T newCondition, Dictionary<T, List<FuncInteractionData>> conditionFunc) where T : System.Enum
     {
+        //깔쌈한테스트//
         //기능 넣고 빼기는 들고 있을 때만.
         if (holdingCharacter != null)
         {
-            //current의 List를 remove요청, change의 List를 add요청
-            ControllerManager.RemoveInputFuncInteraction(conditionFunc[currentCondition]);
-            //바뀐 놈 List로 갱신
-            ControllerManager.AddInputFuncInteraction(conditionFunc[newCondition]);
+            Playable playable = holdingCharacter as Playable;
+            if(playable != null)
+            {
+                playable.ExchangeHoldingInputFuncInteraction(conditionFunc[newCondition]);
+            }
+
+            ////current의 List를 remove요청, change의 List를 add요청
+            //ControllerManager.RemoveInputFuncInteraction(conditionFunc[currentCondition]);
+            ////바뀐 놈 List로 갱신
+            //ControllerManager.AddInputFuncInteraction(conditionFunc[newCondition]);
         }
         //마지막에 식별해주는 친구 바꾸기
         currentCondition = newCondition;
@@ -560,7 +567,7 @@ public class Umbrella : UniqueTool
     private void ChangeUmbrellaDirectionSight()
     {
         //캐릭터의 시야를 바라보게 설정
-        SetFakeCenterEulerAngle(holdingCharacter.CurrentSightEulerAngle);
+        SetFakeCenterEulerAngle(holdingCharacter.CurrentSightEulerAngle_Interaction);
         //대상의 방향을 추가로 조정하는 과정. 기본 우산의 forward를 고려하는 것과, 추가 회전을 통해 눈에 잘 보이게 하기 위한 작업
         SetFakeCenterQuaternionProductRotation(Quaternion.Euler(-120, 22.5f, 0));
 
@@ -728,7 +735,7 @@ public class Umbrella : UniqueTool
         physicsInteractionObjectCollider.isTrigger = false;
         currentRigidbody.isKinematic = false;
         currentRigidbody.velocity = holdingCharacter.GetVelocity();
-        ControllerManager.RemoveInputFuncInteraction(conditionFuncInteractionDictionary[currentCondition]);
+        //깔쌈한테스트// ControllerManager.RemoveInputFuncInteraction(conditionFuncInteractionDictionary[currentCondition]);
         transform.parent = null;
         holdingCharacter = null;
         ChangeUmbrellaStatus();
@@ -752,7 +759,7 @@ public class Umbrella : UniqueTool
 
         SetUmbrellaDirection(currentStandardaAngle);
 
-        ControllerManager.AddInputFuncInteraction(conditionFuncInteractionDictionary[currentCondition]);
+        //깔쌈한테스트// ControllerManager.AddInputFuncInteraction(conditionFuncInteractionDictionary[currentCondition]);
 
         //타겟 리지드바디 설정
         currentRigidbody = holdingCharacter.CurrentRigidbody;
@@ -769,5 +776,12 @@ public class Umbrella : UniqueTool
         GameManager.ObjectsUpdate -= CustomUpdate;
         
 
+    }
+
+
+    //깔쌈한테스트//
+    public override List<FuncInteractionData> GetHoldingFuncInteractionDataList()
+    {
+        return conditionFuncInteractionDictionary[currentCondition];
     }
 }

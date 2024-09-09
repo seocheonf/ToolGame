@@ -83,7 +83,7 @@ public abstract class UniqueTool : MovablePositionObject
         physicsInteractionObjectCollider.isTrigger = false;
         currentRigidbody.isKinematic = false;
         currentRigidbody.velocity = holdingCharacter.GetVelocity();
-        ControllerManager.RemoveInputFuncInteraction(holdingFuncInteractionList);
+        //±ò½ÓÇÑÅ×½ºÆ®// ControllerManager.RemoveInputFuncInteraction(holdingFuncInteractionList);
         transform.parent = null;
         holdingCharacter = null;
 
@@ -110,7 +110,7 @@ public abstract class UniqueTool : MovablePositionObject
         currentRigidbody.isKinematic = true;
         physicsInteractionObjectCollider.isTrigger = true;
         FakeCenterPosition = holdingCharacter.GetCatchingPosition();
-        ControllerManager.AddInputFuncInteraction(holdingFuncInteractionList);
+        //±ò½ÓÇÑÅ×½ºÆ®// ControllerManager.AddInputFuncInteraction(holdingFuncInteractionList);
 
         //Å¸°Ù ¸®Áöµå¹Ùµð ¼³Á¤
         currentRigidbody = holdingCharacter.CurrentRigidbody;
@@ -217,5 +217,13 @@ public abstract class UniqueTool : MovablePositionObject
     protected override void RemoveFuncInDestroy()
     {
         GameManager.ObjectsFixedUpdate -= MainFixedUpdate;
+    }
+
+
+
+    //±ò½ÓÇÑÅ×½ºÆ®//
+    public virtual List<FuncInteractionData> GetHoldingFuncInteractionDataList()
+    {
+        return holdingFuncInteractionList;
     }
 }

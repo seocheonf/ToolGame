@@ -38,11 +38,23 @@ namespace SpecialInteraction
         [SerializeField]
         WaterData waterData;
 
-        protected override void MainFixedUpdate(float fixedDeltaTime)
+        protected override void RegisterFuncInInitialize()
+        {
+            base.RegisterFuncInInitialize();
+            GameManager.ObjectsFixedUpdate -= CustomFixedUpdate;
+            GameManager.ObjectsFixedUpdate += CustomFixedUpdate;
+        }
+
+        protected override void RemoveFuncInDestroy()
+        {
+            base.RemoveFuncInDestroy();
+            GameManager.ObjectsFixedUpdate -= CustomFixedUpdate;
+        }
+
+        protected virtual void CustomFixedUpdate(float fixedDeltaTime)
         {
             //방향 값 갱신
             waterData.Direction = transform.rotation * waterData.offset * Vector3.forward;
-
             base.MainFixedUpdate(fixedDeltaTime);
         }
 

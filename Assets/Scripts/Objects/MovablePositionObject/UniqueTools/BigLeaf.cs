@@ -96,12 +96,13 @@ public class BigLeaf : UniqueTool
                 break;
         }
 
-        if(holdingCharacter != null)
-        {
-            ControllerManager.RemoveInputFuncInteraction(holdingFuncInteractionList);
-            holdingFuncInteractionList = conditionFuncInteractionDictionary[CurrentCondition];
-            ControllerManager.AddInputFuncInteraction(holdingFuncInteractionList);
-        } 
+        //깔쌈한테스트//
+        //if (holdingCharacter != null)
+        //{
+        //    ControllerManager.RemoveInputFuncInteraction(holdingFuncInteractionList);
+        //    holdingFuncInteractionList = conditionFuncInteractionDictionary[CurrentCondition];
+        //    ControllerManager.AddInputFuncInteraction(holdingFuncInteractionList);
+        //} 
 
     }
 
@@ -152,7 +153,7 @@ public class BigLeaf : UniqueTool
     private void ChangeBigLeafDirectionSight(float fixedDeltaTime)
     {
         //캐릭터의 시야를 바라보게 설정
-        Vector3 tempt = holdingCharacter.CurrentSightEulerAngle;
+        Vector3 tempt = holdingCharacter.CurrentSightEulerAngle_Interaction;
         //Debug.Log($"{tempt} / {holdingCharacter.transform.eulerAngles}");
 
         //Debug.Log($"{tempt.y - holdingCharacter.transform.eulerAngles.y}");
@@ -244,4 +245,10 @@ public class BigLeaf : UniqueTool
         base.PutTool();
     }
 
+
+    //깔쌈한테스트//
+    public override List<FuncInteractionData> GetHoldingFuncInteractionDataList()
+    {
+        return conditionFuncInteractionDictionary[currentCondition];
+    }
 }

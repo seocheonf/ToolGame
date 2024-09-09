@@ -32,8 +32,8 @@ public class Character : MovablePositionObject
 
     protected bool isAir;
 
+    [SerializeField]
     protected GeneralState currentGeneralState;
-
     CrowdControlState currentCrowdControlState;     //현재 걸려있는 CC기
     List<AffectedCrowdControl> affectedCrowdControlList;
     Dictionary<CrowdControlState, AffectedCrowdControl> affectedCrowdControlDict = new();   //List -> Dictionary 로 교체
@@ -62,30 +62,64 @@ public class Character : MovablePositionObject
     protected float jumpPower;
   
 
-    protected Vector3 currentSightEulerAngle;
+    //시선 오일러각 - 근원의 시선
+    protected Vector3 currentSightEulerAngle_Origin;
     //오일러각
-    public virtual Vector3 CurrentSightEulerAngle
+    public virtual Vector3 CurrentSightEulerAngle_Origin
     {
         get
         {
-            return currentSightEulerAngle;
+            return currentSightEulerAngle_Origin;
         }
     }
     //쿼터니언각
-    public virtual Quaternion CurrentSightQuaternionAngle
+    public virtual Quaternion CurrentSightQuaternionAngle_Origin
     {
         get
         {
-            return Quaternion.Euler(CurrentSightEulerAngle);
+            return Quaternion.Euler(CurrentSightEulerAngle_Origin);
         }
     }
-    public virtual Vector3 CurrentSightForward
+    public virtual Vector3 CurrentSightForward_Origin
     {
         get
         {
-            return Quaternion.Euler(CurrentSightEulerAngle) * Vector3.forward;
+            return Quaternion.Euler(CurrentSightEulerAngle_Origin) * Vector3.forward;
         }
     }
+
+    //시선 오일러각 - 상호작용 시선
+    protected Vector3 currentSightEulerAngle_Interaction;
+    //오일러각
+    public virtual Vector3 CurrentSightEulerAngle_Interaction
+    {
+        get
+        {
+            if (currentGeneralState == GeneralState.CrowdControl)
+                return currentSightEulerAngle_Interaction;
+            else
+            {
+                currentSightEulerAngle_Interaction = CurrentSightEulerAngle_Origin;
+                return currentSightEulerAngle_Interaction;
+            }
+        }
+    }
+    //쿼터니언각
+    public virtual Quaternion CurrentSightQuaternionAngle_Interaction
+    {
+        get
+        {
+            return Quaternion.Euler(CurrentSightEulerAngle_Interaction);
+        }
+    }
+    public virtual Vector3 CurrentSightForward_Interaction
+    {
+        get
+        {
+            return Quaternion.Euler(CurrentSightEulerAngle_Interaction) * Vector3.forward;
+        }
+    }
+
 
     //경사로인지 확인하는 변수들 (추가)
     private GameObject ground;

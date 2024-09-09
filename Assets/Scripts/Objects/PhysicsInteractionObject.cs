@@ -77,7 +77,7 @@ public abstract class PhysicsInteractionObject : MyComponent
     public virtual void GetSpecialInteraction(SpecialInteraction.WaterData source)
     {
         //조류
-        AddForce(new ForceInfo(source.Direction * source.intensity, ForceType.DurationForce));
+        AddForce(new ForceInfo(source.Direction * source.intensity, ForceType.UnityDuration));
         //부력
         AddForce(new ForceInfo(Vector3.up * source.amount, ForceType.UnityDuration));
         //AddForce(new ForceInfo(Vector3.up * (source.amount / CurrentMass) * (GetDownSpeed() * -1 * 0.5f), ForceType.DurationForce));
