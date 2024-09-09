@@ -16,8 +16,10 @@ public class Playable : Character, ICameraTarget
     private IOuterFuncInteraction currentTargetOuterFuncInteraction;
 
     private List<FuncInteractionData> originInputFuncInteractionList;
-    private List<FuncInteractionData> currentHoldingFuncInteractionList;
+    private List<FuncInteractionData> currentHoldingFuncInteractionList; //현재 들고 있는 도구의 기능들 모음
     private List<FuncInteractionData> currentOuterFuncInteractionList;
+    //깔쌈한테스트//
+    private List<FuncInteractionData> playableActionFuncInteractionList; //플레이어블의 행동과 연관이 있는 기능들 모음
 
     private bool isSit;
     private bool isPickUpTool = false;
@@ -44,35 +46,50 @@ public class Playable : Character, ICameraTarget
         base.MyStart();
         characterCollider = GetComponent<CapsuleCollider>();
 
+        //깔쌈한테스트//
+
         FuncInteractionData jump = new(KeyCode.Space, "점프", OnJump, null, null);
-        ControllerManager.AddInputFuncInteraction(jump);
+        //ControllerManager.AddInputFuncInteraction(jump);
 
         FuncInteractionData forward = new(KeyCode.W, "앞으로 이동", null, OnMoveForward, null);
-        ControllerManager.AddInputFuncInteraction(forward);
+        //ControllerManager.AddInputFuncInteraction(forward);
 
         FuncInteractionData backward = new(KeyCode.S, "뒤로 이동", null, OnMoveBackward, null);
-        ControllerManager.AddInputFuncInteraction(backward);
+        //ControllerManager.AddInputFuncInteraction(backward);
 
         FuncInteractionData left = new(KeyCode.A, "왼쪽으로 이동", null, OnMoveLeft, null);
-        ControllerManager.AddInputFuncInteraction(left);
+        //ControllerManager.AddInputFuncInteraction(left);
 
         FuncInteractionData right = new(KeyCode.D, "오른쪽으로 이동", null, OnMoveRight, null);
-        ControllerManager.AddInputFuncInteraction(right);
+        //ControllerManager.AddInputFuncInteraction(right);
 
         FuncInteractionData accel = new(KeyCode.LeftShift, "대시 기능", null, OnRun, RunGetKeyUp);
-        ControllerManager.AddInputFuncInteraction(accel);
+        //ControllerManager.AddInputFuncInteraction(accel);
 
         FuncInteractionData sit = new(KeyCode.LeftControl, "앉기 기능", null, OnSit, UnSit);
-        ControllerManager.AddInputFuncInteraction(sit);
+        //ControllerManager.AddInputFuncInteraction(sit);
 
         FuncInteractionData rush = new(KeyCode.R, "돌진 기능", OnRush, null, null);
-        ControllerManager.AddInputFuncInteraction(rush);
+        //ControllerManager.AddInputFuncInteraction(rush);
 
         FuncInteractionData onOffPickupTool = new(KeyCode.Mouse1, "도구 잡고 놓는 기능", OnOffPickUpTool, null, null);
-        ControllerManager.AddInputFuncInteraction(onOffPickupTool);
+        //ControllerManager.AddInputFuncInteraction(onOffPickupTool);
 
         FuncInteractionData clickSwitch = new(KeyCode.E, "레버 또는 버튼 누르는 기능", OnSwitchFuncInteraction, null, null);
-        ControllerManager.AddInputFuncInteraction(clickSwitch);
+        //ControllerManager.AddInputFuncInteraction(clickSwitch);
+
+        AddPlayableActionInputFuncInteraction(jump);
+        AddPlayableActionInputFuncInteraction(forward);
+        AddPlayableActionInputFuncInteraction(backward);
+        AddPlayableActionInputFuncInteraction(left);
+        AddPlayableActionInputFuncInteraction(right);
+        AddPlayableActionInputFuncInteraction(accel);
+        AddPlayableActionInputFuncInteraction(sit);
+        AddPlayableActionInputFuncInteraction(rush);
+        AddPlayableActionInputFuncInteraction(onOffPickupTool);
+        AddPlayableActionInputFuncInteraction(clickSwitch);
+
+        AddInputFuncInteraction(playableActionFuncInteractionList);
 
         GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraViewType.ThirdView);
     }
@@ -103,6 +120,10 @@ public class Playable : Character, ICameraTarget
 
         GameManager.ObjectsUpdate += PlayableManagerUpdate;
         GameManager.CharactersFixedUpdate += PlayableManagerFixedUpdate;
+
+        //깔쌈한테스트//
+        currentHoldingFuncInteractionList = new List<FuncInteractionData>();
+        playableActionFuncInteractionList = new List<FuncInteractionData>();
     }
 
     protected override void MyDestroy()
@@ -309,4 +330,105 @@ public class Playable : Character, ICameraTarget
     }
 
 #endif
+
+
+    //깔쌈한테스트//
+
+    private void AddInputFuncInteraction(FuncInteractionData data)
+    {
+        ControllerManager.AddInputFuncInteraction(data);
+    }
+    private void AddInputFuncInteraction(List<FuncInteractionData> list)
+    {
+        ControllerManager.AddInputFuncInteraction(list);
+    }
+    private void RemoveInputFuncInteraction(FuncInteractionData data)
+    {
+        ControllerManager.RemoveInputFuncInteraction(data);
+    }
+    private void RemoveInputFuncInteraction(List<FuncInteractionData> list)
+    {
+        ControllerManager.RemoveInputFuncInteraction(list);
+    }
+
+
+    private void AddPlayableActionInputFuncInteraction(FuncInteractionData data)
+    {
+        playableActionFuncInteractionList.Add(data);
+    }
+    private void AddPlayableActionInputFuncInteraction(List<FuncInteractionData> list)
+    {
+        foreach(FuncInteractionData each in list)
+        {
+            playableActionFuncInteractionList.Add(each);
+        }
+    }
+    private void RemovePlayableActionInputFuncInteraction(FuncInteractionData data)
+    {
+        playableActionFuncInteractionList.Remove(data);
+    }
+    private void RemovePlayableActionInputFuncInteraction(List<FuncInteractionData> list)
+    {
+        foreach (FuncInteractionData each in list)
+        {
+            playableActionFuncInteractionList.Remove(each);
+        }
+    }
+
+
+    private void AddHoldingInputFuncInteraction(FuncInteractionData data)
+    {
+        currentHoldingFuncInteractionList.Add(data);
+    }
+    private void AddHoldingInputFuncInteraction(List<FuncInteractionData> list)
+    {
+        foreach (FuncInteractionData each in list)
+        {
+            currentHoldingFuncInteractionList.Add(each);
+        }
+    }
+    private void RemoveHoldingInputFuncInteraction(FuncInteractionData data)
+    {
+        currentHoldingFuncInteractionList.Remove(data);
+    }
+    private void RemoveHoldingInputFuncInteraction(List<FuncInteractionData> list)
+    {
+        foreach (FuncInteractionData each in list)
+        {
+            currentHoldingFuncInteractionList.Remove(each);
+        }
+    }
+
+    //깔쌈한테스트//
+    public void ExchangeHoldingInputFuncInteraction(List<FuncInteractionData> newList)
+    {
+        RemoveInputFuncInteraction(currentHoldingFuncInteractionList);
+        RemovePlayableActionInputFuncInteraction(currentHoldingFuncInteractionList);
+        currentHoldingFuncInteractionList.Clear();
+
+        AddHoldingInputFuncInteraction(newList);
+        AddPlayableActionInputFuncInteraction(currentHoldingFuncInteractionList);
+        AddInputFuncInteraction(currentHoldingFuncInteractionList);
+    }
+
+    protected override void PutTool()
+    {
+        //깔쌈한테스트//
+        RemoveInputFuncInteraction(currentHoldingFuncInteractionList);
+        RemovePlayableActionInputFuncInteraction(currentHoldingFuncInteractionList);
+        currentHoldingFuncInteractionList.Clear();
+
+        base.PutTool();
+    }
+
+    public override void PickUpTool(UniqueTool target)
+    {
+        base.PickUpTool(target);
+
+        //깔쌈한테스트//
+        AddHoldingInputFuncInteraction(target.GetHoldingFuncInteractionDataList());
+        AddPlayableActionInputFuncInteraction(currentHoldingFuncInteractionList);
+        AddInputFuncInteraction(currentHoldingFuncInteractionList);
+    }
+
 }

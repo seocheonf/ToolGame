@@ -138,10 +138,10 @@ public class Umbrella : UniqueTool
 
         //뒤집혀 있을 때 할 일 대기
         conditionFuncInteractionDictionary[UmbrellaCondition.Reverse].Add(new FuncInteractionData(KeyCode.Tab, "우산 뒤집기", TryCloseUmbrella, null, null));
-        conditionFuncInteractionDictionary[UmbrellaCondition.Reverse].Add(new FuncInteractionData(KeyCode.CapsLock, "갈고리 걸기", TryHookOnUmbrella, null, null));
+        conditionFuncInteractionDictionary[UmbrellaCondition.Reverse].Add(new FuncInteractionData(KeyCode.Mouse0, "갈고리 걸기", TryHookOnUmbrella, null, null));
 
         //걸려 있을 때 할 일 대기
-        conditionFuncInteractionDictionary[UmbrellaCondition.Hook].Add(new FuncInteractionData(KeyCode.CapsLock, "갈고리 풀기", TryReverseUmbrellaInHook, null, null));
+        conditionFuncInteractionDictionary[UmbrellaCondition.Hook].Add(new FuncInteractionData(KeyCode.Mouse0, "갈고리 풀기", TryReverseUmbrellaInHook, null, null));
 
     }
 
@@ -545,13 +545,20 @@ public class Umbrella : UniqueTool
 
     private void ChangeCondition<T>(ref T currentCondition, T newCondition, Dictionary<T, List<FuncInteractionData>> conditionFunc) where T : System.Enum
     {
+        //깔쌈한테스트//
         //기능 넣고 빼기는 들고 있을 때만.
         if (holdingCharacter != null)
         {
-            //current의 List를 remove요청, change의 List를 add요청
-            ControllerManager.RemoveInputFuncInteraction(conditionFunc[currentCondition]);
-            //바뀐 놈 List로 갱신
-            ControllerManager.AddInputFuncInteraction(conditionFunc[newCondition]);
+            Playable playable = holdingCharacter as Playable;
+            if(playable != null)
+            {
+                playable.ExchangeHoldingInputFuncInteraction(conditionFunc[newCondition]);
+            }
+
+            ////current의 List를 remove요청, change의 List를 add요청
+            //ControllerManager.RemoveInputFuncInteraction(conditionFunc[currentCondition]);
+            ////바뀐 놈 List로 갱신
+            //ControllerManager.AddInputFuncInteraction(conditionFunc[newCondition]);
         }
         //마지막에 식별해주는 친구 바꾸기
         currentCondition = newCondition;
@@ -728,7 +735,7 @@ public class Umbrella : UniqueTool
         physicsInteractionObjectCollider.isTrigger = false;
         currentRigidbody.isKinematic = false;
         currentRigidbody.velocity = holdingCharacter.GetVelocity();
-        ControllerManager.RemoveInputFuncInteraction(conditionFuncInteractionDictionary[currentCondition]);
+        //깔쌈한테스트// ControllerManager.RemoveInputFuncInteraction(conditionFuncInteractionDictionary[currentCondition]);
         transform.parent = null;
         holdingCharacter = null;
         ChangeUmbrellaStatus();
@@ -752,7 +759,7 @@ public class Umbrella : UniqueTool
 
         SetUmbrellaDirection(currentStandardaAngle);
 
-        ControllerManager.AddInputFuncInteraction(conditionFuncInteractionDictionary[currentCondition]);
+        //깔쌈한테스트// ControllerManager.AddInputFuncInteraction(conditionFuncInteractionDictionary[currentCondition]);
 
         //타겟 리지드바디 설정
         currentRigidbody = holdingCharacter.CurrentRigidbody;
@@ -769,5 +776,12 @@ public class Umbrella : UniqueTool
         GameManager.ObjectsUpdate -= CustomUpdate;
         
 
+    }
+
+
+    //깔쌈한테스트//
+    public override List<FuncInteractionData> GetHoldingFuncInteractionDataList()
+    {
+        return conditionFuncInteractionDictionary[currentCondition];
     }
 }
