@@ -21,14 +21,23 @@ namespace SpecialInteraction
 
         private void OnTriggerEnter(Collider other)
         {
-            if (TryGetComponent(out PhysicsInteractionObject result))
-            {
-                result.GetSpecialInteraction(fireData);
-            }
+            //if (TryGetComponent(out PhysicsInteractionObject result))
+            //{
+            //    result.GetSpecialInteraction(fireData);
+            //}
             if (other.GetComponent<Character>())
             {
                 fireData.detectedCharacter = other.GetComponent<Character>();
             }
+        }
+
+        private void OnTriggerStay(Collider other)
+        {
+            if (other.TryGetComponent(out PhysicsInteractionObject result))
+            {
+                result.GetSpecialInteraction(fireData);
+            }
+            
         }
 
         private void OnTriggerExit(Collider other)
