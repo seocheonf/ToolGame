@@ -2,6 +2,7 @@ using SpecialInteraction;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ToolGame;
 
 public abstract class UniqueTool : MovablePositionObject
 {

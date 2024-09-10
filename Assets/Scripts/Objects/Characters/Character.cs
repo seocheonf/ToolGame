@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.IO.LowLevel.Unsafe;
 using Unity.VisualScripting;
 using UnityEngine;
+using ToolGame;
 
 //적용중인 상태이상에 대한 정보
 public class AffectedCrowdControl
@@ -345,13 +347,19 @@ public class Character : MovablePositionObject
         }
     }
 
-    public void SetCrowdControl(CrowdControlState targetCC, float duration)
+    public virtual void SetCrowdControl(CrowdControlState targetCC, float duration)
     {
         if (!affectedCrowdControlDict.TryGetValue(targetCC, out AffectedCrowdControl value))
         {
             AffectedCrowdControl newCrowdControl = new(targetCC, duration);
             affectedCrowdControlDict.Add(targetCC, newCrowdControl);
+
+            AfterCompleteSetCrowdControl(targetCC);
         }
+    }
+    protected virtual void AfterCompleteSetCrowdControl(CrowdControlState targetCC)
+    {
+
     }
 
     protected void RenewalCrowdControlRemainTimeUpdate(float deltaTime)
@@ -377,14 +385,20 @@ public class Character : MovablePositionObject
         DeleteCrowdControlDict(deltaTime);
     }
 
-    private void DeleteCrowdControlDict(float deltaTime)
+    protected virtual void DeleteCrowdControlDict(float deltaTime)
     {
         affectedCrowdControlDict[currentCrowdControlState].remainTime = affectedCrowdControlDict[currentCrowdControlState].remainTime - deltaTime;
         if (affectedCrowdControlDict[currentCrowdControlState].remainTime <= 0)
         {
             affectedCrowdControlDict.Remove(currentCrowdControlState);
             currentGeneralState = GeneralState.Normal;
+
+            AfterCompleteDeleteCrowdControlDict(currentCrowdControlState);
         }
+    }
+    protected virtual void AfterCompleteDeleteCrowdControlDict(CrowdControlState beforeCrowdControlState)
+    {
+
     }
 
     #endregion
@@ -487,7 +501,6 @@ public class Character : MovablePositionObject
             Vector3 slidingVector = Vector3.ProjectOnPlane(originVector, hit.normal);
 
             CurrentMovementVelocity = (originVector * possibleDistance) + (slidingVector * impossibleDistance);
-            Debug.Log(hit.collider);
         }
         
         return CurrentMovementVelocity;

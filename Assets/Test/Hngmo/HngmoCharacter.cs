@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ToolGame;
 
 public class HngmoCharacter : Character, ICameraTarget
 {
@@ -14,7 +15,7 @@ public class HngmoCharacter : Character, ICameraTarget
     {
         base.Initialize();
 
-        AboutTool = (new FuncInteractionData(KeyCode.Mouse1, "우산 들기", ToolSet, null, null));
+        AboutTool = (new FuncInteractionData(OuterKeyCode.TakeTool, "우산 들기", ToolSet, null, null));
         
     }
 

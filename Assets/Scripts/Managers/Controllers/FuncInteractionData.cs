@@ -1,11 +1,12 @@
 using UnityEngine;
+using ToolGame;
 
 /// <summary>
 /// 입력과 기능에 대한 정보 저장 장소.
 /// </summary>
 public class FuncInteractionData
 {
-    public KeyCode keyCode;
+    public OuterKeyCode keyCode;
     public string description;
     
     public FuncInteractionFunction OnFuncInteraction;
@@ -20,7 +21,7 @@ public class FuncInteractionData
     /// <param name="OnFunc">입력받는 순간의 기능</param>
     /// <param name="DurationFunc">입력받는 동안의 기능</param>
     /// <param name="OffFunc">입력이 종료됐을 때의 기능</param>
-    public FuncInteractionData(KeyCode keyCode, string description, FuncInteractionFunction OnFunc, FuncInteractionFunction DurationFunc, FuncInteractionFunction OffFunc)
+    public FuncInteractionData(OuterKeyCode keyCode, string description, FuncInteractionFunction OnFunc, FuncInteractionFunction DurationFunc, FuncInteractionFunction OffFunc)
     {
         this.keyCode = keyCode;
         this.description = description;

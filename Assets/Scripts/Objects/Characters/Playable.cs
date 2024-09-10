@@ -1,8 +1,8 @@
 using SpecialInteraction;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using ToolGame;
 
 public class Playable : Character, ICameraTarget
 {
@@ -48,34 +48,34 @@ public class Playable : Character, ICameraTarget
 
         //깔쌈한테스트//
 
-        FuncInteractionData jump = new(KeyCode.Space, "점프", OnJump, null, null);
+        FuncInteractionData jump = new(OuterKeyCode.Jump, "점프", OnJump, null, null);
         //ControllerManager.AddInputFuncInteraction(jump);
 
-        FuncInteractionData forward = new(KeyCode.W, "앞으로 이동", null, OnMoveForward, null);
+        FuncInteractionData forward = new(OuterKeyCode.Forward, "앞으로 이동", null, OnMoveForward, null);
         //ControllerManager.AddInputFuncInteraction(forward);
 
-        FuncInteractionData backward = new(KeyCode.S, "뒤로 이동", null, OnMoveBackward, null);
+        FuncInteractionData backward = new(OuterKeyCode.Backward, "뒤로 이동", null, OnMoveBackward, null);
         //ControllerManager.AddInputFuncInteraction(backward);
 
-        FuncInteractionData left = new(KeyCode.A, "왼쪽으로 이동", null, OnMoveLeft, null);
+        FuncInteractionData left = new(OuterKeyCode.Leftward, "왼쪽으로 이동", null, OnMoveLeft, null);
         //ControllerManager.AddInputFuncInteraction(left);
 
-        FuncInteractionData right = new(KeyCode.D, "오른쪽으로 이동", null, OnMoveRight, null);
+        FuncInteractionData right = new(OuterKeyCode.Rightward, "오른쪽으로 이동", null, OnMoveRight, null);
         //ControllerManager.AddInputFuncInteraction(right);
 
-        FuncInteractionData accel = new(KeyCode.LeftShift, "대시 기능", null, OnRun, RunGetKeyUp);
+        FuncInteractionData accel = new(OuterKeyCode.Dash, "대시 기능", null, OnRun, RunGetKeyUp);
         //ControllerManager.AddInputFuncInteraction(accel);
 
-        FuncInteractionData sit = new(KeyCode.LeftControl, "앉기 기능", null, OnSit, UnSit);
+        FuncInteractionData sit = new(OuterKeyCode.Sit, "앉기 기능", null, OnSit, UnSit);
         //ControllerManager.AddInputFuncInteraction(sit);
 
-        FuncInteractionData rush = new(KeyCode.R, "돌진 기능", OnRush, null, null);
+        FuncInteractionData rush = new(OuterKeyCode.Rush, "돌진 기능", OnRush, null, null);
         //ControllerManager.AddInputFuncInteraction(rush);
 
-        FuncInteractionData onOffPickupTool = new(KeyCode.Mouse1, "도구 잡고 놓는 기능", OnOffPickUpTool, null, null);
+        FuncInteractionData onOffPickupTool = new(OuterKeyCode.TakeTool, "도구 잡고 놓는 기능", OnOffPickUpTool, null, null);
         //ControllerManager.AddInputFuncInteraction(onOffPickupTool);
 
-        FuncInteractionData clickSwitch = new(KeyCode.E, "레버 또는 버튼 누르는 기능", OnSwitchFuncInteraction, null, null);
+        FuncInteractionData clickSwitch = new(OuterKeyCode.OuterFunc, "레버 또는 버튼 누르는 기능", OnSwitchFuncInteraction, null, null);
         //ControllerManager.AddInputFuncInteraction(clickSwitch);
 
         AddPlayableActionInputFuncInteraction(jump);
@@ -253,9 +253,9 @@ public class Playable : Character, ICameraTarget
         RaycastHit hit;
         if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward_Interaction, out hit, sightForwardLength))
         {
-            if (hit.collider.GetComponent<LimitPositionObject>())
+            if (hit.collider.GetComponent<ITriggerFuncInteraction>() != null)
             {
-                hit.collider.GetComponent<LimitPositionObject>().ObjectClick();
+                hit.collider.GetComponent<ITriggerFuncInteraction>().DoTrigger();
             }
         }
     }
@@ -410,6 +410,33 @@ public class Playable : Character, ICameraTarget
         AddPlayableActionInputFuncInteraction(currentHoldingFuncInteractionList);
         AddInputFuncInteraction(currentHoldingFuncInteractionList);
     }
+
+
+    protected override void AfterCompleteSetCrowdControl(CrowdControlState targetCC)
+    {
+        base.AfterCompleteSetCrowdControl(targetCC);
+        if(targetCC == CrowdControlState.ElectricShcok || targetCC == CrowdControlState.Stun)
+        {
+            RemoveInputFuncInteraction(playableActionFuncInteractionList);
+        }
+    }
+
+    protected override void AfterCompleteDeleteCrowdControlDict(CrowdControlState beforeCrowdControlState)
+    {
+        base.AfterCompleteDeleteCrowdControlDict(beforeCrowdControlState);
+
+        if (beforeCrowdControlState == CrowdControlState.ElectricShcok || beforeCrowdControlState == CrowdControlState.Stun)
+        {
+            AddInputFuncInteraction(playableActionFuncInteractionList);
+        }
+    }
+
+
+
+
+
+
+
 
     protected override void PutTool()
     {
