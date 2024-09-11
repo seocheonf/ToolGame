@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 //적용중인 상태이상에 대한 정보
 public class AffectedCrowdControl
@@ -60,7 +61,6 @@ public class Character : MovablePositionObject
 
     [SerializeField] protected float defaultJumpPower;
     protected float jumpPower;
-  
 
     //시선 오일러각 - 근원의 시선
     protected Vector3 currentSightEulerAngle_Origin;
@@ -72,6 +72,7 @@ public class Character : MovablePositionObject
             return currentSightEulerAngle_Origin;
         }
     }
+    
     //쿼터니언각
     public virtual Quaternion CurrentSightQuaternionAngle_Origin
     {
@@ -345,12 +346,13 @@ public class Character : MovablePositionObject
         }
     }
 
-    public void SetCrowdControl(CrowdControlState targetCC, float duration)
+    public virtual void SetCrowdControl(CrowdControlState targetCC, float duration)
     {
         if (!affectedCrowdControlDict.TryGetValue(targetCC, out AffectedCrowdControl value))
         {
             AffectedCrowdControl newCrowdControl = new(targetCC, duration);
             affectedCrowdControlDict.Add(targetCC, newCrowdControl);
+            //TODO : 여기다가 상태이상 함 넣어보슈
         }
     }
 
@@ -377,13 +379,14 @@ public class Character : MovablePositionObject
         DeleteCrowdControlDict(deltaTime);
     }
 
-    private void DeleteCrowdControlDict(float deltaTime)
+    protected virtual void DeleteCrowdControlDict(float deltaTime)
     {
         affectedCrowdControlDict[currentCrowdControlState].remainTime = affectedCrowdControlDict[currentCrowdControlState].remainTime - deltaTime;
         if (affectedCrowdControlDict[currentCrowdControlState].remainTime <= 0)
         {
             affectedCrowdControlDict.Remove(currentCrowdControlState);
             currentGeneralState = GeneralState.Normal;
+            //TODO : 여기다가도 상태이상 빠질때 함수 넣으슈
         }
     }
 
@@ -394,14 +397,20 @@ public class Character : MovablePositionObject
 
     }
 
+    bool isTest = false;
     private void OnCollisionEnter(Collision collision)
     {
         //땅이 아닌 레버나 버튼이나 가스레인지 장식물 (원형기둥) 에 닿을때마다 이미 들어있으니 가세요라 오류 수정해야됨 (해결함)
-        if (collision.relativeVelocity.sqrMagnitude > 15) { return; } 
+        Debug.Log(collision.relativeVelocity.sqrMagnitude);
+        if (collision.relativeVelocity.sqrMagnitude > 15) 
+        {
+            Debug.Log("끼얏");
+            isTest = true;
+            return;
+        } 
         if (attachedCollision.ContainsKey(collision.gameObject)) { }
         else attachedCollision.Add(collision.gameObject, collision.GetContact(0).normal);
         CalculateGround();
-        Debug.Log($"{collision.relativeVelocity.sqrMagnitude} Enter");
     }
 
     private void OnCollisionStay(Collision collision)
@@ -411,7 +420,13 @@ public class Character : MovablePositionObject
         if (!attachedCollision.ContainsKey(collision.gameObject)) // <= if (attachedCollision[collision.gameObject] != null) 원래 문구
         {
             attachedCollision[collision.gameObject] = normal;
-        }        
+        }
+        if (IsGround && isTest)
+        {
+            Debug.Log("호우");
+            currentRigidbody.velocity = Vector3.zero;
+            isTest = false;
+        }
         CalculateGround();
     }
 
@@ -459,6 +474,15 @@ public class Character : MovablePositionObject
         }
     }
 
+    protected float FixedUpdate_Test()
+    {
+        Vector3 currentShiftDirection = currentMoveDirection - planeMovementVector;
+
+        float currentMoveAmount = Mathf.Min(moveSpeed * Time.fixedDeltaTime, currentShiftDirection.magnitude);
+
+        return currentMoveAmount;
+    }
+
     protected Vector3 FixedUpdate_Calculate_Move()
     {
         Vector3 currentShiftDirection = currentMoveDirection - planeMovementVector;
@@ -477,7 +501,10 @@ public class Character : MovablePositionObject
         float originDistance = CurrentMovementVelocity.magnitude;
 
         originDistance += characterCollider.radius;
-        if (Physics.Raycast(moveRay, out RaycastHit hit, originDistance, -1 ,QueryTriggerInteraction.Ignore))
+
+        int layerMask = 1 << LayerMask.NameToLayer("Block");
+        //여기 Raycast를 선이 아닌 Box로 바꿔야함
+        if (Physics.BoxCast(CalculateCenter(currentMoveAmount), CalculateHalfExtents(currentMoveAmount), CurrentSightForward_Interaction, out RaycastHit hit, transform.rotation, originDistance, layerMask)) // <= Physics.Raycast(moveRay, out RaycastHit hit, originDistance, -1 ,QueryTriggerInteraction.Ignore)
         {
             float possibleDistance = hit.distance - characterCollider.radius;
 
@@ -487,15 +514,34 @@ public class Character : MovablePositionObject
             Vector3 slidingVector = Vector3.ProjectOnPlane(originVector, hit.normal);
 
             CurrentMovementVelocity = (originVector * possibleDistance) + (slidingVector * impossibleDistance);
-            Debug.Log(hit.collider);
+            
+            Debug.Log("asdf");
+
         }
         
         return CurrentMovementVelocity;
     }
 
+    private Vector3 CalculateCenter(float speed)
+    {
+        Vector3 capsuleCenter;
+        float height = characterCollider.bounds.center.y + (characterCollider.radius / 2);
+        Vector3 length = transform.position + currentMoveDirection.normalized * (characterCollider.radius + (speed / 2));
+        capsuleCenter = new Vector3(length.x, height, length.z);
+
+        return capsuleCenter;
+    }
+
+    private Vector3 CalculateHalfExtents(float speed)
+    {
+        float height;
+        height = characterCollider.height + characterCollider.radius;
+        Vector3 halfExtents = new Vector3(speed / 2, height / 2, speed / 2);
+        
+        return halfExtents; 
+    }
+
     #endregion
-
-
 
     protected override void Initialize()
     {

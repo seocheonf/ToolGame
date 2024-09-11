@@ -44,6 +44,7 @@ namespace SpecialInteraction
         {
             fireData.detectedCharacter = null;
         }
+
         protected override void RegisterFuncInInitialize()
         {
             

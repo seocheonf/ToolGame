@@ -103,6 +103,7 @@ public class Playable : Character, ICameraTarget
 
     protected void PlayableManagerFixedUpdate(float fixedDeltaTime)
     {
+        FixedUpdate_Test();
         MoveHorizontalityFixedUpdate(fixedDeltaTime);
         ResetDirection();
         CharacterRotationSightFixedUpdate();
@@ -142,7 +143,6 @@ public class Playable : Character, ICameraTarget
     private void Sit()
     {
         RaycastHit hit;
-        Debug.DrawRay(transform.position, Vector3.down * 2, UnityEngine.Color.magenta);
         if (Physics.Raycast(currentRigidbody.transform.position, Vector3.down, out hit, sitRaycastDistance))
         {
             if (hit.collider.GetComponent<Rigidbody>())
@@ -204,7 +204,7 @@ public class Playable : Character, ICameraTarget
     {
         RaycastHit hit;
         int layerMask = (1 << LayerMask.NameToLayer("Cast_UniqueTool")) + (1 << LayerMask.NameToLayer("Block"));
-        if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward_Interaction, out hit, sightForwardLength))
+        if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward_Interaction, out hit, sightForwardLength, layerMask))
         {
             currentTargetUniqueTool = hit.collider.GetComponentInParent<UniqueTool>();
             PickUpTool(currentTargetUniqueTool);
@@ -321,15 +321,6 @@ public class Playable : Character, ICameraTarget
             return result;
         }
     }
-#if UNITY_EDITOR
-
-    private void OnDrawGizmos()
-    {
-        Debug.DrawRay(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward_Interaction * sightForwardLength, UnityEngine.Color.red);
-
-    }
-
-#endif
 
 
     //깔쌈한테스트//
