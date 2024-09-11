@@ -8,7 +8,13 @@
         Monologue,
         CapCap,
 
-        Umbrella
+        Umbrella,
+        BigLeaf,
+
+        UmbrellaHookTarget,
+
+        WindA,
+        WindB
 
         #endregion
 

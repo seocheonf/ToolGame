@@ -10,7 +10,14 @@ public static class ResourcePath
         "Monologue",
         "CapCap",
 
-        "UniqueTool/Umbrella"
+        "UniqueTool/Umbrella",
+        "UniqueTool/BigLeaf",
+
+        "UniqueTool/AboutUniqueTools/UmbrellaHookTarget",
+
+        "SpecialInteractions/WindA",
+        "SpecialInteractions/WindB"
+
 
         #endregion
 
