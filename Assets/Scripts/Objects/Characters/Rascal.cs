@@ -39,6 +39,7 @@ public class Rascal : Character
     {
         ApplicationGeneralState();
         RenewalCrowdControlRemainTimeUpdate(deltaTime);
+        UpdateLookTarget();
     }
 
     protected void RascalManagerFixedUpdate(float fixedDeltaTime)
@@ -123,7 +124,13 @@ public class Rascal : Character
         {
             moveSpeed = defaultMoveSpeed + defaultAccelSpeed;
             destination = player.transform.position;
+            
         }
     }
 
+    void UpdateLookTarget()
+    {
+        Vector3 dir = destination - transform.position;
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), 0.02f);
+    }
 }
