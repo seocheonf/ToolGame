@@ -84,4 +84,13 @@ namespace ToolGame
         Length
     }
 
+    public enum SingleUIType
+    {
+        CurrentInputList
+    }
+
+    public enum MultipleUIType
+    {
+
+    }
 }
