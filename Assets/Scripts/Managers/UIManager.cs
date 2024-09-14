@@ -76,19 +76,23 @@ public class UIManager : Manager
             }
         }
 
+        target.transform.parent = GameManager.Instance.MainCanvas.transform;
         return target;
     }
-    public void GetSingleUI(SingleUIType uiType)
+    public SingleUIComponent GetSingleUI(SingleUIType uiType)
     {
-
+        return default;
     }
 
-    public T GetMultipleUI<T>(MultipleUIType uiType)
+    public T GetMultipleUI<T>(MultipleUIType uiType) where T : MultipleUIComponent
     {
-
+        return default;
     }
-    public void GetMultipleUI(MultipleUIType uiType)
+    public MultipleUIComponent GetMultipleUI(MultipleUIType uiType)
     {
-
+        return default;
     }
+
+
+
 }

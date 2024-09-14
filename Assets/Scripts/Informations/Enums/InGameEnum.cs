@@ -80,7 +80,7 @@ namespace ToolGame
 
         #endregion
 
-        //길이용
+        //길이 용도
         Length
     }
 
