@@ -3,39 +3,122 @@ using System.Collections.Generic;
 using ToolGame;
 using UnityEngine;
 
+[System.Serializable]
+class SingleUIInfo
+{
+    public SingleUIType uiType;
+    public ResourceEnum.Prefab prefab;
+}
+
+class MultipleUIInfo
+{
+    public MultipleUIType uiType;
+    public ResourceEnum.Prefab prefab;
+}
+
+class SingleUICount
+{
+    public GameObject instance;
+    public int count = 0;
+
+
+}
+
 public class UIManager : Manager
 {
-    private Dictionary<SingleUIType, ResourceEnum.Prefab> singleInfoDictionary;
-    private Dictionary<SingleUIType, GameObject> singleInstanceDictionary;
+    //인스펙터용 데이터
+    [SerializeField]
+    private List<SingleUIInfo> singleInfoList;
+    [SerializeField]
+    private List<MultipleUIInfo> multipleInfoList;
+    //
+
+    private Dictionary<SingleUIType, SingleUICount> singleInstanceDictionary;
 
     private Dictionary<MultipleUIType, ResourceEnum.Prefab> multipleInfoDictionary;
+    private Dictionary<MultipleUIType, Queue<GameObject>> multiplePoolDictionary;
     
     public override IEnumerator Initiate()
     {
         yield return base.Initiate();
 
-        singleInfoDictionary = new Dictionary<SingleUIType, ResourceEnum.Prefab>();
-        singleInstanceDictionary = new Dictionary<SingleUIType, GameObject>();
+        GameManager.TurnOnBasicLoadingCavnas("Essential UI Loading..");
+
+        //
+
+        singleInstanceDictionary = new Dictionary<SingleUIType, SingleUICount>();
+
+        for(int i = 0; i<singleInfoList.Count; i++)
+        {
+            singleInstanceDictionary.Add(singleInfoList[i].uiType, new(GameObject.Instantiate(ResourceManager.GetResource(singleInfoList[i].prefab)));
+            singleInfoList[i] = null;
+        }
+
+        singleInfoList = null;
+
+        //
 
         multipleInfoDictionary = new Dictionary<MultipleUIType, ResourceEnum.Prefab>();
+        multiplePoolDictionary = new Dictionary<MultipleUIType, Queue<GameObject>>();
+
+        for (int i = 0; i < multipleInfoList.Count; i++)
+        {
+            multipleInfoDictionary.Add(multipleInfoList[i].uiType, multipleInfoList[i].prefab);
+            multipleInfoList[i] = null;
+        }
+
+        multipleInfoList = null;
+
+        //
 
 
     }
 
-    private void SetSingleUIPrefabPair(SingleUIType uiType, ResourceEnum.Prefab prefab)
+    public T GetSingleUI<T>(SingleUIType uiType) where T : SingleUIComponent
     {
-        singleInfoDictionary.Add(uiType, prefab);
-    }
-    private void SetMultipleUIPrefabPair(MultipleUIType uiType, ResourceEnum.Prefab prefab)
-    {
-        multipleInfoDictionary.Add(uiType, prefab);
+
     }
 
     public T GetSingleUI<T>(SingleUIType uiType) where T : SingleUIComponent
     {
         T target = null;
+
+        #region 코드 중복 줄이기
+        if (!singleInstanceDictionary.TryGetValue(uiType, out GameObject resultG) || resultG == null)
+        {
+            if (singleInfoDictionary.TryGetValue(uiType, out ResourceEnum.Prefab resultP))
+            {
+                resultG = ResourceManager.GetResource(resultP);
+                resultG = GameObject.Instantiate(resultG);
+            }
+            else
+            {
+                Debug.LogError("UI에 대한 리소스를 찾을 수 없어요!");
+                return null;
+            }
+
+            if(!singleInstanceDictionary.TryAdd(uiType, resultG))
+            {
+                singleInstanceDictionary[uiType] = resultG;
+            }
+
+        }
+
+        target = resultG.GetComponent<T>();
+
+        if(target == null)
+        {
+            Debug.LogError("UI에 대한 리소스를 찾을 수 없어요!");
+            return null;
+        }
+
+        target.transform.parent = GameManager.Instance.MainCanvas.transform;
+        return target;
+        #endregion
+        //vs
+        #region 직관적으로 작성하기
         //우선 생성되어 있는 유일 UI가 있는 지 확인
-        if(singleInstanceDictionary.TryGetValue(uiType, out GameObject resultG))
+        if (singleInstanceDictionary.TryGetValue(uiType, out GameObject resultG))
         {
             //Dictionary구조는 있는데 비어있다면
             if (resultG == null)
@@ -78,6 +161,7 @@ public class UIManager : Manager
 
         target.transform.parent = GameManager.Instance.MainCanvas.transform;
         return target;
+        #endregion
     }
     public SingleUIComponent GetSingleUI(SingleUIType uiType)
     {
