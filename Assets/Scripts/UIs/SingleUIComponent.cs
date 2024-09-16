@@ -11,7 +11,7 @@ public class SingleUIComponent : UIComponent
     {
         myType = uiType;
     }
-    public SingleUIType GetType()
+    public SingleUIType GetUIType()
     {
         return myType;
     }

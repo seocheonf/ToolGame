@@ -20,8 +20,12 @@ class SingleUICount
 {
     public GameObject instance;
     public int count = 0;
+    public HashSet<object> user = new HashSet<object>();
 
-
+    public SingleUICount(GameObject newInstance)
+    {
+        instance = newInstance;
+    }
 }
 
 public class UIManager : Manager
@@ -50,7 +54,7 @@ public class UIManager : Manager
 
         for(int i = 0; i<singleInfoList.Count; i++)
         {
-            singleInstanceDictionary.Add(singleInfoList[i].uiType, new(GameObject.Instantiate(ResourceManager.GetResource(singleInfoList[i].prefab)));
+            singleInstanceDictionary.Add(singleInfoList[i].uiType, new(GameObject.Instantiate(ResourceManager.GetResource(singleInfoList[i].prefab))));
             singleInfoList[i] = null;
         }
 
@@ -74,9 +78,48 @@ public class UIManager : Manager
 
     }
 
-    public T GetSingleUI<T>(SingleUIType uiType) where T : SingleUIComponent
+    public T GetSingleUI<T>(SingleUIType uiType, object user) where T : SingleUIComponent
     {
+        if(singleInstanceDictionary.TryGetValue(uiType, out SingleUICount result) && result != null && result.instance != null)
+        {
+            result.count++;
 
+            result.user.Add(user);
+
+            T resultT = result.instance.GetComponent<T>();
+            resultT.SetActive(true);
+
+            return resultT;
+        }
+        else
+        {
+            Debug.LogError("유일 UI가 준비되지 않았아요. 유일 UI용 프리팹 설정과 프리팹 데이터를 확인해주세요!");
+            return null;
+        }
+    }
+    public void PutSingleUI<T>(ref T target) where T : SingleUIComponent
+    {
+#if UNITY_EDITOR
+        if(target == null)
+        {
+            Debug.LogError("Null Ref Error!!!!!!!");
+            return;
+        }
+#endif
+
+        if (singleInstanceDictionary.TryGetValue(target.GetUIType(), out SingleUICount result) && result != null && result.instance != null)
+        {
+            result.count--;
+
+            if(result.count == 0)
+                target.SetActive(false);
+        }
+        else
+        {
+            Debug.LogError("유일 UI가 준비되지 않았아요. 유일 UI용 프리팹 설정과 프리팹 데이터를 확인해주세요!");
+        }
+
+        target = null;
     }
 
     public T GetSingleUI<T>(SingleUIType uiType) where T : SingleUIComponent
