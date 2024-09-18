@@ -111,8 +111,14 @@ public class UIManager : Manager
         {
             result.count--;
 
-            if(result.count == 0)
+            if (result.count == 0)
+            {
                 target.SetActive(false);
+            }
+            else if(result.count < 0)
+            {
+                Debug.LogError("잘못된 refcount 입니다! 값이 UIManager를 통하지 않고 사용되었을 가능성이 있습니다!");
+            }
         }
         else
         {
