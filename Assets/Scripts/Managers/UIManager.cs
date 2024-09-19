@@ -28,6 +28,25 @@ class SingleUICount
     }
 }
 
+[System.Serializable]
+class FixedUIInfo
+{
+    public FixedUIType uiType;
+    public ResourceEnum.Prefab prefab;
+}
+
+class FixedUICount
+{
+    public GameObject instance;
+    public bool count = false;
+}
+
+
+
+
+
+
+
 public class UIManager : Manager
 {
     //인스펙터용 데이터
@@ -41,6 +60,17 @@ public class UIManager : Manager
 
     private Dictionary<MultipleUIType, ResourceEnum.Prefab> multipleInfoDictionary;
     private Dictionary<MultipleUIType, Queue<GameObject>> multiplePoolDictionary;
+
+
+
+
+    //-------------------------------
+
+    //인스펙터용 데이터
+    [SerializeField]
+    private List<FixedUIInfo> fixedInfoList;
+    private Dictionary<FixedUIType, GameObject> fixedPrefabDictionary;
+    private Dictionary<FixedUIType, FixedUICount> fixedUIDictionary;
     
     public override IEnumerator Initiate()
     {
@@ -77,6 +107,82 @@ public class UIManager : Manager
 
 
     }
+
+
+    private T GetFixedUI<T>(FixedUIType uiType) where T : FixedUIComponent
+    {
+        T resultT = null;
+
+        FixedUICount result = fixedUIDictionary[uiType];
+
+        result.count = true;
+        resultT = result.instance.GetComponent<T>();
+
+        return resultT;
+    }
+    private bool TryGetFixedUI<T>(FixedUIType uiType, out T resultT) where T : FixedUIComponent
+    {
+        resultT = null;
+
+        //생성된 인스턴스 확인
+        if (!fixedUIDictionary.TryGetValue(uiType, out FixedUICount result) || result == null)
+        //생성된 인스턴스가 없다면?
+        {
+            //새로 인스턴스를 생성한다.
+            result.instance = GetFixedPrefab(uiType);
+            result.count = true;
+        }
+        if(result.instance == null)
+        {
+            Debug.LogError("Fixed UI가 준비되지 않았아요. Fixed UI용 프리팹 설정과 프리팹 데이터를 확인해주세요!");
+            return false;
+        }
+
+        resultT = result.instance.GetComponent<T>();
+        return true;
+    }
+
+
+
+
+
+    private GameObject GetFixedPrefab(FixedUIType uiType)
+    {
+        return fixedPrefabDictionary[uiType];
+    }
+    private bool TryGetFixedPrefab(FixedUIType uIType, out GameObject result)
+    {
+        if (!fixedPrefabDictionary.TryGetValue(uIType, out result))
+        {
+            //리소스 정보 확인 불가.
+            Debug.LogError("Fixed UI가 준비되지 않았아요. Fixed UI용 프리팹 설정과 프리팹 데이터를 확인해주세요!");
+            return false;
+        }
+        else if (result == null)
+        {
+            Debug.LogError("Fixed UI가 준비되지 않았아요. Fixed UI용 프리팹 설정과 프리팹 데이터를 확인해주세요!");
+            return false;
+        }
+        return true;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public T GetSingleUI<T>(SingleUIType uiType, object user) where T : SingleUIComponent
     {

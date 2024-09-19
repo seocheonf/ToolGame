@@ -10,4 +10,14 @@ public class UIComponent : MyComponent
     {
         gameObject.SetActive(isActive);
     }
+
+    public virtual void StartUI()
+    {
+
+    }
+
+    public virtual void EndUI()
+    {
+
+    }
 }

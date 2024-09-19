@@ -93,4 +93,9 @@ namespace ToolGame
     {
 
     }
+
+    public enum FixedUIType
+    {
+
+    }
 }
