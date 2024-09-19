@@ -92,7 +92,7 @@ public class Rascal : Character
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    protected virtual void OnTriggerEnter(Collider other)
     {
         if (other.GetComponent<Playable>())
         {
@@ -100,8 +100,8 @@ public class Rascal : Character
             MoveForPlayer(other.GetComponent<Playable>());
         }
     }
-    
-    private void OnTriggerStay(Collider other)
+
+    protected virtual void OnTriggerStay(Collider other)
     {
         if (other.GetComponent<Playable>())
         {
@@ -109,8 +109,8 @@ public class Rascal : Character
             MoveForPlayer(other.GetComponent<Playable>());
         }
     }
-    
-    private void OnTriggerExit(Collider other)
+
+    protected virtual void OnTriggerExit(Collider other)
     {
         isPlayerIn = false;
         moveSpeed = defaultMoveSpeed;

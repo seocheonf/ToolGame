@@ -511,12 +511,9 @@ public class Character : MovablePositionObject
             float impossibleDistance = originDistance - possibleDistance;
 
             Vector3 originVector = CurrentMovementVelocity.normalized;
-            Vector3 slidingVector = Vector3.ProjectOnPlane(originVector, hit.normal);
+            Vector3 slidingVector = Vector3.ProjectOnPlane(originVector, hit.normal.normalized);
 
             CurrentMovementVelocity = (originVector * possibleDistance) + (slidingVector * impossibleDistance);
-            
-            Debug.Log("asdf");
-
         }
         
         return CurrentMovementVelocity;
