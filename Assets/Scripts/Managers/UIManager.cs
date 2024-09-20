@@ -141,6 +141,12 @@ public class UIManager : Manager
         resultT = result.instance.GetComponent<T>();
         return true;
     }
+    //====== 일반적인 단독 UI는 풀링하는 대상으로 보기 힘들다. UI의 구성요소가 풀링될 수 있어도, 그 집합체, 단독으로 하나의 의미를 갖는 UI는 오류메세지같은 단순한 수준이 아니고서야 풀링으로 처리하기 애매하다. ======//
+    // floating UIComponent를 List를 stack으로서 써서 닫힐 순서를 정의할 수 있다.
+    // nonblocking끼리는 닫힐 순서가 바뀔 수 있으나 blocking끼리는 안된다. blocking은 자기보다 먼저 들어가 있던 친구를 모두 무시한다.
+    // 그렇다면, blocking에 대한 요소는 floating의 하위 클래스로 분류하기보다 그 멤버변수로서 특징으로 가지고 있는 것이 더 적절하다 판단된다.
+    // 기본적으로 blocking과 nonblocking의 게임 씬에 덧 올라간다라는 특징은 동일한데 다른 점이 만약 쌓은 위치를 교환하거나, 입력을 받을 때 그 이전 것을 무시하느냐 차이라서.
+    // 매번 getcomponent를 하기에도 애매하고. 
 
 
 
