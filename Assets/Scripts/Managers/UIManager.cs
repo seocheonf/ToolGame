@@ -3,126 +3,45 @@ using System.Collections.Generic;
 using ToolGame;
 using UnityEngine;
 
-[System.Serializable]
-class SingleUIInfo
+
+class FloatingNode
 {
-    public SingleUIType uiType;
-    public ResourceEnum.Prefab prefab;
+    public FloatingUIComponent headBlockingUI;
+    public List<FloatingUIComponent> nonBlockingStack;
 }
-
-class MultipleUIInfo
-{
-    public MultipleUIType uiType;
-    public ResourceEnum.Prefab prefab;
-}
-
-class SingleUICount
-{
-    public GameObject instance;
-    public int count = 0;
-    public HashSet<object> user = new HashSet<object>();
-
-    public SingleUICount(GameObject newInstance)
-    {
-        instance = newInstance;
-    }
-}
-
-[System.Serializable]
-class FixedUIInfo
-{
-    public FixedUIType uiType;
-    public ResourceEnum.Prefab prefab;
-}
-
-class FixedUICount
-{
-    public GameObject instance;
-    public bool count = false;
-}
-
-
-
-
-
-
 
 public class UIManager : Manager
 {
-    //인스펙터용 데이터
-    [SerializeField]
-    private List<SingleUIInfo> singleInfoList;
-    [SerializeField]
-    private List<MultipleUIInfo> multipleInfoList;
-    //
 
-    private Dictionary<SingleUIType, SingleUICount> singleInstanceDictionary;
+    private Stack<FloatingNode> floatingUIStack;
 
-    private Dictionary<MultipleUIType, ResourceEnum.Prefab> multipleInfoDictionary;
-    private Dictionary<MultipleUIType, Queue<GameObject>> multiplePoolDictionary;
-
-
-
-
-    //-------------------------------
-
-    //인스펙터용 데이터
-    [SerializeField]
-    private List<FixedUIInfo> fixedInfoList;
-    private Dictionary<FixedUIType, GameObject> fixedPrefabDictionary;
-    private Dictionary<FixedUIType, FixedUICount> fixedUIDictionary;
-    
     public override IEnumerator Initiate()
     {
         yield return base.Initiate();
 
         GameManager.TurnOnBasicLoadingCavnas("Essential UI Loading..");
 
-        //
-
-        singleInstanceDictionary = new Dictionary<SingleUIType, SingleUICount>();
-
-        for(int i = 0; i<singleInfoList.Count; i++)
-        {
-            singleInstanceDictionary.Add(singleInfoList[i].uiType, new(GameObject.Instantiate(ResourceManager.GetResource(singleInfoList[i].prefab))));
-            singleInfoList[i] = null;
-        }
-
-        singleInfoList = null;
-
-        //
-
-        multipleInfoDictionary = new Dictionary<MultipleUIType, ResourceEnum.Prefab>();
-        multiplePoolDictionary = new Dictionary<MultipleUIType, Queue<GameObject>>();
-
-        for (int i = 0; i < multipleInfoList.Count; i++)
-        {
-            multipleInfoDictionary.Add(multipleInfoList[i].uiType, multipleInfoList[i].prefab);
-            multipleInfoList[i] = null;
-        }
-
-        multipleInfoList = null;
-
-        //
-
+        floatingUIStack = new Stack<FloatingNode>();
 
     }
 
-
-    private T GetFixedUI<T>(FixedUIType uiType) where T : FixedUIComponent
+    
+    public T GetFixedUI<T>(FixedUIType uiType) where T : FixedUIComponent
     {
+        GameObject result = null;
         T resultT = null;
 
-        FixedUICount result = fixedUIDictionary[uiType];
-
-        result.count = true;
-        resultT = result.instance.GetComponent<T>();
+        result = ResourceManager.GetResource(ResourceEnum.Prefab);
+        resultT = result.GetComponent<T>();
 
         return resultT;
     }
-    private bool TryGetFixedUI<T>(FixedUIType uiType, out T resultT) where T : FixedUIComponent
+    public bool TryGetFixedUI<T>(FixedUIType uiType, out T resultT) where T : FixedUIComponent
     {
         resultT = null;
+
+
+
 
         //생성된 인스턴스 확인
         if (!fixedUIDictionary.TryGetValue(uiType, out FixedUICount result) || result == null)
@@ -141,12 +60,37 @@ public class UIManager : Manager
         resultT = result.instance.GetComponent<T>();
         return true;
     }
-    //====== 일반적인 단독 UI는 풀링하는 대상으로 보기 힘들다. UI의 구성요소가 풀링될 수 있어도, 그 집합체, 단독으로 하나의 의미를 갖는 UI는 오류메세지같은 단순한 수준이 아니고서야 풀링으로 처리하기 애매하다. ======//
-    // floating UIComponent를 List를 stack으로서 써서 닫힐 순서를 정의할 수 있다.
-    // nonblocking끼리는 닫힐 순서가 바뀔 수 있으나 blocking끼리는 안된다. blocking은 자기보다 먼저 들어가 있던 친구를 모두 무시한다.
-    // 그렇다면, blocking에 대한 요소는 floating의 하위 클래스로 분류하기보다 그 멤버변수로서 특징으로 가지고 있는 것이 더 적절하다 판단된다.
-    // 기본적으로 blocking과 nonblocking의 게임 씬에 덧 올라간다라는 특징은 동일한데 다른 점이 만약 쌓은 위치를 교환하거나, 입력을 받을 때 그 이전 것을 무시하느냐 차이라서.
-    // 매번 getcomponent를 하기에도 애매하고. 
+
+    public T GetFloatingUI<T>(FloatingUIType uIType) where T : FloatingUIComponent
+    {
+
+    }
+    public bool TryGetFloatingUI<T>(FloatingUIType uiType, out T resultT) where T : FloatingUIComponent
+    {
+
+    }
+
+    private void PushUIStack(Stack<FloatingNode> target, FloatingUIComponent data)
+    {
+
+    }
+    private void PopUIStack(Stack<FloatingNode> target, FloatingUIComponent data)
+    {
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

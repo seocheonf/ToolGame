@@ -84,18 +84,15 @@ namespace ToolGame
         Length
     }
 
-    public enum SingleUIType
-    {
-        CurrentInputList
-    }
-
-    public enum MultipleUIType
-    {
-
-    }
 
     public enum FixedUIType
     {
 
     }
+
+    public enum FloatingUIType
+    {
+
+    }
+
 }
