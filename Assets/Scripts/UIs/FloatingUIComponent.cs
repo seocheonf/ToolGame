@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ToolGame;
 using UnityEngine;
 
-public class FloatingUIComponent : MonoBehaviour
+public class FloatingUIComponent : UIComponent
 {
 
     private bool isBlocking;

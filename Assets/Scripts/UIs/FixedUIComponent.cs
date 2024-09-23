@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ToolGame;
 using UnityEngine;
 
-public class FixedUIComponent : MonoBehaviour
+public class FixedUIComponent : UIComponent
 {
 
     private FixedUIType uiType;

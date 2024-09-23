@@ -7,8 +7,43 @@ using UnityEngine;
 
 class FloatingNode
 {
-    public FloatingUIComponent headBlockingUI;
-    public List<FloatingUIComponent> nonBlockingStack;
+    private FloatingUIComponent headBlockingUI;
+    private List<FloatingUIComponent> nonBlockingStack;
+
+    public FloatingUIComponent Head => headBlockingUI;
+
+    public FloatingNode(FloatingUIComponent head)
+    {
+        headBlockingUI = head;
+        nonBlockingStack = new List<FloatingUIComponent>();
+    }
+
+    public void Push(FloatingUIComponent data)
+    {
+        nonBlockingStack.Add(data);
+    }
+    public void Pop(FloatingUIComponent data)
+    {
+        if (nonBlockingStack[^1] == data)
+            nonBlockingStack.RemoveAt(nonBlockingStack.Count - 1);
+        else
+            Debug.LogError("UI Stack의 최상단과 제거하고자 하는 UI가 일치하지 않습니다!");
+    }
+    public void UpInStack(FloatingUIComponent data)
+    {
+        nonBlockingStack.Remove(data);
+        nonBlockingStack.Add(data);
+    }
+
+    public void PopAll()
+    {
+        ////////////////////////////
+        foreach(FloatingUIComponent each in nonBlockingStack)
+        {
+            each.SetActive(false);
+        }
+        nonBlockingStack.Clear();
+    }
 }
 
 public class UIManager : Manager
@@ -111,25 +146,73 @@ public class UIManager : Manager
 
         TryGetFloatingInstance(uiType, out resultT);
 
+        resultT.UIStart += () => { PushUIStack(resultT); };
+        resultT.UIDestroy += () => { PopUIStack(resultT); };
+
         return resultT;
     }
     public bool TryGetFloatingUI<T>(FloatingUIType uiType, out T resultT) where T : FloatingUIComponent
     {
+
         if (!TryGetFloatingInstance(uiType, out resultT))
         {
             return false;
         }
+
+        T lambda = resultT;
+
+        resultT.UIStart += () => { PushUIStack(floatingUIStack, lambda); };
+        resultT.UIDestroy += () => { PopUIStack(floatingUIStack, lambda); };
+
         return true;
     }
 
 
-    private void PushUIStack(Stack<FloatingNode> target, FloatingUIComponent data)
+    //floatingUIStack을 위한 Push Pop함수
+    private void PushUIStack(FloatingUIComponent data)
     {
 
+        if(floatingUIStack.Count == 0)
+        {
+            floatingUIStack.Push(new FloatingNode(null));
+        }
+
+        if(data.IsBlocking)
+        {
+            FloatingNode node = new FloatingNode(data);
+            floatingUIStack.Push(node);
+        }
+        else
+        {
+            floatingUIStack.TryPeek(out FloatingNode peek);
+            peek.Push(data);
+        }
     }
-    private void PopUIStack(Stack<FloatingNode> target, FloatingUIComponent data)
+    private bool PopUIStack(FloatingUIComponent data = null)
     {
+        FloatingNode peek = null;
 
+        // 비어있다면
+        if(floatingUIStack.Count == 0)
+        {
+            return false;
+        }
+        // stack의 깔개라면
+        else if(!floatingUIStack.TryPeek(out peek) || peek.Head == null)
+        {
+            return false;
+        }
+
+        if(peek.Head == data)
+        {
+            peek.PopAll();
+            floatingUIStack.Pop();
+            return true;
+        }
+
+        peek.Pop(data);
+
+        return true;
     }
 
 
