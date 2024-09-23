@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using ToolGame;
@@ -25,50 +26,102 @@ public class UIManager : Manager
 
     }
 
-    
+
+    private bool TryGetFixedInstance<T>(FixedUIType uiType, out T resultT) where T : FixedUIComponent
+    {
+
+        resultT = null;
+        GameObject result = null;
+
+        string typeName = uiType.ToString();
+        typeName = "UI_Fixed_" + typeName;
+        
+        if(!Enum.TryParse(typeName, out ResourceEnum.Prefab prefab))
+        {
+            Debug.LogError("해당하는 UI enum value에 대한 Prefab enum value가 없어요!");
+            return false;
+        }
+
+        if(!ResourceManager.TryGetResource(prefab, out result))
+        {
+            Debug.LogError("해당하는 UI 리소스가 없어요!");
+            return false;
+        }
+
+        if(!result.TryGetComponent(out resultT))
+        {
+            Debug.LogError("해당하는 UI의 속성이 아니에요!");
+            return false;
+        }
+
+        return true;
+
+    }
     public T GetFixedUI<T>(FixedUIType uiType) where T : FixedUIComponent
     {
-        GameObject result = null;
-        T resultT = null;
+        T resultT;
 
-        result = ResourceManager.GetResource(ResourceEnum.Prefab);
-        resultT = result.GetComponent<T>();
+        TryGetFixedInstance(uiType, out resultT);
 
         return resultT;
     }
     public bool TryGetFixedUI<T>(FixedUIType uiType, out T resultT) where T : FixedUIComponent
     {
-        resultT = null;
-
-
-
-
-        //생성된 인스턴스 확인
-        if (!fixedUIDictionary.TryGetValue(uiType, out FixedUICount result) || result == null)
-        //생성된 인스턴스가 없다면?
+        if(!TryGetFixedInstance(uiType, out resultT))
         {
-            //새로 인스턴스를 생성한다.
-            result.instance = GetFixedPrefab(uiType);
-            result.count = true;
-        }
-        if(result.instance == null)
-        {
-            Debug.LogError("Fixed UI가 준비되지 않았아요. Fixed UI용 프리팹 설정과 프리팹 데이터를 확인해주세요!");
             return false;
         }
-
-        resultT = result.instance.GetComponent<T>();
         return true;
     }
 
-    public T GetFloatingUI<T>(FloatingUIType uIType) where T : FloatingUIComponent
+
+    private bool TryGetFloatingInstance<T>(FloatingUIType uiType, out T resultT) where T : FloatingUIComponent
     {
 
+        resultT = null;
+        GameObject result = null;
+
+        string typeName = uiType.ToString();
+        typeName = "UI_Floating_" + typeName;
+
+        if (!Enum.TryParse(typeName, out ResourceEnum.Prefab prefab))
+        {
+            Debug.LogError("해당하는 UI enum value에 대한 Prefab enum value가 없어요!");
+            return false;
+        }
+
+        if (!ResourceManager.TryGetResource(prefab, out result))
+        {
+            Debug.LogError("해당하는 UI 리소스가 없어요!");
+            return false;
+        }
+
+        if (!result.TryGetComponent(out resultT))
+        {
+            Debug.LogError("해당하는 UI의 속성이 아니에요!");
+            return false;
+        }
+
+        return true;
+
+    }
+    public T GetFloatingUI<T>(FloatingUIType uiType) where T : FloatingUIComponent
+    {
+        T resultT;
+
+        TryGetFloatingInstance(uiType, out resultT);
+
+        return resultT;
     }
     public bool TryGetFloatingUI<T>(FloatingUIType uiType, out T resultT) where T : FloatingUIComponent
     {
-
+        if (!TryGetFloatingInstance(uiType, out resultT))
+        {
+            return false;
+        }
+        return true;
     }
+
 
     private void PushUIStack(Stack<FloatingNode> target, FloatingUIComponent data)
     {
