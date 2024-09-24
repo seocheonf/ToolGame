@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using ToolGame;
 using UnityEngine;
 
@@ -22,12 +23,23 @@ class FloatingNode
     {
         nonBlockingStack.Add(data);
     }
-    public void Pop(FloatingUIComponent data)
+    public bool Pop(FloatingUIComponent data)
     {
-        if (nonBlockingStack[^1] == data)
+        if (nonBlockingStack.Count == 0)
+        {
+            Debug.LogError("NonBlockingUI Stack이 비워져 있어요!");
+            return false;
+        }
+        else if (nonBlockingStack[^1] == data)
+        {
             nonBlockingStack.RemoveAt(nonBlockingStack.Count - 1);
+            return true;
+        }
         else
+        {
             Debug.LogError("UI Stack의 최상단과 제거하고자 하는 UI가 일치하지 않습니다!");
+            return false;
+        }
     }
     public void UpInStack(FloatingUIComponent data)
     {
@@ -37,11 +49,12 @@ class FloatingNode
 
     public void PopAll()
     {
-        ////////////////////////////
-        foreach(FloatingUIComponent each in nonBlockingStack)
+
+        while(nonBlockingStack.Count - 1 >= 0)
         {
-            each.SetActive(false);
+            nonBlockingStack.Last().SetActive(false);
         }
+
         nonBlockingStack.Clear();
     }
 }
@@ -60,7 +73,6 @@ public class UIManager : Manager
         floatingUIStack = new Stack<FloatingNode>();
 
     }
-
 
     private bool TryGetFixedInstance<T>(FixedUIType uiType, out T resultT) where T : FixedUIComponent
     {
@@ -82,6 +94,8 @@ public class UIManager : Manager
             Debug.LogError("해당하는 UI 리소스가 없어요!");
             return false;
         }
+
+        result = GameObject.Instantiate(result);
 
         if(!result.TryGetComponent(out resultT))
         {
@@ -109,7 +123,6 @@ public class UIManager : Manager
         return true;
     }
 
-
     private bool TryGetFloatingInstance<T>(FloatingUIType uiType, out T resultT) where T : FloatingUIComponent
     {
 
@@ -130,6 +143,8 @@ public class UIManager : Manager
             Debug.LogError("해당하는 UI 리소스가 없어요!");
             return false;
         }
+
+        result = GameObject.Instantiate(result);
 
         if (!result.TryGetComponent(out resultT))
         {
@@ -161,12 +176,11 @@ public class UIManager : Manager
 
         T lambda = resultT;
 
-        resultT.UIStart += () => { PushUIStack(floatingUIStack, lambda); };
-        resultT.UIDestroy += () => { PopUIStack(floatingUIStack, lambda); };
+        lambda.UIStart += () => { PushUIStack(lambda); };
+        lambda.UIDestroy += () => { PopUIStack(lambda); };
 
         return true;
     }
-
 
     //floatingUIStack을 위한 Push Pop함수
     private void PushUIStack(FloatingUIComponent data)
@@ -188,49 +202,29 @@ public class UIManager : Manager
             peek.Push(data);
         }
     }
-    private bool PopUIStack(FloatingUIComponent data = null)
+    private bool PopUIStack(FloatingUIComponent data)
     {
         FloatingNode peek = null;
 
-        // 비어있다면
-        if(floatingUIStack.Count == 0)
+        // 빼낼 UI 정보가 stack에 전혀 없다면?
+        if(!floatingUIStack.TryPeek(out peek))
         {
-            return false;
-        }
-        // stack의 깔개라면
-        else if(!floatingUIStack.TryPeek(out peek) || peek.Head == null)
-        {
+            Debug.LogError("쌓여있는 UI가 없는데 UI를 닫으려고 했어요!");
             return false;
         }
 
-        if(peek.Head == data)
+        // 빼낼 UI 정보가 stack 최상단의 Head와 동일하다면?
+        if (peek.Head == data)
         {
             peek.PopAll();
             floatingUIStack.Pop();
             return true;
         }
 
-        peek.Pop(data);
-
-        return true;
+        return peek.Pop(data);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    /*
 
     private GameObject GetFixedPrefab(FixedUIType uiType)
     {
@@ -419,5 +413,5 @@ public class UIManager : Manager
     }
 
 
-
+    */
 }
