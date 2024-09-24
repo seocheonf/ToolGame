@@ -40,8 +40,58 @@ public class GameManager : MonoBehaviour
     //실행의 순서를 지켜야 하는 묶음단위가 있으므로 각각의 델리게이트로 분리하여 관리한다.
 
     //처음 나타날 때 한번 해야할 일들의 묶음
-    public static StartFunction ManagersStart;
-    public static StartFunction ObjectsStart;
+    public static StartFunction ManagersStart
+    {
+        get
+        {
+
+            while (ManagersStart_A != null || ManagersStart_B != null)
+            {
+                //양쪽 중 하나라도 비어있지 않다면
+
+                if (managersStart_Running)
+                {
+                    ManagersStart_A?.Invoke();
+                    ManagersStart_A = null;
+                }
+                else
+                {
+                    ManagersStart_B?.Invoke();
+                    ManagersStart_B = null;
+                }
+
+                managersStart_Running = !managersStart_Running;
+
+            }
+            //만약 양쪽 다 비었다면 그만 실행.
+            return null;
+
+        }
+        set
+        {
+            if(value == null)
+            {
+                ManagersStart_A = null;
+                ManagersStart_B = null;
+            }
+
+            if (!managersStart_Running)
+                ManagersStart_A = value;
+            else
+                ManagersStart_B = value;
+        }
+    }
+    private static bool managersStart_Running = true; // get 했을 시 현재 실행해야 할 트리거 [true : A, false : B]. set은 그 반대
+    private static StartFunction ManagersStart_A;
+    private static StartFunction ManagersStart_B;
+
+    public static StartFunction ObjectsStart
+    {
+        get;
+        set;
+    }
+    private static StartFunction ObjectsStart_A;
+    private static StartFunction ObjectsStart_B;
 
     //매 프레임마다 지속적으로 해야할 일들의 묶음
     public static UpdateFunction ManagersUpdate;
