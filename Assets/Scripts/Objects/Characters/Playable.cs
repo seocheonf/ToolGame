@@ -25,8 +25,6 @@ public class Playable : Character, ICameraTarget
     private bool isPickUpTool = false;
     private int currentSightOrdinal;
 
-    private bool isJump;
-
     [SerializeField] float defaultRushPower;
     private float rushPower;
 
@@ -45,6 +43,7 @@ public class Playable : Character, ICameraTarget
     {
         base.MyStart();
         characterCollider = GetComponent<CapsuleCollider>();
+        anim = GetComponentInChildren<Animator>();
 
         //깔쌈한테스트//
 
@@ -97,6 +96,7 @@ public class Playable : Character, ICameraTarget
     {
         ApplicationGeneralState();
         RunUpdate();
+        AnimatorUpdate();
         RushCoolTimeUpdate(deltaTime);
         RenewalCrowdControlRemainTimeUpdate(deltaTime);
     }
@@ -225,6 +225,7 @@ public class Playable : Character, ICameraTarget
         }
     }
 
+
     private void TargetOuterFuncInteraction()
     {
 
@@ -280,6 +281,17 @@ public class Playable : Character, ICameraTarget
                 if (!isSit && !isRush) currentGeneralState = GeneralState.Normal;
                 break;
         }
+    }
+
+    private void AnimatorUpdate()
+    {
+        anim.SetBool("isJump", isJump);
+        anim.SetBool("isRush", isRush);
+        anim.SetBool("isRun", isAccel);
+        anim.SetBool("isSit", isSit);
+
+        anim.SetInteger("GeneralState", (int)currentGeneralState);
+        anim.SetInteger("CrowdState", (int)currentCrowdControlState);
     }
 
     private void MoveLookAt()

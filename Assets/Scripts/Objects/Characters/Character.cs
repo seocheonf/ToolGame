@@ -32,10 +32,13 @@ public class Character : MovablePositionObject
     protected bool isMoveRight;
 
     protected bool isAir;
+    protected bool isJump;
+
+    [SerializeField] protected Animator anim;
 
     [SerializeField]
     protected GeneralState currentGeneralState;
-    CrowdControlState currentCrowdControlState;     //현재 걸려있는 CC기
+    protected CrowdControlState currentCrowdControlState;     //현재 걸려있는 CC기
     List<AffectedCrowdControl> affectedCrowdControlList;
     Dictionary<CrowdControlState, AffectedCrowdControl> affectedCrowdControlDict = new();   //List -> Dictionary 로 교체
 
@@ -157,6 +160,7 @@ public class Character : MovablePositionObject
         {
             _groundNormal = value;
             _isGround = (value.y > 0 && Vector3.Angle(Vector3.up, value) < maxSlopeAngle);
+            if (_isGround && isJump) isJump = false; 
         }
     }
     protected Vector3 planeMovementVector;
@@ -261,6 +265,7 @@ public class Character : MovablePositionObject
             result.y = jumpPower;
 
             currentRigidbody.velocity = result;
+            isJump = true;
         }
     }
 
@@ -504,7 +509,8 @@ public class Character : MovablePositionObject
 
         int layerMask = 1 << LayerMask.NameToLayer("Block");
         //여기 Raycast를 선이 아닌 Box로 바꿔야함
-        if (Physics.BoxCast(CalculateCenter(currentMoveAmount), CalculateHalfExtents(currentMoveAmount), CurrentSightForward_Interaction, out RaycastHit hit, transform.rotation, originDistance, layerMask)) // <= Physics.Raycast(moveRay, out RaycastHit hit, originDistance, -1 ,QueryTriggerInteraction.Ignore)
+        //if (Physics.BoxCast(CalculateCenter(currentMoveAmount), CalculateHalfExtents(currentMoveAmount), CurrentSightForward_Interaction, out RaycastHit hit, transform.rotation, originDistance, layerMask)) // <= Physics.Raycast(moveRay, out RaycastHit hit, originDistance, -1 ,QueryTriggerInteraction.Ignore)
+        if (Physics.Raycast(moveRay, out RaycastHit hit, originDistance, -1, QueryTriggerInteraction.Ignore))
         {
             float possibleDistance = hit.distance - characterCollider.radius;
 
