@@ -3,6 +3,7 @@ namespace ResourceEnum
 {
     public enum Prefab
     {
+        BasicCanvas,
 
         #region Object Prefab List
         TestPrefab,
@@ -15,14 +16,15 @@ namespace ResourceEnum
         UmbrellaHookTarget,
 
         WindA,
-        WindB
+        WindB,
 
         #endregion
 
 
         #region UI Prefab List
 
-
+        UI_Fixed_FixedUITest,
+        UI_Floating_FloatingUITest
 
         #endregion
 

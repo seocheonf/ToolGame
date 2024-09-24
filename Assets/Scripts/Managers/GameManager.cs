@@ -61,9 +61,6 @@ public class GameManager : MonoBehaviour
     public static DestroyFunction ObjectsDestroy;
 
     [SerializeField]
-    private Canvas mainCanvas;
-    public Canvas MainCanvas => mainCanvas;
-    [SerializeField]
     private BasicLoadingCanvas basicLoadingCanvas;
 
     private bool isScriptEntireUpdateStop = true;
@@ -185,7 +182,6 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            
             ObjectsStart?.Invoke();
             ObjectsStart = null;
 

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class FloatingUIComponent : UIComponent
 {
-
+    [SerializeField]
     private bool isBlocking;
     private FloatingUIType uiType;
 

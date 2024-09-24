@@ -72,6 +72,8 @@ public class UIManager : Manager
 
         floatingUIStack = new Stack<FloatingNode>();
 
+        floatingUIStack.Push(new FloatingNode(null));
+
     }
 
     private bool TryGetFixedInstance<T>(FixedUIType uiType, out T resultT) where T : FixedUIComponent
@@ -102,6 +104,8 @@ public class UIManager : Manager
             Debug.LogError("해당하는 UI의 속성이 아니에요!");
             return false;
         }
+
+        result.transform.SetParent(GameManager.Instance.CurrentWorld.WorldCanvas.transform);
 
         return true;
 
@@ -145,12 +149,14 @@ public class UIManager : Manager
         }
 
         result = GameObject.Instantiate(result);
-
+        
         if (!result.TryGetComponent(out resultT))
         {
             Debug.LogError("해당하는 UI의 속성이 아니에요!");
             return false;
         }
+
+        result.transform.SetParent(GameManager.Instance.CurrentWorld.WorldCanvas.transform);
 
         return true;
 
