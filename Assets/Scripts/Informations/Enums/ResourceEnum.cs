@@ -24,7 +24,9 @@ namespace ResourceEnum
         #region UI Prefab List
 
         UI_Fixed_FixedUITest,
-        UI_Floating_FloatingUITest
+        UI_Floating_FloatingUITest,
+
+        UI_Fixed_PlayableInputUI
 
         #endregion
 

@@ -29,7 +29,9 @@ public static class ResourcePath
         #region UI Prefab List
 
         "UIs/UI_Fixed_FixedUITest",
-        "UIs/UI_Floating_FloatingUITest"
+        "UIs/UI_Floating_FloatingUITest",
+
+        "UIs/UI_Fixed_PlayableInputUI"
 
 
         #endregion

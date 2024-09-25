@@ -97,15 +97,13 @@ public class UIManager : Manager
             return false;
         }
 
-        result = GameObject.Instantiate(result);
+        result = GameObject.Instantiate(result, GameManager.Instance.CurrentWorld.WorldCanvas.transform);
 
         if(!result.TryGetComponent(out resultT))
         {
             Debug.LogError("해당하는 UI의 속성이 아니에요!");
             return false;
         }
-
-        result.transform.SetParent(GameManager.Instance.CurrentWorld.WorldCanvas.transform);
 
         return true;
 
@@ -148,15 +146,13 @@ public class UIManager : Manager
             return false;
         }
 
-        result = GameObject.Instantiate(result);
+        result = GameObject.Instantiate(result, GameManager.Instance.CurrentWorld.WorldCanvas.transform);
         
         if (!result.TryGetComponent(out resultT))
         {
             Debug.LogError("해당하는 UI의 속성이 아니에요!");
             return false;
         }
-
-        result.transform.SetParent(GameManager.Instance.CurrentWorld.WorldCanvas.transform);
 
         return true;
 

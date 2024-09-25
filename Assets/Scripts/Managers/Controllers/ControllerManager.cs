@@ -9,6 +9,9 @@ public delegate void FuncInteractionFunction();
 public class ControllerManager : Manager
 {
 
+    private static float mouseScrollDelta;
+    public static float MouseScrollDelta => mouseScrollDelta;
+
     private static Vector2 mouseMovement;
     public static Vector2 MouseMovement => mouseMovement;
 
@@ -69,6 +72,8 @@ public class ControllerManager : Manager
 
         mouseMovement.x = Input.GetAxis("Mouse X");
         mouseMovement.y = Input.GetAxis("Mouse Y");
+
+        mouseScrollDelta = Input.mouseScrollDelta.y;
 
         foreach (var each in inputFuncInteractionDictionary)
         {

@@ -41,6 +41,9 @@ public class Playable : Character, ICameraTarget
     [SerializeField] float clampAngle;
     [SerializeField] float sightForwardLength;
 
+    //플레이어블 입력 UI
+    private PlayableInputUI inputUI;
+
     protected override void MyStart()
     {
         base.MyStart();
@@ -99,6 +102,7 @@ public class Playable : Character, ICameraTarget
         RunUpdate();
         RushCoolTimeUpdate(deltaTime);
         RenewalCrowdControlRemainTimeUpdate(deltaTime);
+        inputUI.SetScrollPosition(ControllerManager.MouseScrollDelta * 10f);
     }
 
     protected void PlayableManagerFixedUpdate(float fixedDeltaTime)
@@ -124,6 +128,8 @@ public class Playable : Character, ICameraTarget
         //깔쌈한테스트//
         currentHoldingFuncInteractionList = new List<FuncInteractionData>();
         playableActionFuncInteractionList = new List<FuncInteractionData>();
+
+        inputUI = GameManager.Instance.UI.GetFixedUI<PlayableInputUI>(FixedUIType.PlayableInputUI);
     }
 
     protected override void MyDestroy()

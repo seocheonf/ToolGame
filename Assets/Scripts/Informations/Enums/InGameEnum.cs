@@ -87,7 +87,8 @@ namespace ToolGame
 
     public enum FixedUIType
     {
-        FixedUITest
+        FixedUITest,
+        PlayableInputUI
     }
 
     public enum FloatingUIType
