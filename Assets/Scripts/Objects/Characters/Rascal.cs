@@ -28,6 +28,7 @@ public class Rascal : Character
         currentGeneralState = GeneralState.Normal;
         coolTime = maxCoolTime;
         currentRigidbody = gameObject.GetComponent<Rigidbody>();
+        anim = GetComponent<Animator>();
         GetRandomPos();
     }
 
@@ -40,6 +41,7 @@ public class Rascal : Character
         ApplicationGeneralState();
         RenewalCrowdControlRemainTimeUpdate(deltaTime);
         UpdateLookTarget();
+        AnimatorUpdate();
     }
 
     protected void RascalManagerFixedUpdate(float fixedDeltaTime)
@@ -132,5 +134,10 @@ public class Rascal : Character
     {
         Vector3 dir = destination - transform.position;
         transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), 0.02f);
+    }
+
+    protected virtual void AnimatorUpdate()
+    {
+        anim.SetBool("isPlayerIn", isPlayerIn);
     }
 }

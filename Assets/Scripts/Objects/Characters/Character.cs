@@ -303,6 +303,7 @@ public class Character : MovablePositionObject
     {
         //CheckWantMoveDirection();
         currentMoveDirection = (wantMoveDirection.x * transform.right + wantMoveDirection.z * transform.forward).normalized;
+        currentSpeed = currentMoveDirection.magnitude / Time.fixedDeltaTime;
         //transform.position += FixedUpdate_Calculate_Move();
         currentRigidbody.MovePosition(transform.position + FixedUpdate_Calculate_Move());
     }
@@ -406,10 +407,8 @@ public class Character : MovablePositionObject
     private void OnCollisionEnter(Collision collision)
     {
         //땅이 아닌 레버나 버튼이나 가스레인지 장식물 (원형기둥) 에 닿을때마다 이미 들어있으니 가세요라 오류 수정해야됨 (해결함)
-        Debug.Log(collision.relativeVelocity.sqrMagnitude);
         if (collision.relativeVelocity.sqrMagnitude > 15) 
         {
-            Debug.Log("끼얏");
             isTest = true;
             return;
         } 
@@ -428,7 +427,6 @@ public class Character : MovablePositionObject
         }
         if (IsGround && isTest)
         {
-            Debug.Log("호우");
             currentRigidbody.velocity = Vector3.zero;
             isTest = false;
         }

@@ -134,6 +134,11 @@ public class Playable : Character, ICameraTarget
         GameManager.CharactersFixedUpdate -= PlayableManagerFixedUpdate;
     }
 
+    protected override void Jump()
+    {
+        base.Jump();
+        anim.SetTrigger("isJump");
+    }
     private void OnSit()
     {
         if (currentGeneralState == GeneralState.Normal) Sit();
@@ -285,10 +290,12 @@ public class Playable : Character, ICameraTarget
 
     private void AnimatorUpdate()
     {
-        anim.SetBool("isJump", isJump);
+        anim.SetBool("isGround", IsGround);
         anim.SetBool("isRush", isRush);
         anim.SetBool("isRun", isAccel);
         anim.SetBool("isSit", isSit);
+
+        anim.SetFloat("MoveSpeed", currentSpeed);
 
         anim.SetInteger("GeneralState", (int)currentGeneralState);
         anim.SetInteger("CrowdState", (int)currentCrowdControlState);

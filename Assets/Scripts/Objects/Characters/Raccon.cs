@@ -36,4 +36,9 @@ public class Raccoon : Rascal
     {
         UpdateDirection();
     }
+
+    protected override void AnimatorUpdate()
+    {
+
+    }
 }
