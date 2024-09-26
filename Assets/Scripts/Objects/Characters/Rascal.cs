@@ -29,6 +29,7 @@ public class Rascal : Character
         currentGeneralState = GeneralState.Normal;
         coolTime = maxCoolTime;
         currentRigidbody = gameObject.GetComponent<Rigidbody>();
+        anim = GetComponent<Animator>();
         GetRandomPos();
     }
 
@@ -40,6 +41,8 @@ public class Rascal : Character
     {
         ApplicationGeneralState();
         RenewalCrowdControlRemainTimeUpdate(deltaTime);
+        UpdateLookTarget();
+        AnimatorUpdate();
     }
 
     protected void RascalManagerFixedUpdate(float fixedDeltaTime)
@@ -92,7 +95,7 @@ public class Rascal : Character
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    protected virtual void OnTriggerEnter(Collider other)
     {
         if (other.GetComponent<Playable>())
         {
@@ -100,8 +103,8 @@ public class Rascal : Character
             MoveForPlayer(other.GetComponent<Playable>());
         }
     }
-    
-    private void OnTriggerStay(Collider other)
+
+    protected virtual void OnTriggerStay(Collider other)
     {
         if (other.GetComponent<Playable>())
         {
@@ -109,8 +112,8 @@ public class Rascal : Character
             MoveForPlayer(other.GetComponent<Playable>());
         }
     }
-    
-    private void OnTriggerExit(Collider other)
+
+    protected virtual void OnTriggerExit(Collider other)
     {
         isPlayerIn = false;
         moveSpeed = defaultMoveSpeed;
@@ -124,7 +127,18 @@ public class Rascal : Character
         {
             moveSpeed = defaultMoveSpeed + defaultAccelSpeed;
             destination = player.transform.position;
+            
         }
     }
 
+    void UpdateLookTarget()
+    {
+        Vector3 dir = destination - transform.position;
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), 0.02f);
+    }
+
+    protected virtual void AnimatorUpdate()
+    {
+        anim.SetBool("isPlayerIn", isPlayerIn);
+    }
 }

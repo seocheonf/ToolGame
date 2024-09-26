@@ -115,6 +115,8 @@ public abstract class UniqueTool : MovablePositionObject
 
         //타겟 리지드바디 설정
         currentRigidbody = holdingCharacter.CurrentRigidbody;
+
+        Debug.Log($"{transform.eulerAngles} 대입 후 ");
     }
 
 

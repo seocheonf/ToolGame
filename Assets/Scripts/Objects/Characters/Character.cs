@@ -4,6 +4,7 @@ using Unity.IO.LowLevel.Unsafe;
 using Unity.VisualScripting;
 using UnityEngine;
 using ToolGame;
+using UnityEngine.UIElements;
 
 //적용중인 상태이상에 대한 정보
 public class AffectedCrowdControl
@@ -33,10 +34,13 @@ public class Character : MovablePositionObject
     protected bool isMoveRight;
 
     protected bool isAir;
+    protected bool isJump;
+
+    [SerializeField] protected Animator anim;
 
     [SerializeField]
     protected GeneralState currentGeneralState;
-    CrowdControlState currentCrowdControlState;     //현재 걸려있는 CC기
+    protected CrowdControlState currentCrowdControlState;     //현재 걸려있는 CC기
     List<AffectedCrowdControl> affectedCrowdControlList;
     Dictionary<CrowdControlState, AffectedCrowdControl> affectedCrowdControlDict = new();   //List -> Dictionary 로 교체
 
@@ -62,7 +66,6 @@ public class Character : MovablePositionObject
 
     [SerializeField] protected float defaultJumpPower;
     protected float jumpPower;
-  
 
     //시선 오일러각 - 근원의 시선
     protected Vector3 currentSightEulerAngle_Origin;
@@ -74,6 +77,7 @@ public class Character : MovablePositionObject
             return currentSightEulerAngle_Origin;
         }
     }
+    
     //쿼터니언각
     public virtual Quaternion CurrentSightQuaternionAngle_Origin
     {
@@ -158,6 +162,7 @@ public class Character : MovablePositionObject
         {
             _groundNormal = value;
             _isGround = (value.y > 0 && Vector3.Angle(Vector3.up, value) < maxSlopeAngle);
+            if (_isGround && isJump) isJump = false; 
         }
     }
     protected Vector3 planeMovementVector;
@@ -262,6 +267,7 @@ public class Character : MovablePositionObject
             result.y = jumpPower;
 
             currentRigidbody.velocity = result;
+            isJump = true;
         }
     }
 
@@ -299,6 +305,7 @@ public class Character : MovablePositionObject
     {
         //CheckWantMoveDirection();
         currentMoveDirection = (wantMoveDirection.x * transform.right + wantMoveDirection.z * transform.forward).normalized;
+        currentSpeed = currentMoveDirection.magnitude / Time.fixedDeltaTime;
         //transform.position += FixedUpdate_Calculate_Move();
         currentRigidbody.MovePosition(transform.position + FixedUpdate_Calculate_Move());
     }
@@ -355,6 +362,7 @@ public class Character : MovablePositionObject
             affectedCrowdControlDict.Add(targetCC, newCrowdControl);
 
             AfterCompleteSetCrowdControl(targetCC);
+
         }
     }
     protected virtual void AfterCompleteSetCrowdControl(CrowdControlState targetCC)
@@ -408,14 +416,18 @@ public class Character : MovablePositionObject
 
     }
 
+    bool isTest = false;
     private void OnCollisionEnter(Collision collision)
     {
         //땅이 아닌 레버나 버튼이나 가스레인지 장식물 (원형기둥) 에 닿을때마다 이미 들어있으니 가세요라 오류 수정해야됨 (해결함)
-        if (collision.relativeVelocity.sqrMagnitude > 15) { return; } 
+        if (collision.relativeVelocity.sqrMagnitude > 15) 
+        {
+            isTest = true;
+            return;
+        } 
         if (attachedCollision.ContainsKey(collision.gameObject)) { }
         else attachedCollision.Add(collision.gameObject, collision.GetContact(0).normal);
         CalculateGround();
-        Debug.Log($"{collision.relativeVelocity.sqrMagnitude} Enter");
     }
 
     private void OnCollisionStay(Collision collision)
@@ -425,7 +437,12 @@ public class Character : MovablePositionObject
         if (!attachedCollision.ContainsKey(collision.gameObject)) // <= if (attachedCollision[collision.gameObject] != null) 원래 문구
         {
             attachedCollision[collision.gameObject] = normal;
-        }        
+        }
+        if (IsGround && isTest)
+        {
+            currentRigidbody.velocity = Vector3.zero;
+            isTest = false;
+        }
         CalculateGround();
     }
 
@@ -473,6 +490,15 @@ public class Character : MovablePositionObject
         }
     }
 
+    protected float FixedUpdate_Test()
+    {
+        Vector3 currentShiftDirection = currentMoveDirection - planeMovementVector;
+
+        float currentMoveAmount = Mathf.Min(moveSpeed * Time.fixedDeltaTime, currentShiftDirection.magnitude);
+
+        return currentMoveAmount;
+    }
+
     protected Vector3 FixedUpdate_Calculate_Move()
     {
         Vector3 currentShiftDirection = currentMoveDirection - planeMovementVector;
@@ -491,14 +517,18 @@ public class Character : MovablePositionObject
         float originDistance = CurrentMovementVelocity.magnitude;
 
         originDistance += characterCollider.radius;
-        if (Physics.Raycast(moveRay, out RaycastHit hit, originDistance, -1 ,QueryTriggerInteraction.Ignore))
+
+        int layerMask = 1 << LayerMask.NameToLayer("Block");
+        //여기 Raycast를 선이 아닌 Box로 바꿔야함
+        //if (Physics.BoxCast(CalculateCenter(currentMoveAmount), CalculateHalfExtents(currentMoveAmount), CurrentSightForward_Interaction, out RaycastHit hit, transform.rotation, originDistance, layerMask)) // <= Physics.Raycast(moveRay, out RaycastHit hit, originDistance, -1 ,QueryTriggerInteraction.Ignore)
+        if (Physics.Raycast(moveRay, out RaycastHit hit, originDistance, -1, QueryTriggerInteraction.Ignore))
         {
             float possibleDistance = hit.distance - characterCollider.radius;
 
             float impossibleDistance = originDistance - possibleDistance;
 
             Vector3 originVector = CurrentMovementVelocity.normalized;
-            Vector3 slidingVector = Vector3.ProjectOnPlane(originVector, hit.normal);
+            Vector3 slidingVector = Vector3.ProjectOnPlane(originVector, hit.normal.normalized);
 
             CurrentMovementVelocity = (originVector * possibleDistance) + (slidingVector * impossibleDistance);
         }
@@ -506,9 +536,26 @@ public class Character : MovablePositionObject
         return CurrentMovementVelocity;
     }
 
+    private Vector3 CalculateCenter(float speed)
+    {
+        Vector3 capsuleCenter;
+        float height = characterCollider.bounds.center.y + (characterCollider.radius / 2);
+        Vector3 length = transform.position + currentMoveDirection.normalized * (characterCollider.radius + (speed / 2));
+        capsuleCenter = new Vector3(length.x, height, length.z);
+
+        return capsuleCenter;
+    }
+
+    private Vector3 CalculateHalfExtents(float speed)
+    {
+        float height;
+        height = characterCollider.height + characterCollider.radius;
+        Vector3 halfExtents = new Vector3(speed / 2, height / 2, speed / 2);
+        
+        return halfExtents; 
+    }
+
     #endregion
-
-
 
     protected override void Initialize()
     {

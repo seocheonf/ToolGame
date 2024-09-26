@@ -85,8 +85,11 @@ public abstract class PhysicsInteractionObject : MyComponent
     }
     public virtual void GetSpecialInteraction(SpecialInteraction.FireData source)
     {
-        source.detectedCharacter.SetCrowdControl(CrowdControlState.Stun, 0.5f);
-        source.detectedCharacter.AddForce((-source.detectedCharacter.transform.forward * source.backBounce + Vector3.up * source.upBounce), ForceType.VelocityForce);
+        if (source.detectedCharacter != null)
+        {
+            source.detectedCharacter.SetCrowdControl(CrowdControlState.Stun, 0.5f);
+            source.detectedCharacter.AddForce((-source.detectedCharacter.transform.forward * source.backBounce + Vector3.up * source.upBounce), ForceType.VelocityForce);
+        }
     }
 
     public virtual void AccelDownForce(float ratio)
