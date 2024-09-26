@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.IO.LowLevel.Unsafe;
 using Unity.VisualScripting;
 using UnityEngine;
+using ToolGame;
 using UnityEngine.UIElements;
 
 //적용중인 상태이상에 대한 정보
@@ -358,8 +360,14 @@ public class Character : MovablePositionObject
         {
             AffectedCrowdControl newCrowdControl = new(targetCC, duration);
             affectedCrowdControlDict.Add(targetCC, newCrowdControl);
-            //TODO : 여기다가 상태이상 함 넣어보슈
+
+            AfterCompleteSetCrowdControl(targetCC);
+
         }
+    }
+    protected virtual void AfterCompleteSetCrowdControl(CrowdControlState targetCC)
+    {
+
     }
 
     protected void RenewalCrowdControlRemainTimeUpdate(float deltaTime)
@@ -392,8 +400,13 @@ public class Character : MovablePositionObject
         {
             affectedCrowdControlDict.Remove(currentCrowdControlState);
             currentGeneralState = GeneralState.Normal;
-            //TODO : 여기다가도 상태이상 빠질때 함수 넣으슈
+
+            AfterCompleteDeleteCrowdControlDict(currentCrowdControlState);
         }
+    }
+    protected virtual void AfterCompleteDeleteCrowdControlDict(CrowdControlState beforeCrowdControlState)
+    {
+
     }
 
     #endregion

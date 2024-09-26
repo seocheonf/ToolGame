@@ -1,21 +1,32 @@
-﻿namespace ResourceEnum
+﻿
+namespace ResourceEnum
 {
     public enum Prefab
     {
+        BasicCanvas,
 
         #region Object Prefab List
         TestPrefab,
         Monologue,
         CapCap,
 
-        Umbrella
+        Umbrella,
+        BigLeaf,
+
+        UmbrellaHookTarget,
+
+        WindA,
+        WindB,
 
         #endregion
 
 
         #region UI Prefab List
 
+        UI_Fixed_FixedUITest,
+        UI_Floating_FloatingUITest,
 
+        UI_Fixed_PlayableInputUI
 
         #endregion
 
@@ -24,11 +35,11 @@
     }
     public enum BGM
     {
-        
+
     }
     public enum SFX
     {
-        
+
     }
 
     public enum Mesh

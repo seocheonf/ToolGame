@@ -23,6 +23,8 @@ public class WorldManager : MonoBehaviour
     public FixedUpdateFunction WorldFixedUpdates;
     public UpdateFunction WorldLateUpdates;
 
+    private Canvas worldCanvas;
+    public Canvas WorldCanvas => worldCanvas;
 
     /// <summary>
     /// 각 월드의 업데이트를 한번에 빼기 위해서, 그 월드의 업데이트를 실행하는 함수에 한번 감싼 뒤, 이를 GameManager의 업데이트에 관리.
@@ -94,13 +96,18 @@ public class WorldManager : MonoBehaviour
         //우선 주민등록 신고하자.
         GameManager.Instance.SetCurrentWorld(this);
 
+        //--월드용 캔버스 생성--
+        worldCanvas = GameObject.Instantiate(ResourceManager.GetResource(ResourceEnum.Prefab.BasicCanvas)).GetComponent<Canvas>();
+        worldCanvas.transform.SetParent(transform);
+        //---------------------
+
         pool = new PoolManager();
         yield return pool.Initiate();
         yield return pool.SetPool(prefabPoolList);
 
         worldCamera = new CameraManager();
         yield return worldCamera.Initiate();
-
+        
         //업데이트 등록
         GameManager.ManagersUpdate -= InnerWorldUpdates;
         GameManager.ManagersUpdate += InnerWorldUpdates;

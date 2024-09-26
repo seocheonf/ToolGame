@@ -2,8 +2,8 @@ using SpecialInteraction;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using ToolGame;
 
 public class BigLeaf : UniqueTool
 {
@@ -57,7 +57,7 @@ public class BigLeaf : UniqueTool
         //Normal 상태일 때 할 일 대기
         //conditionFuncInteractionDictionary[BigLeafCondition.Normal].Add(new FuncInteractionData(,,,,));
         //Forward 상태일 때 할 일 대기
-        conditionFuncInteractionDictionary[BigLeafCondition.Forward].Add(new FuncInteractionData(KeyCode.F,"바람 일으키기 On/Off",SetWindOnOff,null,null));
+        conditionFuncInteractionDictionary[BigLeafCondition.Forward].Add(new FuncInteractionData(OuterKeyCode.Action,"바람 일으키기 On/Off",SetWindOnOff,null,null));
         //Up 상태일 때 할 일 대기
         //conditionFuncInteractionDictionary[BigLeafCondition.Up].Add(new FuncInteractionData(,,,,));
 

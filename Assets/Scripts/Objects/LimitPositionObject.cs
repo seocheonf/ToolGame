@@ -13,19 +13,4 @@ public class LimitPositionObject : PhysicsInteractionObject
     {
         GameManager.ObjectsFixedUpdate -= MainFixedUpdate;
     }
-
-    public virtual void ObjectOn()
-    {
-
-    }
-
-    public virtual void ObjectOff()
-    {
-
-    }
-
-    public virtual void ObjectClick()
-    {
-
-    }
 }

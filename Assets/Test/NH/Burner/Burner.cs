@@ -2,17 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Burner : LimitPositionObject
+public class Burner : LimitPositionObject, IOnOffFuncInteraction
 {
     [SerializeField] GameObject fire;
-    
-    public override void ObjectOn()
+
+    public void DoOn()
     {
         fire.SetActive(true);
     }
 
-    public override void ObjectOff()
+    public void DoOff()
     {
         fire.SetActive(false);
     }
+
 }

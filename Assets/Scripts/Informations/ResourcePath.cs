@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public static class ResourcePath
 {
     public const string audioMixerPath = "Sounds/AudioMixer";
@@ -5,18 +7,31 @@ public static class ResourcePath
     public static string[] prefabPathArray =
     {
         
+        "UIs/BasicCanvas",
+
         #region Object Prefab List
         "TestPrefab",
         "Monologue",
         "CapCap",
 
-        "UniqueTool/Umbrella"
+        "UniqueTool/Umbrella",
+        "UniqueTool/BigLeaf",
+
+        "UniqueTool/AboutUniqueTools/UmbrellaHookTarget",
+
+        "SpecialInteractions/WindA",
+        "SpecialInteractions/WindB",
+
 
         #endregion
 
 
         #region UI Prefab List
 
+        "UIs/UI_Fixed_FixedUITest",
+        "UIs/UI_Floating_FloatingUITest",
+
+        "UIs/UI_Fixed_PlayableInputUI"
 
 
         #endregion

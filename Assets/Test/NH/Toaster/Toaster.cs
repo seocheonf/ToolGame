@@ -2,20 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Toaster : LimitPositionObject
+public class Toaster : LimitPositionObject, IOnOffFuncInteraction
 {
     [SerializeField] GameObject toast;
     [SerializeField] Collider playerDetectArea;
     [SerializeField] Transform toastMakeTransform;
     [SerializeField] float wantShootPower;
 
-
-    public override void ObjectOn() 
+    public void DoOn()
     {
         playerDetectArea.enabled = true;
     }
 
-    public override void ObjectOff()
+    public void DoOff()
     {
         playerDetectArea.enabled = false;
     }

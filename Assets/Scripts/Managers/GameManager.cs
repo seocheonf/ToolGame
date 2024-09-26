@@ -170,6 +170,13 @@ public class GameManager : MonoBehaviour
     }
 
 
+    private void DoCompletelyStartFunction(ref StartFunction target)
+    {
+        StartFunction runTarget = target;
+        target = null;
+        runTarget?.Invoke();
+    }
+
     private void Update()
     {
 
@@ -177,14 +184,11 @@ public class GameManager : MonoBehaviour
 
         if(ManagersStart != null)
         {
-            ManagersStart.Invoke();
-            ManagersStart = null;
+            DoCompletelyStartFunction(ref ManagersStart);
         }
         else
         {
-            
-            ObjectsStart?.Invoke();
-            ObjectsStart = null;
+            DoCompletelyStartFunction(ref ObjectsStart);
 
             if (!isScriptManagersUpdateStop) ManagersUpdate?.Invoke(Time.deltaTime);
             if (!isScriptObjectsUpdateStop) ObjectsUpdate?.Invoke(Time.deltaTime);
@@ -202,14 +206,11 @@ public class GameManager : MonoBehaviour
 
         if (ManagersStart != null)
         {
-            ManagersStart.Invoke();
-            ManagersStart = null;
+            DoCompletelyStartFunction(ref ManagersStart);
         }
         else
         {
-            
-            ObjectsStart?.Invoke();
-            ObjectsStart = null;
+            DoCompletelyStartFunction(ref ObjectsStart);
 
             if (!isScriptObjectsUpdateStop)
             {
@@ -294,4 +295,5 @@ public class GameManager : MonoBehaviour
         }
         currentWorld = null;
     }
+
 }

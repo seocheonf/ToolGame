@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using ToolGame;
 
 [RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
 public class Umbrella : UniqueTool
@@ -128,20 +129,20 @@ public class Umbrella : UniqueTool
         }
 
         //접혀져 있을 때 할 일 대기
-        conditionFuncInteractionDictionary[UmbrellaCondition.Closed].Add(new FuncInteractionData(KeyCode.Q, "우산 펼치기", TryOpenUmbrella, null, null));
-        conditionFuncInteractionDictionary[UmbrellaCondition.Closed].Add(new FuncInteractionData(KeyCode.Tab, "우산 뒤집기", TryReverseUmbrella, null, null));
-        conditionFuncInteractionDictionary[UmbrellaCondition.Closed].Add(new FuncInteractionData(KeyCode.F, "방향 전환", SwitchUmbrellaDirectionFixed, null, null));
+        conditionFuncInteractionDictionary[UmbrellaCondition.Closed].Add(new FuncInteractionData(OuterKeyCode.Action, "우산 펼치기", TryOpenUmbrella, null, null));
+        conditionFuncInteractionDictionary[UmbrellaCondition.Closed].Add(new FuncInteractionData(OuterKeyCode.Reverse, "우산 뒤집기", TryReverseUmbrella, null, null));
+        conditionFuncInteractionDictionary[UmbrellaCondition.Closed].Add(new FuncInteractionData(OuterKeyCode.Rot_Backward_Right, "방향 전환", SwitchUmbrellaDirectionFixed, null, null));
 
         //펼쳐져 있을 때 할 일 대기
-        conditionFuncInteractionDictionary[UmbrellaCondition.Open].Add(new FuncInteractionData(KeyCode.Q, "우산 접기", TryCloseUmbrella, null, null));
-        conditionFuncInteractionDictionary[UmbrellaCondition.Open].Add(new FuncInteractionData(KeyCode.F, "방향 전환", SwitchUmbrellaDirectionFixed, null, null));
+        conditionFuncInteractionDictionary[UmbrellaCondition.Open].Add(new FuncInteractionData(OuterKeyCode.Action, "우산 접기", TryCloseUmbrella, null, null));
+        conditionFuncInteractionDictionary[UmbrellaCondition.Open].Add(new FuncInteractionData(OuterKeyCode.Rot_Backward_Right, "방향 전환", SwitchUmbrellaDirectionFixed, null, null));
 
         //뒤집혀 있을 때 할 일 대기
-        conditionFuncInteractionDictionary[UmbrellaCondition.Reverse].Add(new FuncInteractionData(KeyCode.Tab, "우산 뒤집기", TryCloseUmbrella, null, null));
-        conditionFuncInteractionDictionary[UmbrellaCondition.Reverse].Add(new FuncInteractionData(KeyCode.Mouse0, "갈고리 걸기", TryHookOnUmbrella, null, null));
+        conditionFuncInteractionDictionary[UmbrellaCondition.Reverse].Add(new FuncInteractionData(OuterKeyCode.Reverse, "우산 뒤집기", TryCloseUmbrella, null, null));
+        conditionFuncInteractionDictionary[UmbrellaCondition.Reverse].Add(new FuncInteractionData(OuterKeyCode.Action, "갈고리 걸기", TryHookOnUmbrella, null, null));
 
         //걸려 있을 때 할 일 대기
-        conditionFuncInteractionDictionary[UmbrellaCondition.Hook].Add(new FuncInteractionData(KeyCode.Mouse0, "갈고리 풀기", TryReverseUmbrellaInHook, null, null));
+        conditionFuncInteractionDictionary[UmbrellaCondition.Hook].Add(new FuncInteractionData(OuterKeyCode.Action, "갈고리 풀기", TryReverseUmbrellaInHook, null, null));
 
     }
 

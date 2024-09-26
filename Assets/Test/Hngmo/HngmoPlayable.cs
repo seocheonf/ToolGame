@@ -8,7 +8,7 @@ public class HngmoPlayable : Playable
     {
         base.MyStart();
 
-        FuncInteractionData AboutTool = (new FuncInteractionData(KeyCode.Mouse1, "우산 들기", ToolSet, null, null));
+        FuncInteractionData AboutTool = (new FuncInteractionData(ToolGame.OuterKeyCode.TakeTool, "우산 들기", ToolSet, null, null));
         ControllerManager.AddInputFuncInteraction(AboutTool);
     }
 

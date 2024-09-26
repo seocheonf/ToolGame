@@ -2,39 +2,58 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Lever : LimitPositionObject, IOnOffFuncInteraction
+public class Lever : LimitPositionObject, IOnOffFuncInteraction, ITriggerFuncInteraction
 {
     [SerializeField] GameObject leverSwitch;
-    [SerializeField] LimitPositionObject targetObject;
+    [SerializeField] MyComponent targetObject;
+    IOnOffFuncInteraction targetOnOff;
 
     bool isActive = false;
 
-    public List<FuncInteractionData> GetOnOffFuncInteractionList()
+    protected override void Initialize()
     {
-        List<FuncInteractionData> add = new List<FuncInteractionData>();
-        return add;
+        base.Initialize();
+
+        targetOnOff = targetObject.GetComponent<IOnOffFuncInteraction>();
+
+#if UNITY_EDITOR
+        if (targetOnOff == null)
+        {
+            Debug.LogError("등록한 타겟 오브젝트에 레버에서 사용할 On/Off용 인터페이스가 없어요!");
+        }
+#endif
+
+        GameManager.ObjectsUpdate -= CustomUpdate;
+        GameManager.ObjectsUpdate += CustomUpdate;
     }
 
-    public override void ObjectClick()
+    protected override void MyDestroy()
+    {
+        base.MyDestroy();
+
+        GameManager.ObjectsUpdate -= CustomUpdate;
+    }
+
+    public void DoTrigger()
     {
         isActive = !isActive;
     }
 
     void LeverUpdate()
     {
-        if (isActive) LeverOn();
-        else LeverOff();
+        if (isActive) DoOn();
+        else DoOff();
         SwitchObjectCheck();
     }
 
-    void LeverOn()
+    public void DoOn()
     {
-        targetObject.ObjectOn();
+        targetOnOff.DoOn();
     }
 
-    void LeverOff()
+    public void DoOff()
     {
-        targetObject.ObjectOff();
+        targetOnOff.DoOff();
     }
 
     void SwitchObjectCheck()
@@ -49,7 +68,7 @@ public class Lever : LimitPositionObject, IOnOffFuncInteraction
         }
     }
 
-    private void Update()
+    private void CustomUpdate(float deltaTime)
     {
         LeverUpdate();
     }

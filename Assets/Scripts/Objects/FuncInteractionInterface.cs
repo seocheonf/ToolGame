@@ -10,5 +10,12 @@ public interface IOuterFuncInteraction
 
 public interface IOnOffFuncInteraction
 {
-    public List<FuncInteractionData> GetOnOffFuncInteractionList();
+    public void DoOn();
+
+    public void DoOff();
+}
+
+public interface ITriggerFuncInteraction
+{
+    public void DoTrigger();
 }

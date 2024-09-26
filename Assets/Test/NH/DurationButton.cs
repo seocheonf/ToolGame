@@ -2,34 +2,54 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DurationButton : LimitPositionObject, IOnOffFuncInteraction
+public class DurationButton : LimitPositionObject, IOnOffFuncInteraction, ITriggerFuncInteraction
 {
     [SerializeField] GameObject buttonSwitch;
-    [SerializeField] LimitPositionObject targetObject;
+    [SerializeField] MyComponent targetObject;
+    [SerializeField] IOnOffFuncInteraction targetOnOff;
     [SerializeField] float durationTime;
     [SerializeField] float buttonTime;
     bool isActive = false;
     bool isButtonActive = false;
 
-    public List<FuncInteractionData> GetOnOffFuncInteractionList()
+    protected override void Initialize()
     {
-        return default;
+        base.Initialize();
+
+        targetOnOff = targetObject.GetComponent<IOnOffFuncInteraction>();
+
+#if UNITY_EDITOR
+        if(targetOnOff == null)
+        {
+            Debug.LogError("등록한 타겟 오브젝트에 버튼에서 사용할 On/Off용 인터페이스가 없어요!");
+        }
+#endif
+
+        GameManager.ObjectsUpdate -= CustomUpdate;
+        GameManager.ObjectsUpdate += CustomUpdate;
     }
 
-    public override void ObjectClick()
+    protected override void MyDestroy()
+    {
+        base.MyDestroy();
+
+        GameManager.ObjectsUpdate -= CustomUpdate;
+    }
+
+    public void DoTrigger()
     {
         isActive = true;
         isButtonActive = true;
     }
 
-    void ButtonOn()
+    public void DoOn()
     {
-        targetObject.ObjectOn();
+        targetOnOff.DoOn();
     }
 
-    void ButtonOff()
+    public void DoOff()
     {
-        targetObject.ObjectOff();
+        targetOnOff.DoOff();
     }
 
     void SwitchObjectCheck(float deltaTime)
@@ -53,19 +73,19 @@ public class DurationButton : LimitPositionObject, IOnOffFuncInteraction
     {
         if (isActive)
         {
-            ButtonOn();
+            DoOn();
             durationTime = durationTime - Time.deltaTime;
             if (durationTime <= 0) isActive = false;
         }
         else
         {
-            ButtonOff();
+            DoOff();
             durationTime = 1.5f;
         }
         SwitchObjectCheck(Time.deltaTime);
     }
 
-    private void Update()
+    private void CustomUpdate(float deltaTime)
     {
         ButtonUpdate();
         //Debug.Log(buttonTime);
