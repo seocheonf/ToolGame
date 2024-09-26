@@ -25,8 +25,6 @@ public class Playable : Character, ICameraTarget
     private bool isPickUpTool = false;
     private int currentSightOrdinal;
 
-    private bool isJump;
-
     [SerializeField] float defaultRushPower;
     private float rushPower;
 
@@ -45,6 +43,7 @@ public class Playable : Character, ICameraTarget
     {
         base.MyStart();
         characterCollider = GetComponent<CapsuleCollider>();
+        anim = GetComponentInChildren<Animator>();
 
         //깔쌈한테스트//
 
@@ -97,12 +96,14 @@ public class Playable : Character, ICameraTarget
     {
         ApplicationGeneralState();
         RunUpdate();
+        AnimatorUpdate();
         RushCoolTimeUpdate(deltaTime);
         RenewalCrowdControlRemainTimeUpdate(deltaTime);
     }
 
     protected void PlayableManagerFixedUpdate(float fixedDeltaTime)
     {
+        FixedUpdate_Test();
         MoveHorizontalityFixedUpdate(fixedDeltaTime);
         ResetDirection();
         CharacterRotationSightFixedUpdate();
@@ -133,6 +134,11 @@ public class Playable : Character, ICameraTarget
         GameManager.CharactersFixedUpdate -= PlayableManagerFixedUpdate;
     }
 
+    protected override void Jump()
+    {
+        base.Jump();
+        anim.SetTrigger("isJump");
+    }
     private void OnSit()
     {
         if (currentGeneralState == GeneralState.Normal) Sit();
@@ -142,7 +148,6 @@ public class Playable : Character, ICameraTarget
     private void Sit()
     {
         RaycastHit hit;
-        Debug.DrawRay(transform.position, Vector3.down * 2, UnityEngine.Color.magenta);
         if (Physics.Raycast(currentRigidbody.transform.position, Vector3.down, out hit, sitRaycastDistance))
         {
             if (hit.collider.GetComponent<Rigidbody>())
@@ -204,7 +209,7 @@ public class Playable : Character, ICameraTarget
     {
         RaycastHit hit;
         int layerMask = (1 << LayerMask.NameToLayer("Cast_UniqueTool")) + (1 << LayerMask.NameToLayer("Block"));
-        if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward_Interaction, out hit, sightForwardLength))
+        if (Physics.Raycast(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward_Interaction, out hit, sightForwardLength, layerMask))
         {
             currentTargetUniqueTool = hit.collider.GetComponentInParent<UniqueTool>();
             PickUpTool(currentTargetUniqueTool);
@@ -224,6 +229,7 @@ public class Playable : Character, ICameraTarget
             TargetUniqueTool();
         }
     }
+
 
     private void TargetOuterFuncInteraction()
     {
@@ -282,6 +288,19 @@ public class Playable : Character, ICameraTarget
         }
     }
 
+    private void AnimatorUpdate()
+    {
+        anim.SetBool("isGround", IsGround);
+        anim.SetBool("isRush", isRush);
+        anim.SetBool("isRun", isAccel);
+        anim.SetBool("isSit", isSit);
+
+        anim.SetFloat("MoveSpeed", currentSpeed);
+
+        anim.SetInteger("GeneralState", (int)currentGeneralState);
+        anim.SetInteger("CrowdState", (int)currentCrowdControlState);
+    }
+
     private void MoveLookAt()
     {
         transform.eulerAngles = new Vector3(0, yRot, 0);
@@ -321,15 +340,6 @@ public class Playable : Character, ICameraTarget
             return result;
         }
     }
-#if UNITY_EDITOR
-
-    private void OnDrawGizmos()
-    {
-        Debug.DrawRay(transform.position + new Vector3(0, 0.5f, 0), CurrentSightForward_Interaction * sightForwardLength, UnityEngine.Color.red);
-
-    }
-
-#endif
 
 
     //깔쌈한테스트//
