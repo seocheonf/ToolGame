@@ -102,7 +102,6 @@ public class Playable : Character, ICameraTarget
         AnimatorUpdate();
         RushCoolTimeUpdate(deltaTime);
         RenewalCrowdControlRemainTimeUpdate(deltaTime);
-        inputUI.SetScrollPosition(ControllerManager.MouseScrollDelta * 10f);
     }
 
     protected void PlayableManagerFixedUpdate(float fixedDeltaTime)
@@ -395,24 +394,33 @@ public class Playable : Character, ICameraTarget
     private void AddHoldingInputFuncInteraction(FuncInteractionData data)
     {
         currentHoldingFuncInteractionList.Add(data);
+        inputUI.SetInputInfo(data);
     }
     private void AddHoldingInputFuncInteraction(List<FuncInteractionData> list)
     {
         foreach (FuncInteractionData each in list)
         {
             currentHoldingFuncInteractionList.Add(each);
+            inputUI.SetInputInfo(each);
         }
     }
     private void RemoveHoldingInputFuncInteraction(FuncInteractionData data)
     {
+        inputUI.UnSetInputInfo(data);
         currentHoldingFuncInteractionList.Remove(data);
     }
     private void RemoveHoldingInputFuncInteraction(List<FuncInteractionData> list)
     {
         foreach (FuncInteractionData each in list)
         {
+            inputUI.UnSetInputInfo(each);
             currentHoldingFuncInteractionList.Remove(each);
         }
+    }
+    private void RemoveAllHoldingInputFuncInteraction()
+    {
+        inputUI.UnSetInputInfo(currentHoldingFuncInteractionList);
+        currentHoldingFuncInteractionList.Clear();
     }
 
     //깔쌈한테스트//
@@ -420,7 +428,7 @@ public class Playable : Character, ICameraTarget
     {
         RemoveInputFuncInteraction(currentHoldingFuncInteractionList);
         RemovePlayableActionInputFuncInteraction(currentHoldingFuncInteractionList);
-        currentHoldingFuncInteractionList.Clear();
+        RemoveAllHoldingInputFuncInteraction();
 
         AddHoldingInputFuncInteraction(newList);
         AddPlayableActionInputFuncInteraction(currentHoldingFuncInteractionList);
@@ -459,7 +467,7 @@ public class Playable : Character, ICameraTarget
         //깔쌈한테스트//
         RemoveInputFuncInteraction(currentHoldingFuncInteractionList);
         RemovePlayableActionInputFuncInteraction(currentHoldingFuncInteractionList);
-        currentHoldingFuncInteractionList.Clear();
+        RemoveAllHoldingInputFuncInteraction();
 
         base.PutTool();
     }

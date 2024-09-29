@@ -52,6 +52,19 @@ public class ControllerManager : Manager
         keyCodeConnection.Add(OuterKeyCode.Rot_Forward_Left, KeyCode.Q);
         keyCodeConnection.Add(OuterKeyCode.Rot_Backward_Right, KeyCode.E);
 
+        //
+        keyCodeConnection.Add(OuterKeyCode.T1, KeyCode.Numlock);
+        keyCodeConnection.Add(OuterKeyCode.T2, KeyCode.Numlock);
+        keyCodeConnection.Add(OuterKeyCode.T3, KeyCode.Numlock);
+        keyCodeConnection.Add(OuterKeyCode.T4, KeyCode.Numlock);
+        keyCodeConnection.Add(OuterKeyCode.T5, KeyCode.Numlock);
+        keyCodeConnection.Add(OuterKeyCode.T6, KeyCode.Numlock);
+        keyCodeConnection.Add(OuterKeyCode.T7, KeyCode.Numlock);
+        keyCodeConnection.Add(OuterKeyCode.T8, KeyCode.Numlock);
+        keyCodeConnection.Add(OuterKeyCode.T9, KeyCode.Numlock);
+
+        //
+
 #if UNITY_EDITOR
 
         if (keyCodeConnection.Count < (int)OuterKeyCode.Length)

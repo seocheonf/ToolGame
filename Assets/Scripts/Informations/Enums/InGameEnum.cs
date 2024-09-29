@@ -80,6 +80,16 @@ namespace ToolGame
 
         #endregion
 
+        T1,
+        T2,
+        T3,
+        T4,
+        T5,
+        T6,
+        T7,
+        T8,
+        T9,
+
         //길이 용도
         Length
     }
@@ -88,7 +98,8 @@ namespace ToolGame
     public enum FixedUIType
     {
         FixedUITest,
-        PlayableInputUI
+        PlayableInputUI,
+        PlayableInputUIBlock
     }
 
     public enum FloatingUIType
