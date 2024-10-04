@@ -184,4 +184,11 @@ public class ControllerManager : Manager
     }
 
 
+
+    public static KeyCode GetUnityKeyCode(OuterKeyCode key)
+    {
+        return keyCodeConnection[key];
+    }
+
+
 }

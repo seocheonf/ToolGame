@@ -61,7 +61,8 @@ public class PlayableInputUI : FixedUIComponent
     public void SetInputInfo(FuncInteractionData data)
     {
         PlayableInputUIBlock block = GetBlock();
-        block.SetInfo(data.keyCode.ToString(), data.description);
+        block.SetInfo(ControllerManager.GetUnityKeyCode(data.keyCode).ToString(), data.description);
+        //block.SetInfo(data.keyCode.ToString(), data.description);
         inputUIDictionary.Add(data, block);
 
         SetBlock(block);
