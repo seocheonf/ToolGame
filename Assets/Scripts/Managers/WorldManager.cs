@@ -61,12 +61,13 @@ public class WorldManager : MonoBehaviour
 #if UNITY_EDITOR
         //에디터 상에선 개발 편의를 위해, 게임 매니저가 없으면 최초 씬으로 이동하는 기능
         //빌드 상에선 그 상황 자체가 에러이기에 (물론 문제 없을 수 있으나, 최초 씬 고치기도 쉽고, 안전하게 가는 것이 좋음)
-        if (GameManager.Instance == null)
-        {
-            UnityEngine.SceneManagement.SceneManager.LoadScene(0);
-            yield break;
-        }
+        //if (GameManager.Instance == null)
+        //{
+        //    UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        //    yield break;
+        //}
 #endif
+
 
         //GameManager와 WorldManager가 하나의 씬에 모두 존재할 때만 필요한(유의미한) 기능
         //예외 처리

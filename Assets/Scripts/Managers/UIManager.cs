@@ -41,12 +41,6 @@ class FloatingNode
             return false;
         }
     }
-    public void UpInStack(FloatingUIComponent data)
-    {
-        nonBlockingStack.Remove(data);
-        nonBlockingStack.Add(data);
-    }
-
     public void PopAll()
     {
 
@@ -56,6 +50,26 @@ class FloatingNode
         }
 
         nonBlockingStack.Clear();
+    }
+
+    public bool TryGetTop(out FloatingUIComponent result)
+    {
+        result = null;
+        if(nonBlockingStack.Count > 0)
+        {
+            result = nonBlockingStack[^1];
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public void UpInStack(FloatingUIComponent data)
+    {
+        nonBlockingStack.Remove(data);
+        nonBlockingStack.Add(data);
     }
 }
 
@@ -225,6 +239,22 @@ public class UIManager : Manager
 
         return peek.Pop(data);
     }
+    private bool TryGetTopUIStack(out FloatingUIComponent result)
+    {
+        FloatingNode peek = null;
+        result = null;
+
+        if (!floatingUIStack.TryPeek(out peek))
+        {
+            Debug.LogError("UI Stack에 빼낼 정보가 없어요!");
+            return false;
+        }
+
+        if(!peek.TryGetTop(out result))
+            result = peek.Head;
+
+        return true;
+    }
 
     //===========
 
@@ -232,9 +262,14 @@ public class UIManager : Manager
 
     private void FloatingOff()
     {
-
-
-        DoNonFloating?.Invoke();
+        if(TryGetTopUIStack(out FloatingUIComponent result))
+        {
+            result.SetActive(false);
+        }
+        else
+        {
+            DoNonFloating?.Invoke();
+        }
     }
 
     public void SetNonFloating(Action action)
@@ -247,15 +282,18 @@ public class UIManager : Manager
         DoNonFloating = action;
     }
 
-    public void UnSetNonFloating(Action action)
+    public void UnSetNonFloating()
     {
         int number = DoNonFloating.GetInvocationList().Length;
         if (number != 1)
         {
             Debug.LogError("이미 떠 있지 않을 때 해야할 일이 1개가 있지않아요. 즉 0개거나 1개보다 많아요! 이 상태에서 매개변수의 기능을 제거합니다. 이전에 문제가 없었는지 확인해주세요!");
-            Debug.LogError(action.Target.ToString());
+            foreach(Delegate each in DoNonFloating.GetInvocationList())
+            {
+                Debug.LogError(each.Target);
+            }
         }
-        DoNonFloating -= action;
+        DoNonFloating = null;
     }
 
 

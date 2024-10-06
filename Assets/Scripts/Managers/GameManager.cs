@@ -179,7 +179,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-
+        
         if (isScriptEntireUpdateStop) return;
 
         if(ManagersStart != null)
@@ -188,6 +188,9 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            if (currentWorld == null)
+                return;
+
             DoCompletelyStartFunction(ref ObjectsStart);
 
             if (!isScriptManagersUpdateStop) ManagersUpdate?.Invoke(Time.deltaTime);
@@ -210,6 +213,9 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            if (currentWorld == null)
+                return;
+
             DoCompletelyStartFunction(ref ObjectsStart);
 
             if (!isScriptObjectsUpdateStop)
@@ -229,6 +235,9 @@ public class GameManager : MonoBehaviour
     private void LateUpdate()
     {
         if (isScriptEntireUpdateStop) return;
+
+        if (currentWorld == null)
+            return;
 
         if (!isScriptManagersUpdateStop) ManagersLateUpdate?.Invoke(Time.deltaTime);        
     }
