@@ -61,12 +61,13 @@ public class WorldManager : MonoBehaviour
 #if UNITY_EDITOR
         //에디터 상에선 개발 편의를 위해, 게임 매니저가 없으면 최초 씬으로 이동하는 기능
         //빌드 상에선 그 상황 자체가 에러이기에 (물론 문제 없을 수 있으나, 최초 씬 고치기도 쉽고, 안전하게 가는 것이 좋음)
-        if (GameManager.Instance == null)
-        {
-            UnityEngine.SceneManagement.SceneManager.LoadScene(0);
-            yield break;
-        }
+        //if (GameManager.Instance == null)
+        //{
+        //    UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+        //    yield break;
+        //}
 #endif
+
 
         //GameManager와 WorldManager가 하나의 씬에 모두 존재할 때만 필요한(유의미한) 기능
         //예외 처리
@@ -89,8 +90,9 @@ public class WorldManager : MonoBehaviour
     /// 월드 매니저를 초기화하면서 해야할 일
     /// </summary>
     /// <returns></returns>
-    protected virtual IEnumerator Initiate()
+    private IEnumerator Initiate()
     {
+        GameManager.Instance.IsScriptEntireUpdateStop = true;
         GameManager.TurnOnBasicLoadingCavnas("World Loading...");
 
         //우선 주민등록 신고하자.
@@ -118,9 +120,15 @@ public class WorldManager : MonoBehaviour
 
         //각 월드 매니저들이 완료 될 때 하도록 하자.
 
+        yield return RemainInitiate();
+
         //임시
         GameManager.TurnOffBasicLoadingCanvas();
+        GameManager.Instance.IsScriptEntireUpdateStop = false;
+
     }
+
+    protected virtual IEnumerator RemainInitiate() { yield return null; }
 
     /// <summary>
     /// 월드 매니저가 죽을 때 해야할 일
@@ -130,6 +138,7 @@ public class WorldManager : MonoBehaviour
         //업데이트 해체
         GameManager.ManagersUpdate -= InnerWorldUpdates;
         GameManager.ManagersFixedUpdate -= InnerWorldFixedUpdates;
+        GameManager.ManagersLateUpdate -= InnerWorldLateUpdates;
     }
 
 }

@@ -21,7 +21,10 @@ public class ADDDDDD : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(Input.GetKeyDown(KeyCode.F10))
+        {
+            GameManager.Instance.SceneChange("InGameStage2");
+        }
     }
 
 }

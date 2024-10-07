@@ -47,7 +47,7 @@ public class ResourceManager : Manager
         GameManager.TurnOnBasicLoadingCavnas("Audio Mixer Loading...");
         mainMixer = Load<AudioMixer>(ResourcePath.audioMixerPath);
         yield return null;
-
+        GameManager.TurnOffBasicLoadingCanvas();
         //나머지 리소스 로딩
         //한 부분의 로딩이 끝날 때까지 대기
         //로딩 중에도 로딩창 보여주기 위해 코루틴 처리
@@ -57,10 +57,12 @@ public class ResourceManager : Manager
         yield return Load(ResourcePath.sfxPathArray, sfxDictionary);
         yield return Load(ResourcePath.meshPathArray, meshDictionary);
         yield return Load(ResourcePath.materialPathArray, materialDictionary);
+        GameManager.TurnOffBasicLoadingCanvas();
 
         //로딩 완료 정보 띄우기
         GameManager.TurnOnBasicLoadingCavnas($"Resource Loaded Completely ({currentResourceComplete} / {totalResourceAmount})");
-
+        yield return null;
+        GameManager.TurnOffBasicLoadingCanvas();
     }
 
 
@@ -127,6 +129,7 @@ public class ResourceManager : Manager
                 currentResourceComplete++;
             }
             yield return null;
+            GameManager.TurnOffBasicLoadingCanvas();
         }
     }
 

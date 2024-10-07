@@ -60,6 +60,15 @@ public class BigLeaf : UniqueTool
         conditionFuncInteractionDictionary[BigLeafCondition.Forward].Add(new FuncInteractionData(OuterKeyCode.Action,"바람 일으키기 On/Off",SetWindOnOff,null,null));
         //Up 상태일 때 할 일 대기
         //conditionFuncInteractionDictionary[BigLeafCondition.Up].Add(new FuncInteractionData(,,,,));
+        conditionFuncInteractionDictionary[BigLeafCondition.Forward].Add(new FuncInteractionData(OuterKeyCode.T1, "Test1", null, null, null));
+        conditionFuncInteractionDictionary[BigLeafCondition.Forward].Add(new FuncInteractionData(OuterKeyCode.T2, "Test2", null, null, null));
+        conditionFuncInteractionDictionary[BigLeafCondition.Forward].Add(new FuncInteractionData(OuterKeyCode.T3, "Test3", null, null, null));
+        conditionFuncInteractionDictionary[BigLeafCondition.Forward].Add(new FuncInteractionData(OuterKeyCode.T4, "Test4", null, null, null));
+        conditionFuncInteractionDictionary[BigLeafCondition.Forward].Add(new FuncInteractionData(OuterKeyCode.T5, "Test5", null, null, null));
+        conditionFuncInteractionDictionary[BigLeafCondition.Forward].Add(new FuncInteractionData(OuterKeyCode.T6, "Test6", null, null, null));
+        conditionFuncInteractionDictionary[BigLeafCondition.Forward].Add(new FuncInteractionData(OuterKeyCode.T7, "Test7", null, null, null));
+        conditionFuncInteractionDictionary[BigLeafCondition.Forward].Add(new FuncInteractionData(OuterKeyCode.T8, "Test8", null, null, null));
+        conditionFuncInteractionDictionary[BigLeafCondition.Forward].Add(new FuncInteractionData(OuterKeyCode.T9, "Test9", null, null, null));
 
 
 
