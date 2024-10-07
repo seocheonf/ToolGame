@@ -61,6 +61,9 @@ namespace ToolGame
         //외부 상호작용
         OuterFunc,
 
+        //Esc
+        Esc,
+
         #endregion
 
         #region About Tool
@@ -99,12 +102,16 @@ namespace ToolGame
     {
         FixedUITest,
         PlayableInputUI,
-        PlayableInputUIBlock
+        PlayableInputUIBlock,
+
+        TitleUI
     }
 
     public enum FloatingUIType
     {
-        FloatingUITest
+        FloatingUITest,
+
+        InStageOption
     }
 
 }

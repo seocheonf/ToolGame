@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToolGame;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 
 class FloatingNode
@@ -87,6 +88,18 @@ public class UIManager : Manager
         floatingUIStack = new Stack<FloatingNode>();
 
         floatingUIStack.Push(new FloatingNode(null));
+
+        //==
+
+        FuncInteractionData closeUI = new FuncInteractionData(OuterKeyCode.Esc, "떠있는 UI를 끄거나, 떠있는 UI가 없을 때 해야할 일을 합니다.", FloatingOff, null, null);
+        ControllerManager.AddInputFuncInteraction(closeUI);
+
+        //==
+
+
+        yield return null;
+
+        GameManager.TurnOffBasicLoadingCanvas();
 
     }
 
@@ -253,6 +266,9 @@ public class UIManager : Manager
         if(!peek.TryGetTop(out result))
             result = peek.Head;
 
+        if (result == null)
+            return false;
+
         return true;
     }
 
@@ -264,6 +280,7 @@ public class UIManager : Manager
     {
         if(TryGetTopUIStack(out FloatingUIComponent result))
         {
+
             result.SetActive(false);
         }
         else
@@ -298,5 +315,11 @@ public class UIManager : Manager
 
 
 
+    //=============
+
+    public static void SetSelectedNull()
+    {
+        EventSystem.current.SetSelectedGameObject(null);
+    }
 
 }

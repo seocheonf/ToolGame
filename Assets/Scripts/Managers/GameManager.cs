@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 public delegate void StartFunction();
@@ -128,6 +129,8 @@ public class GameManager : MonoBehaviour
 
         #endregion
 
+        IsScriptEntireUpdateStop = true;
+
         TurnOnBasicLoadingCavnas("");
 
         /* 
@@ -164,6 +167,10 @@ public class GameManager : MonoBehaviour
         ManagersUpdate += controller.ManagerUpdate;
         ManagersUpdate += ui.ManagerUpdate;
         ManagersUpdate += sound.ManagerUpdate;
+
+        DoCompletelyStartFunction(ref ManagersStart);
+
+        IsScriptEntireUpdateStop = false;
 
         TurnOffBasicLoadingCanvas();
 
@@ -242,15 +249,20 @@ public class GameManager : MonoBehaviour
         if (!isScriptManagersUpdateStop) ManagersLateUpdate?.Invoke(Time.deltaTime);        
     }
 
+    private static int basicLoadingCanvasCount = 0;
+
     /// <summary>
     /// 기본 로딩 캔버스를 문구와 함께 나타낸다. GameManager 스크립트상의 Update를 정지시킨다.
     /// </summary>
     /// <param name="info"> 기본 로딩 캔버스 문구 </param>
     public static void TurnOnBasicLoadingCavnas(string info)
     {
+        basicLoadingCanvasCount += 1;
         instance.basicLoadingCanvas.gameObject.SetActive(true);
         instance.basicLoadingCanvas.SetInfo(info);
-        instance.isScriptEntireUpdateStop = true;
+        //instance.isScriptEntireUpdateStop = true;
+        instance.isScriptManagersUpdateStop = true;
+        instance.isScriptObjectsUpdateStop = true;
     }
     
     /// <summary>
@@ -258,8 +270,20 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public static void TurnOffBasicLoadingCanvas()
     {
-        instance.basicLoadingCanvas.gameObject.SetActive(false);
-        instance.isScriptEntireUpdateStop = false;
+        basicLoadingCanvasCount -= 1;
+        if(basicLoadingCanvasCount == 0)
+        {
+            basicLoadingCanvasCount = 0;
+            instance.basicLoadingCanvas.gameObject.SetActive(false);
+            //instance.isScriptEntireUpdateStop = false;
+            instance.isScriptManagersUpdateStop = false;
+            instance.isScriptObjectsUpdateStop = false;
+        }
+        else if(basicLoadingCanvasCount < 0)
+        {
+            Debug.LogError("베이직 로딩 캔버스의 참조 카운트가 음수에요!");
+        }
+        
     }
 
     /// <summary>
@@ -269,8 +293,24 @@ public class GameManager : MonoBehaviour
     public void SceneChange(string sceneName)
     {
         WorldDelete();
-        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+        StartCoroutine(AsyncSceneChange(sceneName));
+        //TurnOnBasicLoadingCavnas("Scene Change");
+        //UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+        //TurnOffBasicLoadingCanvas();
     }
+    private IEnumerator AsyncSceneChange(string sceneName)
+    {
+        AsyncOperation sceneLoading = SceneManager.LoadSceneAsync(sceneName);
+
+        TurnOnBasicLoadingCavnas("Scene Change...");
+        while(!sceneLoading.isDone)
+        {
+            yield return null;
+        }
+        yield return new WaitUntil(() => currentWorld != null);
+        TurnOffBasicLoadingCanvas();
+    }
+
     /// <summary>
     /// 씬 전환 함수
     /// </summary>
@@ -278,8 +318,24 @@ public class GameManager : MonoBehaviour
     public void SceneChange(int sceneBuildIndex)
     {
         WorldDelete();
-        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneBuildIndex);
+        StartCoroutine(AsyncSceneChange(sceneBuildIndex));
+        //TurnOnBasicLoadingCavnas("Scene Change");
+        //UnityEngine.SceneManagement.SceneManager.LoadScene(sceneBuildIndex);
+        //TurnOffBasicLoadingCanvas();
     }
+    private IEnumerator AsyncSceneChange(int sceneBuildIndex)
+    {
+        AsyncOperation sceneLoading = SceneManager.LoadSceneAsync(sceneBuildIndex);
+
+        TurnOnBasicLoadingCavnas("Scene Change...");
+        while (!sceneLoading.isDone)
+        {
+            yield return null;
+        }
+        yield return new WaitUntil(() => currentWorld != null);
+        TurnOffBasicLoadingCanvas();
+    }
+
     /// <summary>
     /// 새로운 World를 적용하는 함수
     /// </summary>

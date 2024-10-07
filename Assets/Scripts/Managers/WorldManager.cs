@@ -90,8 +90,9 @@ public class WorldManager : MonoBehaviour
     /// 월드 매니저를 초기화하면서 해야할 일
     /// </summary>
     /// <returns></returns>
-    protected virtual IEnumerator Initiate()
+    private IEnumerator Initiate()
     {
+        GameManager.Instance.IsScriptEntireUpdateStop = true;
         GameManager.TurnOnBasicLoadingCavnas("World Loading...");
 
         //우선 주민등록 신고하자.
@@ -119,9 +120,15 @@ public class WorldManager : MonoBehaviour
 
         //각 월드 매니저들이 완료 될 때 하도록 하자.
 
+        yield return RemainInitiate();
+
         //임시
         GameManager.TurnOffBasicLoadingCanvas();
+        GameManager.Instance.IsScriptEntireUpdateStop = false;
+
     }
+
+    protected virtual IEnumerator RemainInitiate() { yield return null; }
 
     /// <summary>
     /// 월드 매니저가 죽을 때 해야할 일
@@ -131,6 +138,7 @@ public class WorldManager : MonoBehaviour
         //업데이트 해체
         GameManager.ManagersUpdate -= InnerWorldUpdates;
         GameManager.ManagersFixedUpdate -= InnerWorldFixedUpdates;
+        GameManager.ManagersLateUpdate -= InnerWorldLateUpdates;
     }
 
 }

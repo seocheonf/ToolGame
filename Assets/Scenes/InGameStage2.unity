@@ -1484,7 +1484,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1053621883}
-  - component: {fileID: 1053621882}
+  - component: {fileID: 1053621884}
   m_Layer: 0
   m_Name: WorldManager
   m_TagString: Untagged
@@ -1492,19 +1492,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1053621882
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1053621881}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5276625e86b29e46ada1bcb71b96698, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  prefabPoolList: []
 --- !u!4 &1053621883
 Transform:
   m_ObjectHideFlags: 0
@@ -1520,6 +1507,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1053621884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053621881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c9dc25befcfd8645afd062a7f6e0638, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabPoolList: []
 --- !u!1 &1067650436
 GameObject:
   m_ObjectHideFlags: 0

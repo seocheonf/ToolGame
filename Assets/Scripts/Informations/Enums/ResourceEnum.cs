@@ -27,7 +27,11 @@ namespace ResourceEnum
         UI_Floating_FloatingUITest,
 
         UI_Fixed_PlayableInputUI,
-        UI_Fixed_PlayableInputUIBlock
+        UI_Fixed_PlayableInputUIBlock,
+
+        UI_Fixed_TitleUI,
+
+        UI_Floating_InStageOption
 
         #endregion
 

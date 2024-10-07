@@ -51,6 +51,7 @@ public class ControllerManager : Manager
         keyCodeConnection.Add(OuterKeyCode.Action, KeyCode.Mouse0);
         keyCodeConnection.Add(OuterKeyCode.Rot_Forward_Left, KeyCode.Q);
         keyCodeConnection.Add(OuterKeyCode.Rot_Backward_Right, KeyCode.E);
+        keyCodeConnection.Add(OuterKeyCode.Esc, KeyCode.Escape);
 
         //
         keyCodeConnection.Add(OuterKeyCode.T1, KeyCode.Numlock);
@@ -80,8 +81,6 @@ public class ControllerManager : Manager
     public override void ManagerUpdate(float deltaTime)
     {
         base.ManagerUpdate(deltaTime);
-
-        Cursor.lockState = CursorLockMode.Locked;
 
         mouseMovement.x = Input.GetAxis("Mouse X");
         mouseMovement.y = Input.GetAxis("Mouse Y");

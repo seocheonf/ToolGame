@@ -137,6 +137,8 @@ public class Playable : Character, ICameraTarget
         base.MyDestroy();
         GameManager.ObjectsUpdate -= PlayableManagerUpdate;
         GameManager.CharactersFixedUpdate -= PlayableManagerFixedUpdate;
+
+        RemoveInputFuncInteraction(playableActionFuncInteractionList);
     }
 
     protected override void Jump()
