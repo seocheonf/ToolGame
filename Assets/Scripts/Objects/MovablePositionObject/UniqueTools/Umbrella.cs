@@ -92,6 +92,9 @@ public class Umbrella : UniqueTool
     }
 #endif
 
+    [SerializeField]
+    private float slowDownValue;
+
     protected override void Initialize()
     {
         base.Initialize();
@@ -677,7 +680,7 @@ public class Umbrella : UniqueTool
         if(GetDownSpeed() <= 0 && umbrellaMode)
         {
             float dotValue = Vector3.Dot(Vector3.up, transform.up);
-            AccelDownForce(1 - dotValue * 0.05f);
+            AccelDownForce(1 - dotValue * slowDownValue);
         }
         base.MainFixedUpdate(fixedDeltaTime);
     }

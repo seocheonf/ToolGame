@@ -2320,6 +2320,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Umbrella
       objectReference: {fileID: 0}
+    - target: {fileID: 8921761411280209383, guid: 75bd243b114174f41bbbfd4061081cd9, type: 3}
+      propertyPath: slowDownValue
+      value: 0.1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2593,6 +2597,14 @@ PrefabInstance:
     - target: {fileID: 5483026813634676928, guid: 75bd243b114174f41bbbfd4061081cd9, type: 3}
       propertyPath: m_Name
       value: Umbrella (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8921761411280209383, guid: 75bd243b114174f41bbbfd4061081cd9, type: 3}
+      propertyPath: slowDownValue
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8921761411280209383, guid: 75bd243b114174f41bbbfd4061081cd9, type: 3}
+      propertyPath: catchedLocalPositionKnob.y
+      value: -0.54083824
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
+using UnityEngine.SceneManagement;
+
 
 public class ADDDDDD : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     [SerializeField]
     PostProcessVolume asdf;
@@ -18,13 +15,22 @@ public class ADDDDDD : MonoBehaviour
     [SerializeField]
     public TextMeshProUGUI fda;
 
-    // Update is called once per frame
+    bool tri = false;
+
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.F10))
+        if(Input.GetKey(KeyCode.RightShift) && Input.GetKey(KeyCode.R) && tri == false)
         {
-            GameManager.Instance.SceneChange("InGameStage2");
+            GameManager.Instance.SceneChange(SceneManager.GetActiveScene().name);
+            tri = true;
+            StartCoroutine(checkTime());
         }
     }
 
+
+    IEnumerator checkTime()
+    {
+        yield return new WaitForSeconds(5f);
+        tri = false;
+    }
 }
