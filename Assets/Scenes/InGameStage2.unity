@@ -1854,7 +1854,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5562107057234540225, guid: c0f204a8aef9aa941a289e2c775062f5, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 24.86
+      value: 28.17
       objectReference: {fileID: 0}
     - target: {fileID: 5562107057234540225, guid: c0f204a8aef9aa941a289e2c775062f5, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1936,7 +1936,7 @@ MonoBehaviour:
   defaultAccelSpeed: 10
   defaultMaxSpeed: 30
   defaultJumpPower: 15
-  catchingLocalPosition: {x: 0.67956924, y: -0.31547356, z: -0.07951927}
+  catchingLocalPosition: {x: 0.67956924, y: -0.31547546, z: -0.07951927}
   maxSlopeAngle: 46
   sitRaycastDistance: 2
   defaultRushPower: 20

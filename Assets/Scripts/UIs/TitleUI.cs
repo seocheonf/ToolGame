@@ -43,7 +43,7 @@ public class TitleUI : FixedUIComponent
 
     private void GameStart()
     {
-        GameManager.Instance.SceneChange("InGameStage2");
+        GameManager.Instance.SceneChange("InGameStage1");
     }
 
 }

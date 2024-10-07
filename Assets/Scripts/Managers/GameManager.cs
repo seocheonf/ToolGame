@@ -170,9 +170,9 @@ public class GameManager : MonoBehaviour
 
         DoCompletelyStartFunction(ref ManagersStart);
 
-        IsScriptEntireUpdateStop = false;
-
         TurnOffBasicLoadingCanvas();
+
+        IsScriptEntireUpdateStop = false;
 
     }
 
@@ -195,7 +195,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            if (currentWorld == null)
+            if (currentWorld == null || !currentWorld.WorldAlive)
                 return;
 
             DoCompletelyStartFunction(ref ObjectsStart);
@@ -220,7 +220,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            if (currentWorld == null)
+            if (currentWorld == null || !currentWorld.WorldAlive)
                 return;
 
             DoCompletelyStartFunction(ref ObjectsStart);
