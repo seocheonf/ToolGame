@@ -416,13 +416,11 @@ public class Character : MovablePositionObject
 
     }
 
-    bool isTest = false;
     private void OnCollisionEnter(Collision collision)
     {
         //땅이 아닌 레버나 버튼이나 가스레인지 장식물 (원형기둥) 에 닿을때마다 이미 들어있으니 가세요라 오류 수정해야됨 (해결함)
         if (collision.relativeVelocity.sqrMagnitude > 15) 
         {
-            isTest = true;
             return;
         } 
         if (attachedCollision.ContainsKey(collision.gameObject)) { }
@@ -437,12 +435,15 @@ public class Character : MovablePositionObject
         if (!attachedCollision.ContainsKey(collision.gameObject)) // <= if (attachedCollision[collision.gameObject] != null) 원래 문구
         {
             attachedCollision[collision.gameObject] = normal;
+            if (IsGround)
+            {
+                currentRigidbody.velocity = Vector3.zero;
+            }
         }
-        if (IsGround && isTest)
-        {
-            currentRigidbody.velocity = Vector3.zero;
-            isTest = false;
-        }
+        //if (IsGround)
+        //{
+        //    currentRigidbody.velocity = Vector3.zero;
+        //}
         CalculateGround();
     }
 

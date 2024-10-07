@@ -23,7 +23,7 @@ public class PlayableInputUI : FixedUIComponent
         Vector3 next = TextsArea.localPosition;
         next.y += scrollPosition;
         next.y = Mathf.Clamp(next.y, -initialHeight, initialHeight);
-        Debug.Log(next.y);
+        //Debug.Log(next.y);
         TextsArea.localPosition = next;
     }
 

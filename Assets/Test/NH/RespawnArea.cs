@@ -5,9 +5,10 @@ using UnityEngine;
 public class RespawnArea : MonoBehaviour
 {
     public Transform respawn; 
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (other.GetComponent<Character>())
+        Collider other = collision.collider;
+        if (other.GetComponent<Playable>())
         {
             other.transform.position = respawn.transform.position;
             other.GetComponent<Rigidbody>().velocity = Vector3.zero;
