@@ -60,4 +60,17 @@ public class DunJim : Rascal
     {
         ThrowTimeUpdate(throwPlayer, Time.deltaTime);
     }
+
+
+    public override void GetSpecialInteraction(SpecialInteraction.WindData source)
+    {
+        if (source.origin == this)
+        {
+            return;
+        }
+
+        SetCrowdControl(CrowdControlState.ElectricShcok, 5f);
+
+        AddForce(new ForceInfo(source.Direction * source.intensity * 5f, ForceType.DurationForce));
+    }
 }

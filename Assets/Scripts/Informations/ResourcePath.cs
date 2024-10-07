@@ -31,7 +31,12 @@ public static class ResourcePath
         "UIs/UI_Fixed_FixedUITest",
         "UIs/UI_Floating_FloatingUITest",
 
-        "UIs/UI_Fixed_PlayableInputUI"
+        "UIs/UI_Fixed_PlayableInputUI",
+        "UIs/UI_Fixed_PlayableInputUIBlock",
+
+        "UIs/UI_Fixed_TitleUI",
+
+        "UIs/UI_Floating_InStageOption"
 
 
         #endregion

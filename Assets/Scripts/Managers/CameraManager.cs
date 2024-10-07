@@ -75,8 +75,15 @@ public class CameraManager : Manager
 
         //GameManager.Instance.CurrentWorld.WorldUpdates -= ManagerFixedUpdate;
         //GameManager.Instance.CurrentWorld.WorldUpdates += ManagerFixedUpdate;
+        yield return null;
+        GameManager.TurnOffBasicLoadingCanvas();
+
+
 
         GameManager.TurnOnBasicLoadingCavnas("Camera Loading Complete!!");
+        yield return null;
+        GameManager.TurnOffBasicLoadingCanvas();
+
 
     }
 

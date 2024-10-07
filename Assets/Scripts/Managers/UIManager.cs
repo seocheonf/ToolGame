@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ToolGame;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 
 class FloatingNode
@@ -41,12 +42,6 @@ class FloatingNode
             return false;
         }
     }
-    public void UpInStack(FloatingUIComponent data)
-    {
-        nonBlockingStack.Remove(data);
-        nonBlockingStack.Add(data);
-    }
-
     public void PopAll()
     {
 
@@ -56,6 +51,26 @@ class FloatingNode
         }
 
         nonBlockingStack.Clear();
+    }
+
+    public bool TryGetTop(out FloatingUIComponent result)
+    {
+        result = null;
+        if(nonBlockingStack.Count > 0)
+        {
+            result = nonBlockingStack[^1];
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public void UpInStack(FloatingUIComponent data)
+    {
+        nonBlockingStack.Remove(data);
+        nonBlockingStack.Add(data);
     }
 }
 
@@ -73,6 +88,18 @@ public class UIManager : Manager
         floatingUIStack = new Stack<FloatingNode>();
 
         floatingUIStack.Push(new FloatingNode(null));
+
+        //==
+
+        FuncInteractionData closeUI = new FuncInteractionData(OuterKeyCode.Esc, "떠있는 UI를 끄거나, 떠있는 UI가 없을 때 해야할 일을 합니다.", FloatingOff, null, null);
+        ControllerManager.AddInputFuncInteraction(closeUI);
+
+        //==
+
+
+        yield return null;
+
+        GameManager.TurnOffBasicLoadingCanvas();
 
     }
 
@@ -225,195 +252,74 @@ public class UIManager : Manager
 
         return peek.Pop(data);
     }
-
-    /*
-
-    private GameObject GetFixedPrefab(FixedUIType uiType)
+    private bool TryGetTopUIStack(out FloatingUIComponent result)
     {
-        return fixedPrefabDictionary[uiType];
-    }
-    private bool TryGetFixedPrefab(FixedUIType uIType, out GameObject result)
-    {
-        if (!fixedPrefabDictionary.TryGetValue(uIType, out result))
+        FloatingNode peek = null;
+        result = null;
+
+        if (!floatingUIStack.TryPeek(out peek))
         {
-            //리소스 정보 확인 불가.
-            Debug.LogError("Fixed UI가 준비되지 않았아요. Fixed UI용 프리팹 설정과 프리팹 데이터를 확인해주세요!");
+            Debug.LogError("UI Stack에 빼낼 정보가 없어요!");
             return false;
         }
-        else if (result == null)
-        {
-            Debug.LogError("Fixed UI가 준비되지 않았아요. Fixed UI용 프리팹 설정과 프리팹 데이터를 확인해주세요!");
+
+        if(!peek.TryGetTop(out result))
+            result = peek.Head;
+
+        if (result == null)
             return false;
-        }
+
         return true;
     }
 
+    //===========
 
+    private Action DoNonFloating;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public T GetSingleUI<T>(SingleUIType uiType, object user) where T : SingleUIComponent
+    private void FloatingOff()
     {
-        if(singleInstanceDictionary.TryGetValue(uiType, out SingleUICount result) && result != null && result.instance != null)
+        if(TryGetTopUIStack(out FloatingUIComponent result))
         {
-            result.count++;
 
-            result.user.Add(user);
-
-            T resultT = result.instance.GetComponent<T>();
-            resultT.SetActive(true);
-
-            return resultT;
+            result.SetActive(false);
         }
         else
         {
-            Debug.LogError("유일 UI가 준비되지 않았아요. 유일 UI용 프리팹 설정과 프리팹 데이터를 확인해주세요!");
-            return null;
+            DoNonFloating?.Invoke();
         }
     }
-    public void PutSingleUI<T>(ref T target) where T : SingleUIComponent
+
+    public void SetNonFloating(Action action)
     {
-#if UNITY_EDITOR
-        if(target == null)
+        if(DoNonFloating != null)
         {
-            Debug.LogError("Null Ref Error!!!!!!!");
-            return;
+            Debug.LogError("이미 떠 있지 않을 때 해야할 일이 등록되어 있어요! 우선 이전의 모든 기능을 지우고, 새 기능을 등록하겠습니다. 이전에 문제가 없었는지 확인해주세요!");
+            DoNonFloating = null;
         }
-#endif
-
-        if (singleInstanceDictionary.TryGetValue(target.GetUIType(), out SingleUICount result) && result != null && result.instance != null)
-        {
-            result.count--;
-
-            if (result.count == 0)
-            {
-                target.SetActive(false);
-            }
-            else if(result.count < 0)
-            {
-                Debug.LogError("잘못된 refcount 입니다! 값이 UIManager를 통하지 않고 사용되었을 가능성이 있습니다!");
-            }
-        }
-        else
-        {
-            Debug.LogError("유일 UI가 준비되지 않았아요. 유일 UI용 프리팹 설정과 프리팹 데이터를 확인해주세요!");
-        }
-
-        target = null;
+        DoNonFloating = action;
     }
 
-    public T GetSingleUI<T>(SingleUIType uiType) where T : SingleUIComponent
+    public void UnSetNonFloating()
     {
-        T target = null;
-
-        #region 코드 중복 줄이기
-        if (!singleInstanceDictionary.TryGetValue(uiType, out GameObject resultG) || resultG == null)
+        int number = DoNonFloating.GetInvocationList().Length;
+        if (number != 1)
         {
-            if (singleInfoDictionary.TryGetValue(uiType, out ResourceEnum.Prefab resultP))
+            Debug.LogError("이미 떠 있지 않을 때 해야할 일이 1개가 있지않아요. 즉 0개거나 1개보다 많아요! 이 상태에서 매개변수의 기능을 제거합니다. 이전에 문제가 없었는지 확인해주세요!");
+            foreach(Delegate each in DoNonFloating.GetInvocationList())
             {
-                resultG = ResourceManager.GetResource(resultP);
-                resultG = GameObject.Instantiate(resultG);
-            }
-            else
-            {
-                Debug.LogError("UI에 대한 리소스를 찾을 수 없어요!");
-                return null;
-            }
-
-            if(!singleInstanceDictionary.TryAdd(uiType, resultG))
-            {
-                singleInstanceDictionary[uiType] = resultG;
-            }
-
-        }
-
-        target = resultG.GetComponent<T>();
-
-        if(target == null)
-        {
-            Debug.LogError("UI에 대한 리소스를 찾을 수 없어요!");
-            return null;
-        }
-
-        target.transform.parent = GameManager.Instance.MainCanvas.transform;
-        return target;
-        #endregion
-        //vs
-        #region 직관적으로 작성하기
-        //우선 생성되어 있는 유일 UI가 있는 지 확인
-        if (singleInstanceDictionary.TryGetValue(uiType, out GameObject resultG))
-        {
-            //Dictionary구조는 있는데 비어있다면
-            if (resultG == null)
-            {
-                //Resource를 찾아와 생성
-                if (singleInfoDictionary.TryGetValue(uiType, out ResourceEnum.Prefab resultP))
-                {
-                    GameObject prefab = ResourceManager.GetResource(resultP);
-                    target = GameObject.Instantiate(prefab).GetComponent<T>();
-                    singleInstanceDictionary[uiType] = target.gameObject;
-                }
-                //ResourceManager에도 그 유일 UI정보가 없다면
-                else
-                {
-                    Debug.LogError("UI에 대한 리소스를 찾을 수 없어요!");
-                }
-            }
-            else
-            {
-                //이미 있다면
-                target = resultG.GetComponent<T>();
+                Debug.LogError(each.Target);
             }
         }
-        //유일 UI가 생성되어 있지 않은 상태라면
-        else
-        {
-            //Resource를 찾아와 생성
-            if (singleInfoDictionary.TryGetValue(uiType, out ResourceEnum.Prefab resultP))
-            {
-                GameObject prefab = ResourceManager.GetResource(resultP);
-                target = GameObject.Instantiate(prefab).GetComponent<T>();
-                singleInstanceDictionary.Add(uiType, target.gameObject);
-            }
-            //ResourceManager에도 그 유일 UI정보가 없다면
-            else
-            {
-                Debug.LogError("UI에 대한 리소스를 찾을 수 없어요!");
-            }
-        }
-
-        target.transform.parent = GameManager.Instance.MainCanvas.transform;
-        return target;
-        #endregion
+        DoNonFloating = null;
     }
-    public SingleUIComponent GetSingleUI(SingleUIType uiType)
+
+
+
+    //=============
+
+    public static void SetSelectedNull()
     {
-        return default;
+        EventSystem.current.SetSelectedGameObject(null);
     }
 
-    public T GetMultipleUI<T>(MultipleUIType uiType) where T : MultipleUIComponent
-    {
-        return default;
-    }
-    public MultipleUIComponent GetMultipleUI(MultipleUIType uiType)
-    {
-        return default;
-    }
-
-
-    */
 }
