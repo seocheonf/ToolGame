@@ -16,7 +16,7 @@ public class PlayableInputUI : FixedUIComponent
     RectTransform backGround;
 
     [SerializeField]
-    //ÀÌ °ªÀº ½ºÅ©·Ñ ÃÖ»ó´ÜÀÇ À§Ä¡¸¦ Á¶ÀıÇÏ±â À§ÇÑ °ªÀ¸·Î¼­, ÃÖÇÏ´ÜÀ¸·Î ºÎÅÍ uiBlockÀÌ ¸îÄ­ ¿Ã¶ó°¡´Â °ÍÀ» ±âÁØÀ¸·Î »ï´Â´Ù.
+    //ì´ ê°’ì€ ìŠ¤í¬ë¡¤ ìµœìƒë‹¨ì˜ ìœ„ì¹˜ë¥¼ ì¡°ì ˆí•˜ê¸° ìœ„í•œ ê°’ìœ¼ë¡œì„œ, ìµœí•˜ë‹¨ìœ¼ë¡œ ë¶€í„° uiBlockì´ ëª‡ì¹¸ ì˜¬ë¼ê°€ëŠ” ê²ƒì„ ê¸°ì¤€ìœ¼ë¡œ ì‚¼ëŠ”ë‹¤.
     int upperBoundaryCount;
 
     float initialHeight;
@@ -55,7 +55,7 @@ public class PlayableInputUI : FixedUIComponent
     }
 
     /// <summary>
-    /// ÀÔ·Â Á¤º¸¸¦ Àü´Ş¹Ş¾Æ UI¿¡ ³ëÃâ½ÃÅµ´Ï´Ù.
+    /// ì…ë ¥ ì •ë³´ë¥¼ ì „ë‹¬ë°›ì•„ UIì— ë…¸ì¶œì‹œí‚µë‹ˆë‹¤.
     /// </summary>
     /// <param name="data"></param>
     public void SetInputInfo(FuncInteractionData data)
@@ -76,7 +76,7 @@ public class PlayableInputUI : FixedUIComponent
     }
 
     /// <summary>
-    /// ÀÔ·Â Á¤º¸¸¦ Àü´Ş¹Ş¾Æ UI¿¡¼­ Á¦°ÅÇÕ´Ï´Ù.
+    /// ì…ë ¥ ì •ë³´ë¥¼ ì „ë‹¬ë°›ì•„ UIì—ì„œ ì œê±°í•©ë‹ˆë‹¤.
     /// </summary>
     /// <param name="data"></param>
     public void UnSetInputInfo(FuncInteractionData data)
@@ -98,7 +98,7 @@ public class PlayableInputUI : FixedUIComponent
     }
 
     /// <summary>
-    /// UIBlockÀ» ¸¸µé°í mask°¡ Àû¿ëµÈ backGroundÀÇ ÀÚ½ÄÀ¸·Î ³ÖÀº µÚ, ¹İÈ¯ÇÕ´Ï´Ù.
+    /// UIBlockì„ ë§Œë“¤ê³  maskê°€ ì ìš©ëœ backGroundì˜ ìì‹ìœ¼ë¡œ ë„£ì€ ë’¤, ë°˜í™˜í•©ë‹ˆë‹¤.
     /// </summary>
     /// <returns>UIBlock</returns>
     private PlayableInputUIBlock MakeBlock()
@@ -110,7 +110,7 @@ public class PlayableInputUI : FixedUIComponent
     }
 
     /// <summary>
-    /// UIBlockÀ» Ç®¸µ¿¡¼­ °¡Á®¿É´Ï´Ù. ¸¸¾à Ç®¸µ µ¥ÀÌÅÍ¿¡ ¾ø´Ù¸é, »õ·Î ¸¸µé¾î¼­ ¹İÈ¯ÇÕ´Ï´Ù.
+    /// UIBlockì„ í’€ë§ì—ì„œ ê°€ì ¸ì˜µë‹ˆë‹¤. ë§Œì•½ í’€ë§ ë°ì´í„°ì— ì—†ë‹¤ë©´, ìƒˆë¡œ ë§Œë“¤ì–´ì„œ ë°˜í™˜í•©ë‹ˆë‹¤.
     /// </summary>
     /// <returns></returns>
     private PlayableInputUIBlock GetBlock()
@@ -123,7 +123,7 @@ public class PlayableInputUI : FixedUIComponent
         return data;
     }
     /// <summary>
-    /// UIBlockÀ» Ç®¸µ¿¡ ¹İ³³ÇÕ´Ï´Ù.
+    /// UIBlockì„ í’€ë§ì— ë°˜ë‚©í•©ë‹ˆë‹¤.
     /// </summary>
     private void PutBlock(PlayableInputUIBlock data)
     {
@@ -131,7 +131,7 @@ public class PlayableInputUI : FixedUIComponent
     }
 
     /// <summary>
-    /// UIBlockÀ» ½×¾Æ ¿Ã¸³´Ï´Ù.
+    /// UIBlockì„ ìŒ“ì•„ ì˜¬ë¦½ë‹ˆë‹¤.
     /// </summary>
     /// <param name="data"></param>
     private void SetBlock(PlayableInputUIBlock data)
@@ -141,7 +141,7 @@ public class PlayableInputUI : FixedUIComponent
         RefreshBlockPos();
     }
     /// <summary>
-    /// Æ¯Á¤ À§Ä¡ÀÇ UIBlockÀ» »©³À´Ï´Ù.
+    /// íŠ¹ì • ìœ„ì¹˜ì˜ UIBlockì„ ë¹¼ëƒ…ë‹ˆë‹¤.
     /// </summary>
     private void UnSetBlock(int index)
     {
@@ -150,7 +150,7 @@ public class PlayableInputUI : FixedUIComponent
         RefreshBlockPos();
     }
     /// <summary>
-    /// Æ¯Á¤ UIBlockÀ» »©³À´Ï´Ù.
+    /// íŠ¹ì • UIBlockì„ ë¹¼ëƒ…ë‹ˆë‹¤.
     /// </summary>
     private void UnSetBlock(PlayableInputUIBlock data)
     {
