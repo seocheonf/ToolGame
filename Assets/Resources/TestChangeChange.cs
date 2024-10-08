@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ToolGame;
 
 public class TestChangeChange : MonoBehaviour
 {
@@ -20,7 +21,7 @@ public class TestChangeChange : MonoBehaviour
             {
                 index = 0;
             }
-            GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(testList[index], CameraType.FirstView);
+            GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(testList[index], CameraViewType.FirstView);
             index++;
         }
 
@@ -34,7 +35,7 @@ public class TestChangeChange : MonoBehaviour
             {
                 index = 0;
             }
-            GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(testList[index], CameraType.ThirdView);
+            GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(testList[index], CameraViewType.ThirdView);
             index++;
         }
     }

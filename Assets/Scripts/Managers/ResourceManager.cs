@@ -11,6 +11,8 @@ public class ResourceManager : Manager
     private static Dictionary<ResourceEnum.Prefab, GameObject> prefabDictionary;
     private static Dictionary<ResourceEnum.BGM, AudioClip> bgmDictionary;
     private static Dictionary<ResourceEnum.SFX, AudioClip> sfxDictionary;
+    private static Dictionary<ResourceEnum.Mesh, Mesh> meshDictionary;
+    private static Dictionary<ResourceEnum.Material, Material> materialDictionary;
     // 오디오 믹서는 하나를 생성하여, 그 안에서 bgm과 sfx를 관리하며 게임내 사운드 전반을 관리한다.
     private static AudioMixer mainMixer;
     public static AudioMixer MainMixer => mainMixer;
@@ -31,17 +33,21 @@ public class ResourceManager : Manager
         prefabDictionary = new Dictionary<ResourceEnum.Prefab, GameObject>();
         bgmDictionary = new Dictionary<ResourceEnum.BGM, AudioClip>();
         sfxDictionary = new Dictionary<ResourceEnum.SFX, AudioClip>();
+        meshDictionary = new Dictionary<ResourceEnum.Mesh, Mesh>();
+        materialDictionary = new Dictionary<ResourceEnum.Material, Material>();
 
         //총 로드할 리소스의 개수 
         totalResourceAmount += ResourcePath.prefabPathArray.Length;
         totalResourceAmount += ResourcePath.bgmPathArray.Length;
         totalResourceAmount += ResourcePath.sfxPathArray.Length;
+        totalResourceAmount += ResourcePath.meshPathArray.Length;
+        totalResourceAmount += ResourcePath.materialPathArray.Length;
 
         //오디오 믹서 로딩
         GameManager.TurnOnBasicLoadingCavnas("Audio Mixer Loading...");
         mainMixer = Load<AudioMixer>(ResourcePath.audioMixerPath);
         yield return null;
-
+        GameManager.TurnOffBasicLoadingCanvas();
         //나머지 리소스 로딩
         //한 부분의 로딩이 끝날 때까지 대기
         //로딩 중에도 로딩창 보여주기 위해 코루틴 처리
@@ -49,11 +55,16 @@ public class ResourceManager : Manager
         yield return Load(ResourcePath.prefabPathArray, prefabDictionary);
         yield return Load(ResourcePath.bgmPathArray, bgmDictionary);
         yield return Load(ResourcePath.sfxPathArray, sfxDictionary);
+        yield return Load(ResourcePath.meshPathArray, meshDictionary);
+        yield return Load(ResourcePath.materialPathArray, materialDictionary);
+        GameManager.TurnOffBasicLoadingCanvas();
 
         //로딩 완료 정보 띄우기
         GameManager.TurnOnBasicLoadingCavnas($"Resource Loaded Completely ({currentResourceComplete} / {totalResourceAmount})");
-
+        yield return null;
+        GameManager.TurnOffBasicLoadingCanvas();
     }
+
 
     /// <summary>
     /// 파일 경로에 있는 리소스를 UnityEngine.Object 타입으로 메모리에 불러오는 함수
@@ -118,6 +129,7 @@ public class ResourceManager : Manager
                 currentResourceComplete++;
             }
             yield return null;
+            GameManager.TurnOffBasicLoadingCanvas();
         }
     }
 
@@ -229,5 +241,65 @@ public class ResourceManager : Manager
     {
         return sfxDictionary[targetSFX];
     }
+
+
+    /// <summary>
+    /// Mesh 리소스를 불러오는 함수
+    /// </summary>
+    /// <param name="targetMesh">불러오고자 하는 Mesh 리소스 정보(Enum에 기록된 이름)</param>
+    /// <param name="result">Mesh 리소스 인스턴스</param>
+    /// <returns>리소스를 가져오는 것 성공 여부</returns>
+    public static bool TryGetResource(ResourceEnum.Mesh targetMesh, out Mesh result)
+    {
+        result = null;
+        if (meshDictionary.TryGetValue(targetMesh, out result))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    /// <summary>
+    /// Mesh 리소스를 불러오는 함수
+    /// </summary>
+    /// <param name="targetMesh">불러오고자 하는 Mesh 리소스 정보(Enum에 기록된 이름)</param>
+    /// <returns>Mesh 리소스 인스턴스</returns>
+    public static Mesh GetResource(ResourceEnum.Mesh targetMesh)
+    {
+        return meshDictionary[targetMesh];
+    }
+
+    /// <summary>
+    /// Material 리소스를 불러오는 함수
+    /// </summary>
+    /// <param name="targetMaterial">불러오고자 하는 Material 리소스 정보(Enum에 기록된 이름)</param>
+    /// <param name="result">Material 리소스 인스턴스</param>
+    /// <returns>리소스를 가져오는 것 성공 여부</returns>
+    public static bool TryGetResource(ResourceEnum.Material targetMaterial, out Material result)
+    {
+        result = null;
+        if (materialDictionary.TryGetValue(targetMaterial, out result))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    /// <summary>
+    /// Material 리소스를 불러오는 함수
+    /// </summary>
+    /// <param name="targetMaterial">불러오고자 하는 Material 리소스 정보(Enum에 기록된 이름)</param>
+    /// <returns>Material 리소스 인스턴스</returns>
+    public static Material GetResource(ResourceEnum.Material targetMaterial)
+    {
+        return materialDictionary[targetMaterial];
+    }
+
+
+
 
 }

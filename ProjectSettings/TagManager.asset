@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - GrabPosition
   layers:
   - Default
   - TransparentFX
@@ -11,6 +12,9 @@ TagManager:
   - 
   - Water
   - UI
+  - Block
+  - Cast_UniqueTool
+  - Cast_Object
   - 
   - 
   - 
@@ -32,11 +36,8 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - POLARIS RAYCAST
+  - POLARIS SPLINE
   m_SortingLayers:
   - name: Default
     uniqueID: 0

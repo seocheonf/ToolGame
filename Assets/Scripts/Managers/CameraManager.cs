@@ -1,24 +1,26 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ToolGame;
 
 public class CameraManager : Manager
 {
 
-    #region º¯¼öºÎ
+    #region ë³€ìˆ˜ë¶€
 
-    //--------------Ä«¸Ş¶ó ¸Å´ÏÀú ±âº» º¯¼öºÎ--------------//
+    //--------------ì¹´ë©”ë¼ ë§¤ë‹ˆì € ê¸°ë³¸ ë³€ìˆ˜ë¶€--------------//
     
-    //Ä«¸Ş¶ó¸Å´ÏÀú°¡ °ü¸®ÇÏ´Â Ä«¸Ş¶ó
+    //ì¹´ë©”ë¼ë§¤ë‹ˆì €ê°€ ê´€ë¦¬í•˜ëŠ” ì¹´ë©”ë¼
     private Camera mainCamera;
 
-    //Ä«¸Ş¶ó°¡ ÇØ¾ßÇÒ ÀÏÀÇ ÀüÈ¯À» À§ÇÑ µ¨¸®°ÔÀÌÆ®
-    private FixedUpdateFunction CameraFixedUpdate;
+    //ì¹´ë©”ë¼ê°€ í•´ì•¼í•  ì¼ì˜ ì „í™˜ì„ ìœ„í•œ ë¸ë¦¬ê²Œì´íŠ¸
+    private UpdateFunction CameraLateUpdate;
 
-    //Ä«¸Ş¶óÀÇ Å¸ÀÔ. Å¸ÀÔ¿¡ µû¶ó ÇàÀ§°¡ ´Ş¶óÁü
-    private CameraType currentCameraType;
-    //Ä«¸Ş¶ó Å¸ÀÔÀÌ º¯ÇÔ¿¡ µû¶ó, Ä«¸Ş¶ó°¡ ¼öÇàÇØ¾ß ÇÒ ÀÏµµ ÀüÈ¯µÇ¾î¾ß ÇÔ.
-    private CameraType CurrentCameraType
+    //ì¹´ë©”ë¼ì˜ íƒ€ì…. íƒ€ì…ì— ë”°ë¼ í–‰ìœ„ê°€ ë‹¬ë¼ì§
+    private CameraViewType currentCameraType;
+    //ì¹´ë©”ë¼ íƒ€ì…ì´ ë³€í•¨ì— ë”°ë¼, ì¹´ë©”ë¼ê°€ ìˆ˜í–‰í•´ì•¼ í•  ì¼ë„ ì „í™˜ë˜ì–´ì•¼ í•¨.
+    private CameraViewType CurrentCameraType
     {
         get
         {
@@ -28,19 +30,19 @@ public class CameraManager : Manager
         {
             switch(value)
             {
-                case CameraType.FirstView :
+                case CameraViewType.FirstView :
                     {
-                        CameraFixedUpdate = FirstViewCameraFixedUpdate;
+                        CameraLateUpdate = FirstViewCameraLateUpdate;
                         break;
                     }
-                case CameraType.ThirdView:
+                case CameraViewType.ThirdView:
                     {
-                        CameraFixedUpdate = ThirdViewCameraFixedUpdate;
+                        CameraLateUpdate = ThirdViewCameraLateUpdate;
                         break;
                     }
                 default :
                     {
-                        CameraFixedUpdate = DefaultCameraFixedUpdate;
+                        CameraLateUpdate = DefaultCameraLateUpdate;
                         break;
                     }
             };
@@ -48,14 +50,15 @@ public class CameraManager : Manager
         }
     }
 
-    //-----------------Ä«¸Ş¶ó Á¶Á¤ º¯¼öºÎ-----------------//
+    //-----------------ì¹´ë©”ë¼ ì¡°ì • ë³€ìˆ˜ë¶€-----------------//
 
-    //Ä«¸Ş¶ó¸Å´ÏÀú°¡ °ü¸®ÇÏ´Â Å¸°ÙµéÀÇ Stack
-    private List<ICameraTarget> cameraTargetLStack;
+    //ì¹´ë©”ë¼ë§¤ë‹ˆì €ê°€ ê´€ë¦¬í•˜ëŠ” íƒ€ê²Ÿë“¤ì˜ Stack
+    private List<CameraTargetInfo> cameraTargetLStack;
+
 
     #endregion
 
-    #region ÇÔ¼öºÎ
+    #region í•¨ìˆ˜ë¶€
 
     public override IEnumerator Initiate()
     {
@@ -63,71 +66,166 @@ public class CameraManager : Manager
 
         GameManager.TurnOnBasicLoadingCavnas("Camera Loading..");
 
-        //º¯¼ö ÃÊ±âÈ­
+        //ë³€ìˆ˜ ì´ˆê¸°í™”
         VarInitialize();
 
-        //ÀÚ½ÅÀÇ ¾÷µ¥ÀÌÆ®°¡ ´©±¸¿Í ÇÔ²² »ì°í Á×´Â°¡¸¦ »ı°¢ÇØº¸ÀÚ.
-        GameManager.Instance.CurrentWorld.WorldFixedUpdates -= ManagerFixedUpdate;
-        GameManager.Instance.CurrentWorld.WorldFixedUpdates += ManagerFixedUpdate;
+        //ìì‹ ì˜ ì—…ë°ì´íŠ¸ê°€ ëˆ„êµ¬ì™€ í•¨ê»˜ ì‚´ê³  ì£½ëŠ”ê°€ë¥¼ ìƒê°í•´ë³´ì.
+        GameManager.Instance.CurrentWorld.WorldLateUpdates -= ManagerLateUpdate;
+        GameManager.Instance.CurrentWorld.WorldLateUpdates += ManagerLateUpdate;
+
+        //GameManager.Instance.CurrentWorld.WorldUpdates -= ManagerFixedUpdate;
+        //GameManager.Instance.CurrentWorld.WorldUpdates += ManagerFixedUpdate;
+        yield return null;
+        GameManager.TurnOffBasicLoadingCanvas();
+
+
 
         GameManager.TurnOnBasicLoadingCavnas("Camera Loading Complete!!");
+        yield return null;
+        GameManager.TurnOffBasicLoadingCanvas();
+
 
     }
 
     /// <summary>
-    /// Ä«¸Ş¶ó ¸Å´ÏÀúÀÇ ±âº» º¯¼ö ÃÊ±âÈ­¸¦ ´ã´çÇÑ´Ù.
+    /// ì¹´ë©”ë¼ ë§¤ë‹ˆì €ì˜ ê¸°ë³¸ ë³€ìˆ˜ ì´ˆê¸°í™”ë¥¼ ë‹´ë‹¹í•œë‹¤.
     /// </summary>
     private void VarInitialize()
     {
         mainCamera = Camera.main;
         
-        currentCameraType = CameraType.Default;
+        currentCameraType = CameraViewType.Default;
 
-        cameraTargetLStack = new List<ICameraTarget>();
+        cameraTargetLStack = new List<CameraTargetInfo>();
+
     }
 
 
     /// <summary>
-    /// Ä«¸Ş¶ó Å¸ÀÔÀ» ¼³Á¤ÇÏ´Â ÇÔ¼ö
+    /// ì¹´ë©”ë¼ íƒ€ì…ì„ ì„¤ì •í•˜ëŠ” í•¨ìˆ˜
     /// </summary>
-    /// <param name="cameraType">¼³Á¤ÇÏ°íÀÚ ÇÏ´Â Ä«¸Ş¶ó Å¸ÀÔ</param>
-    public void CameraSet(CameraType cameraType)
+    /// <param name="cameraType">ì„¤ì •í•˜ê³ ì í•˜ëŠ” ì¹´ë©”ë¼ íƒ€ì…</param>
+    public void CameraSet(CameraViewType cameraType)
     {
         CurrentCameraType = cameraType;
-    }
-    /// <summary>
-    /// Ä«¸Ş¶ó Å¸°ÙÀ» Ãß°¡ÇÏ°í, Å¸ÀÔÀ» ¼³Á¤ÇÏ´Â ÇÔ¼ö
-    /// </summary>
-    /// <param name="cameraTarget">Ãß°¡ÇÏ°íÀÚ ÇÏ´Â Ä«¸Ş¶ó Å¸°Ù</param>
-    /// <param name="cameraType">¼³Á¤ÇÏ°íÀÚ ÇÏ´Â Ä«¸Ş¶ó Å¸ÀÔ</param>
-    public void CameraSet(ICameraTarget cameraTarget, CameraType cameraType)
-    {
-        cameraTargetLStack.Insert(0, cameraTarget);
-        CurrentCameraType = cameraType;
-    }
-    /// <summary>
-    /// Ä«¸Ş¶ó Å¸°ÙÀ» Á¦°ÅÇÏ´Â ÇÔ¼ö
-    /// </summary>
-    /// <param name="cameraTarget">Á¦°ÅÇÏ°íÀÚ ÇÏ´Â Ä«¸Ş¶ó Å¸°Ù</param>
-    public void CameraBreak(ICameraTarget cameraTarget)
-    {
+
 #if UNITY_EDITOR
-        if(!cameraTargetLStack.Remove(cameraTarget))
+        if (cameraTargetLStack.Count <= 0)
         {
             Debug.LogError("CameraManager doesn't have [cameraTarget].");
-            CurrentCameraType = CameraType.Default;
+            return;
         }
-#else
-        cameraTargetLStack.Remove(cameraTarget);
 #endif
+
+        cameraTargetLStack[0].cameraType = cameraType;
+
+    }
+    /// <summary>
+    /// ì¹´ë©”ë¼ íƒ€ê²Ÿì„ ì¶”ê°€í•˜ê³ , íƒ€ì…ì„ ì„¤ì •í•˜ëŠ” í•¨ìˆ˜.
+    /// </summary>
+    /// <param name="cameraTarget">ì¶”ê°€í•˜ê³ ì í•˜ëŠ” ì¹´ë©”ë¼ íƒ€ê²Ÿ</param>
+    /// <param name="cameraType">ì„¤ì •í•˜ê³ ì í•˜ëŠ” ì¹´ë©”ë¼ íƒ€ì…</param>
+    public void CameraSet(ICameraTarget cameraTarget, CameraViewType cameraType)
+    {
+        CameraTargetInfo info = new CameraTargetInfo(cameraTarget, cameraType);
+
+        cameraTargetLStack.Insert(0, info);
+
+        CurrentCameraType = cameraType;
+    }
+    /// <summary>
+    /// ê°€ì¥ ìµœê·¼ì˜, ëŒ€ìƒì´ ë˜ëŠ” ì¹´ë©”ë¼ íƒ€ê²Ÿì„ ì œê±°í•˜ëŠ” í•¨ìˆ˜
+    /// </summary>
+    /// <param name="cameraTarget">ì œê±°í•˜ê³ ì í•˜ëŠ” ì¹´ë©”ë¼ íƒ€ê²Ÿ</param>
+    public void CameraBreak(ICameraTarget cameraTarget)
+    {
+
+        #region ì§€ìš°ê¸° ìœ„í•œ ì‘ì—…
+
+        CameraTargetInfo target = null;
+
+        //ìˆëŠ”ì§€ ì°¾ê¸°. 0ë²ˆì´ ê°€ì¥ ìµœì‹ ì´ë¼ foreachë¡œ ëŒë ¤ë„ ëœë‹¤.
+        foreach (CameraTargetInfo each in cameraTargetLStack)
+        {
+            if(each.cameraTarget == cameraTarget)
+            {
+                target = each;
+                break;
+            }
+        }
+
+#if UNITY_EDITOR
+        //ì—†ë‹¤ë©´
+        if(target == null)
+        {
+            Debug.LogError("ì§€ìš°ë ¤ëŠ” ëŒ€ìƒì´ ì—†ì–´ìš”!");
+            CurrentCameraType = CameraViewType.Default;
+            return;
+        }
+#endif
+
+        cameraTargetLStack.Remove(target);
+
+        #endregion
+
+        #region ì§€ìš°ê³  ë‚œ í›„ ë¹„ì›Œì¡ŒëŠ”ì§€ë¥¼ í™•ì¸í•œ í›„, í˜„ì¬ ì¹´ë©”ë¼ íƒ€ì…ì„ ì •ë³´ì— ë§ê²Œ ì„¤ì •
+        int tempt = 0;
+        foreach(CameraTargetInfo each in cameraTargetLStack)
+        {
+            //í•˜ë‚˜ë¼ë„ ìˆë‹¤ë©´
+            tempt++;
+            break;
+        }
+        if (tempt == 0)
+        {
+            //í•˜ë‚˜ë¼ë„ ì—†ë‹¤ë©´
+            CurrentCameraType = CameraViewType.Default;
+        }
+        else
+        {
+            //í•˜ë‚˜ë¼ë„ ìˆë‹¤ë©´
+            CurrentCameraType = cameraTargetLStack[0].cameraType;
+        }
+        #endregion
+
+    }
+    /// <summary>
+    /// ëŒ€ìƒì´ ë˜ëŠ” ì¹´ë©”ë¼ íƒ€ê²Ÿì„ ì „ë¶€ ì œê±°í•˜ëŠ” í•¨ìˆ˜
+    /// </summary>
+    /// <param name="cameraTarget">ì œê±°í•˜ê³ ì í•˜ëŠ” ì¹´ë©”ë¼ íƒ€ê²Ÿ</param>
+    public void CameraBreakAll(ICameraTarget cameraTarget)
+    {
+
+        cameraTargetLStack.RemoveAll((each) => each.cameraTarget == cameraTarget);
+
+        #region ì§€ìš°ê³  ë‚œ í›„ ë¹„ì›Œì¡ŒëŠ”ì§€ë¥¼ í™•ì¸í•œ í›„, í˜„ì¬ ì¹´ë©”ë¼ íƒ€ì…ì„ ì •ë³´ì— ë§ê²Œ ì„¤ì •
+        int tempt = 0;
+        foreach (CameraTargetInfo each in cameraTargetLStack)
+        {
+            //í•˜ë‚˜ë¼ë„ ìˆë‹¤ë©´
+            tempt++;
+            break;
+        }
+        if (tempt == 0)
+        {
+            //í•˜ë‚˜ë¼ë„ ì—†ë‹¤ë©´
+            CurrentCameraType = CameraViewType.Default;
+        }
+        else
+        {
+            //í•˜ë‚˜ë¼ë„ ìˆë‹¤ë©´
+            CurrentCameraType = cameraTargetLStack[0].cameraType;
+        }
+        #endregion
+
     }
 
 
     /// <summary>
-    /// 1ÀÎÄª Ä«¸Ş¶ó »óÅÂ¿¡¼­ ¼öÇàÇØ¾ßÇÒ Ä«¸Ş¶ó µ¿ÀÛ
+    /// 1ì¸ì¹­ ì¹´ë©”ë¼ ìƒíƒœì—ì„œ ìˆ˜í–‰í•´ì•¼í•  ì¹´ë©”ë¼ ë™ì‘
     /// </summary>
-    /// <param name="fixedDeltaTime">FixedUpdate ¼öÇà ½Ã°£ °£°İ</param>
-    private void FirstViewCameraFixedUpdate(float fixedDeltaTime)
+    /// <param name="deltaTime">LateUpdate ìˆ˜í–‰ ì‹œê°„ ê°„ê²©</param>
+    private void FirstViewCameraLateUpdate(float deltaTime)
     {
 #if UNITY_EDITOR
         if(cameraTargetLStack.Count <= 0)
@@ -136,17 +234,17 @@ public class CameraManager : Manager
         }
 #endif
 
-        FirstViewCameraData targetData = cameraTargetLStack[0].FirstViewCameraSet();
+        FirstViewCameraData targetData = cameraTargetLStack[0].cameraTarget.FirstViewCameraSet();
 
         mainCamera.transform.position = targetData.targetPosition;
         mainCamera.transform.forward = targetData.targetForward;
 
     }
     /// <summary>
-    /// 3ÀÎÄª Ä«¸Ş¶ó »óÅÂ¿¡¼­ ¼öÇàÇØ¾ßÇÒ Ä«¸Ş¶ó µ¿ÀÛ
+    /// 3ì¸ì¹­ ì¹´ë©”ë¼ ìƒíƒœì—ì„œ ìˆ˜í–‰í•´ì•¼í•  ì¹´ë©”ë¼ ë™ì‘
     /// </summary>
-    /// <param name="fixedDeltaTime">FixedUpdate ¼öÇà ½Ã°£ °£°İ</param>
-    private void ThirdViewCameraFixedUpdate(float fixedDeltaTime)
+    /// <param name="deltaTime">LateUdpate ìˆ˜í–‰ ì‹œê°„ ê°„ê²©</param>
+    private void ThirdViewCameraLateUpdate(float deltaTime)
     {
 #if UNITY_EDITOR
         if (cameraTargetLStack.Count <= 0)
@@ -155,9 +253,9 @@ public class CameraManager : Manager
         }
 #endif
 
-        ThirdViewCameraData targetData = cameraTargetLStack[0].ThirdViewCameraSet();
+        ThirdViewCameraData targetData = cameraTargetLStack[0].cameraTarget.ThirdViewCameraSet();
 
-        #region ³ëÈ¯ÁØ
+        #region ë…¸í™˜ì¤€
 
         Quaternion rot = Quaternion.Euler(targetData.Xrot, targetData.Yrot, 0);
         mainCamera.transform.position = targetData.targetPosition;
@@ -169,7 +267,7 @@ public class CameraManager : Manager
         finalDir *= targetData.maxDistance;
 
 
-        if (Physics.Linecast(mainCamera.transform.position, targetData.targetPosition + finalDir, out hit))
+        if (Physics.Linecast(mainCamera.transform.position, targetData.targetPosition + finalDir, out hit) && !hit.collider.isTrigger)
         {
             finalDistance = Mathf.Clamp(hit.distance, targetData.minDistance, targetData.maxDistance);
         }
@@ -184,52 +282,66 @@ public class CameraManager : Manager
 
     }
     /// <summary>
-    /// ±âº» Ä«¸Ş¶ó »óÅÂ¿¡¼­ ¼öÇàÇØ¾ßÇÒ Ä«¸Ş¶ó µ¿ÀÛ
+    /// ê¸°ë³¸ ì¹´ë©”ë¼ ìƒíƒœì—ì„œ ìˆ˜í–‰í•´ì•¼í•  ì¹´ë©”ë¼ ë™ì‘
     /// </summary>
-    /// <param name="fixedDeltaTime">FixedUpdate ¼öÇà ½Ã°£ °£°İ</param>
-    private void DefaultCameraFixedUpdate(float fixedDeltaTime)
+    /// <param name="deltaTime">LateUpdate ìˆ˜í–‰ ì‹œê°„ ê°„ê²©</param>
+    private void DefaultCameraLateUpdate(float deltaTime)
     {
 
     }
 
+    public override void ManagerLateUpdate(float deltaTime)
+    {
+        base.ManagerLateUpdate(deltaTime);
+
+        CameraLateUpdate?.Invoke(deltaTime);
+    }
+    /*
     public override void ManagerFixedUpdate(float fixedDeltaTime)
     {
         base.ManagerFixedUpdate(fixedDeltaTime);
 
-        CameraFixedUpdate?.Invoke(fixedDeltaTime);
+        CameraLateUpdate?.Invoke(fixedDeltaTime);
     }
-
+    */
     #endregion
 }
 
 /// <summary>
-/// Ä«¸Ş¶ó Å¸°ÙÀÌ µÇ°í ½ÍÀº ÀÚ¶ó¸é ºÙÀÌ¸é ÁÁÀ» ÀÎÅÍÆäÀÌ½º
+/// ì¹´ë©”ë¼ íƒ€ê²Ÿì´ ë˜ê³  ì‹¶ì€ ìë¼ë©´ ë¶™ì´ë©´ ì¢‹ì„ ì¸í„°í˜ì´ìŠ¤
 /// </summary>
 public interface ICameraTarget
 {
-    public FirstViewCameraData  FirstViewCameraSet();
-    public ThirdViewCameraData  ThirdViewCameraSet();
+    public FirstViewCameraData FirstViewCameraSet();
+    public ThirdViewCameraData ThirdViewCameraSet();
     //public CustomViewCameraData CustomViewCameraSet(Camera mainCamera);
 }
 
 /// <summary>
-/// 1¾ÈÃ¢ Ä«¸Ş¶ó ¼³Á¤ Á¤º¸
+/// 1ì•ˆì°½ ì¹´ë©”ë¼ ì„¤ì • ì •ë³´
 /// </summary>
 public class FirstViewCameraData
 {
-    //Å¸°Ù À§Ä¡
+    //íƒ€ê²Ÿ ìœ„ì¹˜
     public Vector3 targetPosition;
-    //Å¸°ÙÀÇ Á¤¸é
+    //íƒ€ê²Ÿì˜ ì •ë©´
     public Vector3 targetForward;
+
+    public void SetInfo(Vector3 targetPosition, Vector3 targetForward)
+    {
+        this.targetPosition = targetPosition;
+        this.targetForward = targetForward;
+    }
 }
 /// <summary>
-/// 3ÀÎÄª Ä«¸Ş¶ó ¼³Á¤ Á¤º¸
+/// 3ì¸ì¹­ ì¹´ë©”ë¼ ì„¤ì • ì •ë³´
 /// </summary>
 public class ThirdViewCameraData
 {
-    #region ³ëÈ¯ÁØ
+    #region ë…¸í™˜ì¤€
 
     public Vector3 targetPosition;
+    public Vector3 targetForward;
     public float Xrot;
     public float Yrot;
     public int minDistance;
@@ -237,24 +349,36 @@ public class ThirdViewCameraData
     public float TPPOffsetY;
     public float TPPOffsetZ;
 
+
+    public void SetInfo(Vector3 targetPosition, float Xrot, float Yrot, int minDistance, int maxDistance, float TPPOffsetY, float TPPOffsetZ)
+    {
+        this.targetPosition = targetPosition;
+        this.Xrot = Xrot;
+        this.Yrot = Yrot;
+        this.minDistance = minDistance;
+        this.maxDistance = maxDistance;
+        this.TPPOffsetY = TPPOffsetY;
+        this.TPPOffsetZ = TPPOffsetZ;
+    }
+
     #endregion
 
-    #region ±èÇü¸ğ
+    #region ê¹€í˜•ëª¨
     /*
-    //Å¸°Ù À§Ä¡
+    //íƒ€ê²Ÿ ìœ„ì¹˜
     public Vector3 targetPosition;
-    //Å¸°ÙÀÇ Á¤¸é
+    //íƒ€ê²Ÿì˜ ì •ë©´
     public Vector3 targetForward;
 
-    //Å¸°ÙÀÇ ¼öÆò°¢µµ
+    //íƒ€ê²Ÿì˜ ìˆ˜í‰ê°ë„
     public Vector3 targetRotation_Horizontal;
-    //Å¸°ÙÀÇ ¼öÁ÷°¢µµ
+    //íƒ€ê²Ÿì˜ ìˆ˜ì§ê°ë„
     public Vector3 targetRotation_Vertical;
 
-    //Å¸°Ù°ú Ä«¸Ş¶ó »çÀÌÀÇ °Å¸®
+    //íƒ€ê²Ÿê³¼ ì¹´ë©”ë¼ ì‚¬ì´ì˜ ê±°ë¦¬
     public int maxDistance;
 
-    //Àü¹æ¿¡ º®ÀÌ ÀÖÀ» ¶§ ÀÌ¸¦ °í·ÁÇÏ¿© Ä«¸Ş¶ó¸¦ ´ç±æ °ÍÀÎÁö, ¸» °ÍÀÎÁö¿¡ ´ëÇÑ ÆÇ´Ü º¯¼ö
+    //ì „ë°©ì— ë²½ì´ ìˆì„ ë•Œ ì´ë¥¼ ê³ ë ¤í•˜ì—¬ ì¹´ë©”ë¼ë¥¼ ë‹¹ê¸¸ ê²ƒì¸ì§€, ë§ ê²ƒì¸ì§€ì— ëŒ€í•œ íŒë‹¨ ë³€ìˆ˜
     public bool blockingCheck;
     */
     #endregion
@@ -265,3 +389,18 @@ public class CustomViewCameraData
 
 }
 */
+
+/// <summary>
+/// ì¹´ë©”ë¼ íƒ€ê²Ÿê³¼, ê·¸ íƒ€ê²Ÿì— ëŒ€ì‘í•˜ëŠ” í˜„ì¬ ì¹´ë©”ë¼ íƒ€ì…ì„ ë³´ê´€í•˜ëŠ” í´ë˜ìŠ¤
+/// </summary>
+public class CameraTargetInfo
+{
+    public ICameraTarget cameraTarget;
+    public CameraViewType cameraType;
+
+    public CameraTargetInfo(ICameraTarget cameraTarget, CameraViewType cameraType)
+    {
+        this.cameraTarget = cameraTarget;
+        this.cameraType = cameraType;
+    }
+}

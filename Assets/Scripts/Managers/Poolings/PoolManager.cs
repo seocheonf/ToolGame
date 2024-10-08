@@ -49,6 +49,9 @@ public class PoolManager : Manager
                 {
                     yield return null;
                 }
+
+                GameManager.TurnOffBasicLoadingCanvas();
+
             }
         }
 

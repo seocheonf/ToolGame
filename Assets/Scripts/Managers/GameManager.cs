@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 public delegate void StartFunction();
@@ -49,7 +50,12 @@ public class GameManager : MonoBehaviour
 
     //매 FixedUpdate마다 지속적으로 해야할 일들의 묶음
     public static FixedUpdateFunction ManagersFixedUpdate;
+    public static FixedUpdateFunction CharactersFixedUpdate;
     public static FixedUpdateFunction ObjectsFixedUpdate;
+
+    //매 LateUpdate마다 지속적으로 해야할 일들의 묶음
+    //일반적으로 렌더링 직전 해야할 일들을 정의함.
+    public static UpdateFunction ManagersLateUpdate;
 
     //사라질 때 한번 해야할 일들의 묶음
     public static DestroyFunction ManagersDestroy;
@@ -105,7 +111,7 @@ public class GameManager : MonoBehaviour
     /// <returns></returns>
     private IEnumerator Start()
     {
-
+ 
         #region MakeSingleton
         
         //싱글톤. 만약 원본이 없다면 저장, 있다면 본인 파괴하고 즉각 나가기.
@@ -122,6 +128,8 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         #endregion
+
+        IsScriptEntireUpdateStop = true;
 
         TurnOnBasicLoadingCavnas("");
 
@@ -156,30 +164,41 @@ public class GameManager : MonoBehaviour
         option = new OptionManager();
         yield return option.Initiate();
 
-
         ManagersUpdate += controller.ManagerUpdate;
         ManagersUpdate += ui.ManagerUpdate;
         ManagersUpdate += sound.ManagerUpdate;
 
+        DoCompletelyStartFunction(ref ManagersStart);
+
         TurnOffBasicLoadingCanvas();
+
+        IsScriptEntireUpdateStop = false;
 
     }
 
 
+    private void DoCompletelyStartFunction(ref StartFunction target)
+    {
+        StartFunction runTarget = target;
+        target = null;
+        runTarget?.Invoke();
+    }
+
     private void Update()
     {
-
+        
         if (isScriptEntireUpdateStop) return;
 
         if(ManagersStart != null)
         {
-            ManagersStart.Invoke();
-            ManagersStart = null;
+            DoCompletelyStartFunction(ref ManagersStart);
         }
         else
         {
-            ObjectsStart?.Invoke();
-            ObjectsStart = null;
+            if (currentWorld == null || !currentWorld.WorldAlive)
+                return;
+
+            DoCompletelyStartFunction(ref ObjectsStart);
 
             if (!isScriptManagersUpdateStop) ManagersUpdate?.Invoke(Time.deltaTime);
             if (!isScriptObjectsUpdateStop) ObjectsUpdate?.Invoke(Time.deltaTime);
@@ -189,7 +208,6 @@ public class GameManager : MonoBehaviour
         ObjectsDestroy = null;
         ManagersDestroy?.Invoke();
         ManagersDestroy = null;
-
     }
 
     private void FixedUpdate()
@@ -198,15 +216,20 @@ public class GameManager : MonoBehaviour
 
         if (ManagersStart != null)
         {
-            ManagersStart.Invoke();
-            ManagersStart = null;
+            DoCompletelyStartFunction(ref ManagersStart);
         }
         else
         {
-            ObjectsStart?.Invoke();
-            ObjectsStart = null;
+            if (currentWorld == null || !currentWorld.WorldAlive)
+                return;
 
-            if (!isScriptObjectsUpdateStop) ObjectsFixedUpdate?.Invoke(Time.fixedDeltaTime);
+            DoCompletelyStartFunction(ref ObjectsStart);
+
+            if (!isScriptObjectsUpdateStop)
+            {
+                CharactersFixedUpdate?.Invoke(Time.fixedDeltaTime);
+                ObjectsFixedUpdate?.Invoke(Time.fixedDeltaTime);
+            }
             if (!isScriptManagersUpdateStop) ManagersFixedUpdate?.Invoke(Time.fixedDeltaTime);
         }
 
@@ -216,6 +239,17 @@ public class GameManager : MonoBehaviour
         ManagersDestroy = null;
     }
 
+    private void LateUpdate()
+    {
+        if (isScriptEntireUpdateStop) return;
+
+        if (currentWorld == null)
+            return;
+
+        if (!isScriptManagersUpdateStop) ManagersLateUpdate?.Invoke(Time.deltaTime);        
+    }
+
+    private static int basicLoadingCanvasCount = 0;
 
     /// <summary>
     /// 기본 로딩 캔버스를 문구와 함께 나타낸다. GameManager 스크립트상의 Update를 정지시킨다.
@@ -223,9 +257,12 @@ public class GameManager : MonoBehaviour
     /// <param name="info"> 기본 로딩 캔버스 문구 </param>
     public static void TurnOnBasicLoadingCavnas(string info)
     {
+        basicLoadingCanvasCount += 1;
         instance.basicLoadingCanvas.gameObject.SetActive(true);
         instance.basicLoadingCanvas.SetInfo(info);
-        instance.isScriptEntireUpdateStop = true;
+        //instance.isScriptEntireUpdateStop = true;
+        instance.isScriptManagersUpdateStop = true;
+        instance.isScriptObjectsUpdateStop = true;
     }
     
     /// <summary>
@@ -233,8 +270,20 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public static void TurnOffBasicLoadingCanvas()
     {
-        instance.basicLoadingCanvas.gameObject.SetActive(false);
-        instance.isScriptEntireUpdateStop = false;
+        basicLoadingCanvasCount -= 1;
+        if(basicLoadingCanvasCount == 0)
+        {
+            basicLoadingCanvasCount = 0;
+            instance.basicLoadingCanvas.gameObject.SetActive(false);
+            //instance.isScriptEntireUpdateStop = false;
+            instance.isScriptManagersUpdateStop = false;
+            instance.isScriptObjectsUpdateStop = false;
+        }
+        else if(basicLoadingCanvasCount < 0)
+        {
+            Debug.LogError("베이직 로딩 캔버스의 참조 카운트가 음수에요!");
+        }
+        
     }
 
     /// <summary>
@@ -244,8 +293,24 @@ public class GameManager : MonoBehaviour
     public void SceneChange(string sceneName)
     {
         WorldDelete();
-        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+        StartCoroutine(AsyncSceneChange(sceneName));
+        //TurnOnBasicLoadingCavnas("Scene Change");
+        //UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+        //TurnOffBasicLoadingCanvas();
     }
+    private IEnumerator AsyncSceneChange(string sceneName)
+    {
+        AsyncOperation sceneLoading = SceneManager.LoadSceneAsync(sceneName);
+
+        TurnOnBasicLoadingCavnas("Scene Change...");
+        while(!sceneLoading.isDone)
+        {
+            yield return null;
+        }
+        yield return new WaitUntil(() => currentWorld != null);
+        TurnOffBasicLoadingCanvas();
+    }
+
     /// <summary>
     /// 씬 전환 함수
     /// </summary>
@@ -253,8 +318,24 @@ public class GameManager : MonoBehaviour
     public void SceneChange(int sceneBuildIndex)
     {
         WorldDelete();
-        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneBuildIndex);
+        StartCoroutine(AsyncSceneChange(sceneBuildIndex));
+        //TurnOnBasicLoadingCavnas("Scene Change");
+        //UnityEngine.SceneManagement.SceneManager.LoadScene(sceneBuildIndex);
+        //TurnOffBasicLoadingCanvas();
     }
+    private IEnumerator AsyncSceneChange(int sceneBuildIndex)
+    {
+        AsyncOperation sceneLoading = SceneManager.LoadSceneAsync(sceneBuildIndex);
+
+        TurnOnBasicLoadingCavnas("Scene Change...");
+        while (!sceneLoading.isDone)
+        {
+            yield return null;
+        }
+        yield return new WaitUntil(() => currentWorld != null);
+        TurnOffBasicLoadingCanvas();
+    }
+
     /// <summary>
     /// 새로운 World를 적용하는 함수
     /// </summary>
@@ -279,4 +360,5 @@ public class GameManager : MonoBehaviour
         }
         currentWorld = null;
     }
+
 }
