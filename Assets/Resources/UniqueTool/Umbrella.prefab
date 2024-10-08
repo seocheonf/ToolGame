@@ -147,6 +147,7 @@ MonoBehaviour:
   catchedLocalPositionKnob: {x: 0, y: -0.5408373, z: 0}
   catchedLocalPositionKnobReverse: {x: 0, y: 0.5189254, z: 0}
   settingJointPoint: 0
+  slowDownValue: 0.05
 --- !u!23 &1836171785004981773
 MeshRenderer:
   m_ObjectHideFlags: 0

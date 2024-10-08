@@ -229,4 +229,20 @@ public abstract class UniqueTool : MovablePositionObject
     {
         return holdingFuncInteractionList;
     }
+
+
+
+
+
+
+    public void TP(Transform target)
+    {
+        if(holdingCharacter == null)
+        {
+            transform.position = target.position;
+        }
+    }
 }
+
+
+

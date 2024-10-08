@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Stage1_WorldManager : Stage_WorldManager
+public class Stage3_WorldManager : Stage_WorldManager
 {
     
 }
- 

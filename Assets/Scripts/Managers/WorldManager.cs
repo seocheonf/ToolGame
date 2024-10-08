@@ -26,6 +26,9 @@ public class WorldManager : MonoBehaviour
     private Canvas worldCanvas;
     public Canvas WorldCanvas => worldCanvas;
 
+    private bool worldAlive = false;
+    public bool WorldAlive => worldAlive;
+
     /// <summary>
     /// 각 월드의 업데이트를 한번에 빼기 위해서, 그 월드의 업데이트를 실행하는 함수에 한번 감싼 뒤, 이를 GameManager의 업데이트에 관리.
     /// </summary>
@@ -66,6 +69,7 @@ public class WorldManager : MonoBehaviour
         //    UnityEngine.SceneManagement.SceneManager.LoadScene(0);
         //    yield break;
         //}
+
 #endif
 
 
@@ -126,6 +130,7 @@ public class WorldManager : MonoBehaviour
         GameManager.TurnOffBasicLoadingCanvas();
         GameManager.Instance.IsScriptEntireUpdateStop = false;
 
+        worldAlive = true;
     }
 
     protected virtual IEnumerator RemainInitiate() { yield return null; }
@@ -139,6 +144,8 @@ public class WorldManager : MonoBehaviour
         GameManager.ManagersUpdate -= InnerWorldUpdates;
         GameManager.ManagersFixedUpdate -= InnerWorldFixedUpdates;
         GameManager.ManagersLateUpdate -= InnerWorldLateUpdates;
+        worldAlive = false;
     }
+
 
 }
