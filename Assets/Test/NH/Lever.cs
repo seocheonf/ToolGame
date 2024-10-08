@@ -8,7 +8,7 @@ public class Lever : LimitPositionObject, IOnOffFuncInteraction, ITriggerFuncInt
     [SerializeField] MyComponent targetObject;
     IOnOffFuncInteraction targetOnOff;
 
-    bool isActive = false;
+    [SerializeField] bool isActive = false;
 
     protected override void Initialize()
     {
@@ -60,11 +60,11 @@ public class Lever : LimitPositionObject, IOnOffFuncInteraction, ITriggerFuncInt
     {
         if (isActive)
         {
-            leverSwitch.transform.rotation = Quaternion.Euler(0, 0, -45);
+            leverSwitch.transform.localRotation = Quaternion.Euler(0, 0, -45);
         }
         else
         {
-            leverSwitch.transform.rotation = Quaternion.Euler(0, 180, -45);
+            leverSwitch.transform.localRotation = Quaternion.Euler(0, 0, -135);
         }
     }
 
