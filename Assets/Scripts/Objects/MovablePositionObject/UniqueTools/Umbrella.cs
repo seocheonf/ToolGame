@@ -93,6 +93,7 @@ public class Umbrella : UniqueTool
 #endif
 
     [SerializeField]
+    [Range(0f, 1f)]
     private float slowDownValue;
 
     protected override void Initialize()
