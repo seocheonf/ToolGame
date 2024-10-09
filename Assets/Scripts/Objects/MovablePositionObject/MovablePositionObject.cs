@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class MovablePositionObject : PhysicsInteractionObject
+public abstract class MovablePositionObject : PhysicsInteractionObject, ITeleportTarget_Portal
 {
     /*
     protected float initialMass;
@@ -17,5 +17,8 @@ public abstract class MovablePositionObject : PhysicsInteractionObject
         currentMass = currentRigidbody.mass;
     }
     */
-
+    public virtual void TP(Vector3 targetPosition)
+    {
+        transform.position = targetPosition;
+    }
 }

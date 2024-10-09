@@ -111,3 +111,17 @@ public class PortalDevice : MyComponent
 
     }
 }
+
+
+
+//==============================================================================//
+
+
+
+/// <summary>
+/// 포탈에 의한 TP대상에게 부착한다.
+/// </summary>
+public interface ITeleportTarget_Portal
+{
+    public void TP(Vector3 targetPosition);
+}

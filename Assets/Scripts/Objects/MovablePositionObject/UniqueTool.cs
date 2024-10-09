@@ -234,3 +234,14 @@ public abstract class UniqueTool : MovablePositionObject
 
 
 
+//==============================================================================//
+
+
+
+/// <summary>
+/// 도구에 의한 TP대상에게 부착한다.
+/// </summary>
+public interface ITeleportTarget_UniqueTool
+{
+
+}
