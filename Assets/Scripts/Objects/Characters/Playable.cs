@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using ToolGame;
 
+
 public class Playable : Character, ICameraTarget
 {
     private FixedJoint joint = null;   //앉기 기능때문에 추가
@@ -16,10 +17,19 @@ public class Playable : Character, ICameraTarget
     private IOuterFuncInteraction currentTargetOuterFuncInteraction;
 
     private List<FuncInteractionData> originInputFuncInteractionList;
-    private List<FuncInteractionData> currentHoldingFuncInteractionList; //현재 들고 있는 도구의 기능들 모음
+    /// <summary>
+    /// 현재 들고 있는 도구의 기능들 모음
+    /// </summary>
+    private List<FuncInteractionData> currentHoldingFuncInteractionList;
     private List<FuncInteractionData> currentOuterFuncInteractionList;
-    //깔쌈한테스트//
-    private List<FuncInteractionData> playableActionFuncInteractionList; //플레이어블의 행동과 연관이 있는 기능들 모음
+    /// <summary>
+    /// 플레이어블의 행동과 연관이 있는 기능들 모음
+    /// </summary>
+    private List<FuncInteractionData> playableActionFuncInteractionList;
+    /// <summary>
+    /// 플레이어블과 연관되지만, 마치 매니저처럼 어느 상황에서든 되었으면 하는 것
+    /// </summary>
+    private List<FuncInteractionData> playableAbsoluteFuncInteractionList;
 
     private bool isSit;
     private bool isPickUpTool = false;
@@ -39,12 +49,52 @@ public class Playable : Character, ICameraTarget
     [SerializeField] float clampAngle;
     [SerializeField] float sightForwardLength;
 
+    //캐릭터 인칭
+    private CameraViewType playableView;
+    private CameraViewType PlayableView
+    {
+        get
+        {
+            return playableView;
+        }
+        set
+        {
+            GameManager.Instance.CurrentWorld.WorldCamera.CameraBreak(this);
+            playableView = value;
+            GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, playableView);
+        }
+    }
+
     //플레이어블 입력 UI
     private PlayableInputUI inputUI;
 
+
+    protected override void Initialize()
+    {
+        base.Initialize();
+
+        rushPower = defaultRushPower;
+        playableView = CameraViewType.ThirdView;
+
+        GameManager.ObjectsUpdate -= PlayableManagerUpdate;
+        GameManager.CharactersFixedUpdate -= PlayableManagerFixedUpdate;
+
+        GameManager.ObjectsUpdate += PlayableManagerUpdate;
+        GameManager.CharactersFixedUpdate += PlayableManagerFixedUpdate;
+
+        //깔쌈한테스트//
+        currentHoldingFuncInteractionList = new List<FuncInteractionData>();
+        playableActionFuncInteractionList = new List<FuncInteractionData>();
+        playableAbsoluteFuncInteractionList = new List<FuncInteractionData>();
+
+        inputUI = GameManager.Instance.UI.GetFixedUI<PlayableInputUI>(FixedUIType.PlayableInputUI);
+    }
     protected override void MyStart()
     {
         base.MyStart();
+        
+        //==Initialize() 끝난 후==//
+
         characterCollider = GetComponent<CapsuleCollider>();
         anim = GetComponentInChildren<Animator>();
 
@@ -93,8 +143,23 @@ public class Playable : Character, ICameraTarget
 
         AddInputFuncInteraction(playableActionFuncInteractionList);
 
-        GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraViewType.ThirdView);
+        // 절대적 입력
+
+        FuncInteractionData sightChange = new(OuterKeyCode.Sight, "1, 3인칭을 교체하는 기능", OnSightChange, null, null);
+        AddInputFuncInteraction(sightChange);
+
+        // 기능적 초기화 (Initialize는 다소 변수적 초기화)
+        PlayableViewInitialize();
     }
+
+
+    private void PlayableViewInitialize()
+    {
+        GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, CameraViewType.ThirdView);
+        PlayableView = CameraViewType.ThirdView;
+    }
+
+
     protected void PlayableManagerUpdate(float deltaTime)
     {
         ApplicationGeneralState();
@@ -113,24 +178,6 @@ public class Playable : Character, ICameraTarget
         if(currentGeneralState == GeneralState.Normal && !isSit && !isRush) MoveLookAt();
     }
 
-    protected override void Initialize()
-    {
-        base.Initialize();
-
-        rushPower = defaultRushPower;
-
-        GameManager.ObjectsUpdate -= PlayableManagerUpdate;
-        GameManager.CharactersFixedUpdate -= PlayableManagerFixedUpdate;
-
-        GameManager.ObjectsUpdate += PlayableManagerUpdate;
-        GameManager.CharactersFixedUpdate += PlayableManagerFixedUpdate;
-
-        //깔쌈한테스트//
-        currentHoldingFuncInteractionList = new List<FuncInteractionData>();
-        playableActionFuncInteractionList = new List<FuncInteractionData>();
-
-        inputUI = GameManager.Instance.UI.GetFixedUI<PlayableInputUI>(FixedUIType.PlayableInputUI);
-    }
 
     protected override void MyDestroy()
     {
@@ -139,6 +186,8 @@ public class Playable : Character, ICameraTarget
         GameManager.CharactersFixedUpdate -= PlayableManagerFixedUpdate;
 
         RemoveInputFuncInteraction(playableActionFuncInteractionList);
+
+        RemoveInputFuncInteraction(playableAbsoluteFuncInteractionList);
     }
 
     protected override void Jump()
@@ -272,6 +321,33 @@ public class Playable : Character, ICameraTarget
             }
         }
     }
+
+    /// <summary>
+    /// 1, 3인칭을 전환하는 함수
+    /// </summary>
+    private void OnSightChange()
+    {
+        if (PlayableView == CameraViewType.Length - 1)
+        {
+            PlayableView = CameraViewType.FirstView;
+        }
+        else if (PlayableView >= CameraViewType.Default)
+        {
+            PlayableView += 1;
+        }
+        else if (PlayableView >= CameraViewType.Length)
+        {
+            Debug.LogError("허용되지 않은 플레이어블의 카메라 타입입니다!");
+            PlayableView = CameraViewType.FirstView;
+        }
+        else
+        {
+            Debug.LogError("규격외의 값입니다!");
+            PlayableView = CameraViewType.FirstView;
+        }
+    }
+
+   
 
     protected override void ApplicationGeneralState()
     {
@@ -460,10 +536,6 @@ public class Playable : Character, ICameraTarget
 
 
 
-
-
-
-
     protected override void PutTool()
     {
         //깔쌈한테스트//
@@ -483,5 +555,6 @@ public class Playable : Character, ICameraTarget
         AddPlayableActionInputFuncInteraction(currentHoldingFuncInteractionList);
         AddInputFuncInteraction(currentHoldingFuncInteractionList);
     }
+
 
 }

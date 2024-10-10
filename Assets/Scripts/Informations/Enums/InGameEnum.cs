@@ -28,7 +28,8 @@ namespace ToolGame
     {
         Default,
         FirstView,
-        ThirdView
+        ThirdView,
+        Length
     }
 
     public enum OuterKeyCode
@@ -63,6 +64,9 @@ namespace ToolGame
 
         //Esc
         Esc,
+
+        //ÀÎÄª ÀüÈ¯
+        Sight,
 
         #endregion
 

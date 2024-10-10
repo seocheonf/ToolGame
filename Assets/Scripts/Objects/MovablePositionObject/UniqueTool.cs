@@ -230,6 +230,14 @@ public abstract class UniqueTool : MovablePositionObject
         return holdingFuncInteractionList;
     }
 
+
+    public override void TP_Portal(Vector3 targetPosition)
+    {
+        if(holdingCharacter == null)
+        {
+            base.TP_Portal(targetPosition);
+        }
+    }
 }
 
 

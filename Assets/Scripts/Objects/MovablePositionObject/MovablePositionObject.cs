@@ -17,8 +17,9 @@ public abstract class MovablePositionObject : PhysicsInteractionObject, ITelepor
         currentMass = currentRigidbody.mass;
     }
     */
-    public virtual void TP(Vector3 targetPosition)
+    public virtual void TP_Portal(Vector3 targetPosition)
     {
         transform.position = targetPosition;
+        currentRigidbody.velocity = Vector3.zero;
     }
 }

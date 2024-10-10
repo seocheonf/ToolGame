@@ -192,15 +192,14 @@ public class BigLeaf : UniqueTool
     public override void GetSpecialInteraction(WaterData source)
     {
         //조류
-        AddForce(new ForceInfo(source.Direction * source.intensity * 0.01f, ForceType.DurationForce));
+        if (holdingCharacter == null)
+        {
+            AddForce(new ForceInfo(source.Direction * source.intensity, ForceType.DurationForce));
+        }
         //부력
         AddForce(new ForceInfo(Vector3.up * source.amount * bigLeafBuoyancyRatio, ForceType.UnityDuration));
 
         
-        if (holdingCharacter == null)
-        {
-            
-        }
     }
 
 
