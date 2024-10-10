@@ -412,6 +412,11 @@ public class Playable : Character, ICameraTarget
         return tempt;
     }
 
+    public void CustomViewCameraSet(Camera main, float deltaTime)
+    {
+
+    }
+
     public override Vector3 CurrentSightEulerAngle_Origin
     {
         get

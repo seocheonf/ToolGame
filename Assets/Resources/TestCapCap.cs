@@ -90,4 +90,8 @@ public class TestCapCap : MyComponent, ICameraTarget
         return tempt2;
     }
 
+    public void CustomViewCameraSet(Camera main, float deltaTime)
+    {
+
+    }
 }

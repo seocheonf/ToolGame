@@ -111,7 +111,10 @@ public class HngmoCharacter : Character, ICameraTarget
         tempt.SetInfo(transform.position, -yRot, xRot, 3, 10, 1, 5);
         return tempt;
     }
+    public void CustomViewCameraSet(Camera main, float deltaTime)
+    {
 
+    }
 
     public override Vector3 CurrentSightEulerAngle_Origin
     {

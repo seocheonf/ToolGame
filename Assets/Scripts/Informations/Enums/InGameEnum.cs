@@ -26,6 +26,7 @@ namespace ToolGame
 
     public enum CameraViewType
     {
+        Custom,
         Default,
         FirstView,
         ThirdView,
