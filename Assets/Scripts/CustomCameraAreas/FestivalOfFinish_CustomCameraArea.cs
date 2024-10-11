@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using System;
 
 delegate void SemiCustomCamera(Camera main, float deltaTime);
 
@@ -28,7 +27,22 @@ public class FestivalOfFinish_CustomCameraArea : MyComponent, ICameraTarget
 
     public void CustomViewCameraSet(Camera main, float deltaTime)
     {
-        FB(main, deltaTime);
+        float x = Random.Range(-1, 1);
+        float y = Random.Range(-1, 1);
+        float z = Random.Range(-1, 1);
+        Vector3 vector3 = new Vector3(x, y, z);
+        vector3 *= deltaTime * 5f;
+        main.transform.position += Vector3.one;
+
+        if(Vector3.Distance(transform.position, target.transform.position) > maxRadius)
+        {
+
+        }
+
+
+        main.transform.LookAt(target.transform);
+
+        //FB(main, deltaTime);
 
         //currentRadius = currentRadiusDirection ? currentRadius - deltaTime * 5f : currentRadius + deltaTime * 5f;
         //currentRadiusDirection = Mathf.Abs(currentRadius) >= maxRadius ? true : false;
@@ -91,6 +105,7 @@ public class FestivalOfFinish_CustomCameraArea : MyComponent, ICameraTarget
         {
             target = result;
             GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, ToolGame.CameraViewType.Custom);
+            transform.position = target.transform.position;
         }
     }
 
