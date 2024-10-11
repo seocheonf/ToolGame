@@ -9,98 +9,49 @@ public class FestivalOfFinish_CustomCameraArea : MyComponent, ICameraTarget
 {
 
     [SerializeField]
-    float minRadius;
+    private Transform[] cameraMoveVertexRef;
+
+    private Vector3[] cameraMoveVertex;
+
+    private int vertexCount;
+    private int currentIndex = 0;
+    private int nextIndex;
+
+    private float currentTime = 0;
     [SerializeField]
-    float maxRadius;
+    private float endTime;
 
-    float currentRadius;
-    bool currentRadiusDirection = false; // 거짓이면 바깥쪽으로
-
-    Playable target;
-
-    SemiCustomCamera FB;
+    private Playable target;
 
     private void Awake()
     {
-        FB = Forward;
-    }
+        vertexCount = cameraMoveVertexRef.Length;
+        cameraMoveVertex = new Vector3[vertexCount];
 
-    Vector3 nextLocalPosition = Vector3.zero;
-    bool pm = true;
+        for(int i = 0; i < vertexCount; i++)
+        {
+            //area의 크기를 반영하여, 카메라 위치 좌표를 나타내는 오브젝트의 local좌표에 곱해준다. 단, 위치 좌표 나타내는 오브젝트가 그 area오브젝트의 자식이어야 한다...
+            Vector3 vector3 = new Vector3(cameraMoveVertexRef[i].transform.localPosition.x * transform.lossyScale.x, cameraMoveVertexRef[i].transform.localPosition.y * transform.lossyScale.y, cameraMoveVertexRef[i].transform.localPosition.z * transform.lossyScale.z);
+            cameraMoveVertex[i] = vector3;
+            Debug.Log(vector3);
+        }
+    }
 
     public void CustomViewCameraSet(Camera main, float deltaTime)
     {
-        float x_p = Random.Range(0, 1f);
-        float y_p = Random.Range(0, 1f);
-        float z_p = Random.Range(0, 1f);
+        nextIndex = currentIndex == vertexCount - 1 ? 0 : currentIndex + 1;
+        Vector3 nextPosition = Vector3.Lerp(cameraMoveVertex[currentIndex], cameraMoveVertex[nextIndex], currentTime / endTime) ;
+        currentTime += deltaTime;
+        main.transform.position = target.transform.position + nextPosition;
 
-        float x_m = Random.Range(-1f, 0);
-        float y_m = Random.Range(-1f, 0);
-        float z_m = Random.Range(-1f, 0);
-
-        Vector3 vector3;
-
-        if (pm)
-            vector3 = new Vector3(x_p, y_p, z_p);
-        else
-            vector3 = new Vector3(x_m, y_m, z_m);
-
-        nextLocalPosition += vector3 * deltaTime * 5f;
-
-        if(nextLocalPosition.magnitude > maxRadius)
+        if(currentTime > endTime)
         {
-            pm = !pm;
+            currentIndex = currentIndex == vertexCount - 1 ? 0 : currentIndex + 1;
+            currentTime = 0;
         }
-        
-        main.transform.position = target.transform.position + nextLocalPosition;
-
 
         main.transform.LookAt(target.transform);
 
-        //FB(main, deltaTime);
-
-        //currentRadius = currentRadiusDirection ? currentRadius - deltaTime * 5f : currentRadius + deltaTime * 5f;
-        //currentRadiusDirection = Mathf.Abs(currentRadius) >= maxRadius ? true : false;
-
-        //main.transform.position = Vector3.back * currentRadius;
-        //main.transform.LookAt(target.transform);
-    }
-
-    private void Forward(Camera main, float deltaTime)
-    {
-        currentRadius = currentRadius - deltaTime * 5f;
-        main.transform.position = Vector3.back * currentRadius;
-        main.transform.LookAt(target.transform);
-
-        if (Mathf.Abs(currentRadius) >= maxRadius)
-        {
-            FB = null;
-            FB += Backward;
-        }
-    }
-
-    /*
-     * 
-     * 현재 카메라 위치에서 내가 가고 싶은 방향벡터를 deltaTime을 곱해서 더하고,
-     * 만약 radius가 넘어간다면 다시 당겨주도록 한다.
-     * 만약 현재 radius가 클 수록, 중심쪽으로 가고자하는 방향벡터를 선택할 가능성이 더 높다.
-     * 앞으로 가고자 하는, 선택할 방향의 선택에, 가중치를 두어서 어떻게 갈지를 결정하게 한다.
-     * 
-     * 가중치는 radius경향성, right경향성, up경향성
-     * 
-     * 최근에 어느 특정 방향으로 많이 선택되었다면, 방향(up, forward, right에 대한 +, -)의 선택확률(비율)이 달라지는 것.
-     * 
-     */
-
-    private void Backward(Camera main, float deltaTime)
-    {
-
-
-        if (Mathf.Abs(currentRadius) <= minRadius)
-        {
-            FB = null;
-            FB += Forward;
-        }
     }
 
 
