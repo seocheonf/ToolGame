@@ -25,19 +25,34 @@ public class FestivalOfFinish_CustomCameraArea : MyComponent, ICameraTarget
         FB = Forward;
     }
 
+    Vector3 nextLocalPosition = Vector3.zero;
+    bool pm = true;
+
     public void CustomViewCameraSet(Camera main, float deltaTime)
     {
-        float x = Random.Range(-1, 1);
-        float y = Random.Range(-1, 1);
-        float z = Random.Range(-1, 1);
-        Vector3 vector3 = new Vector3(x, y, z);
-        vector3 *= deltaTime * 5f;
-        main.transform.position += Vector3.one;
+        float x_p = Random.Range(0, 1f);
+        float y_p = Random.Range(0, 1f);
+        float z_p = Random.Range(0, 1f);
 
-        if(Vector3.Distance(transform.position, target.transform.position) > maxRadius)
+        float x_m = Random.Range(-1f, 0);
+        float y_m = Random.Range(-1f, 0);
+        float z_m = Random.Range(-1f, 0);
+
+        Vector3 vector3;
+
+        if (pm)
+            vector3 = new Vector3(x_p, y_p, z_p);
+        else
+            vector3 = new Vector3(x_m, y_m, z_m);
+
+        nextLocalPosition += vector3 * deltaTime * 5f;
+
+        if(nextLocalPosition.magnitude > maxRadius)
         {
-
+            pm = !pm;
         }
+        
+        main.transform.position = target.transform.position + nextLocalPosition;
 
 
         main.transform.LookAt(target.transform);
@@ -105,7 +120,6 @@ public class FestivalOfFinish_CustomCameraArea : MyComponent, ICameraTarget
         {
             target = result;
             GameManager.Instance.CurrentWorld.WorldCamera.CameraSet(this, ToolGame.CameraViewType.Custom);
-            transform.position = target.transform.position;
         }
     }
 
