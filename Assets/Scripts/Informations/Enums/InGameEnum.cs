@@ -116,7 +116,9 @@ namespace ToolGame
     {
         FloatingUITest,
 
-        InStageOption
+        InStageOption,
+
+        SettingUI
     }
 
 }

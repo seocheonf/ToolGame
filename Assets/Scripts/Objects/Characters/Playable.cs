@@ -146,6 +146,7 @@ public class Playable : Character, ICameraTarget
         // 절대적 입력
 
         FuncInteractionData sightChange = new(OuterKeyCode.Sight, "1, 3인칭을 교체하는 기능", OnSightChange, null, null);
+        playableAbsoluteFuncInteractionList.Add(sightChange);
         AddInputFuncInteraction(sightChange);
 
         // 기능적 초기화 (Initialize는 다소 변수적 초기화)

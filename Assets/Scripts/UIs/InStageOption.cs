@@ -12,6 +12,13 @@ public class InStageOption : FloatingUIComponent
     [SerializeField]
     private Button exitButton;
 
+    private SettingUI settingUI;
+
+    private void Awake()
+    {
+        settingUI = GameManager.Instance.UI.GetFloatingUI<SettingUI>(ToolGame.FloatingUIType.SettingUI);
+    }
+
     protected override void MyStart()
     {
         base.MyStart();
@@ -26,6 +33,7 @@ public class InStageOption : FloatingUIComponent
         settingButton.onClick.AddListener(() =>
         {
             UIManager.SetSelectedNull();
+            PopSettingUI();
         });
         exitButton.onClick.AddListener(() =>
         {
@@ -51,6 +59,11 @@ public class InStageOption : FloatingUIComponent
     private void OutOption()
     {
         SetActive(false);
+    }
+
+    private void PopSettingUI()
+    {
+        settingUI.SetActive(true);
     }
 
     private void ExitToTitle()
