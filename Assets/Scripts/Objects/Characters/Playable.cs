@@ -560,6 +560,4 @@ public class Playable : Character, ICameraTarget
         AddPlayableActionInputFuncInteraction(currentHoldingFuncInteractionList);
         AddInputFuncInteraction(currentHoldingFuncInteractionList);
     }
-
-
 }

@@ -301,7 +301,6 @@ public class GameManager : MonoBehaviour
     private IEnumerator AsyncSceneChange(string sceneName)
     {
         AsyncOperation sceneLoading = SceneManager.LoadSceneAsync(sceneName);
-
         TurnOnBasicLoadingCavnas("Scene Change...");
         while(!sceneLoading.isDone)
         {
@@ -360,5 +359,4 @@ public class GameManager : MonoBehaviour
         }
         currentWorld = null;
     }
-
 }
