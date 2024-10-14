@@ -241,7 +241,7 @@ public class CameraManager : Manager
 
         FirstViewCameraData targetData = cameraTargetLStack[0].cameraTarget.FirstViewCameraSet();
 
-        mainCamera.transform.position = targetData.targetPosition;
+        mainCamera.transform.position = targetData.targetPosition + targetData.targetForward * 0.5f;
         mainCamera.transform.forward = targetData.targetForward;
 
     }
