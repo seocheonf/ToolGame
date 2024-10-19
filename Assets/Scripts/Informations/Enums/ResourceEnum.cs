@@ -31,7 +31,9 @@ namespace ResourceEnum
 
         UI_Fixed_TitleUI,
 
-        UI_Floating_InStageOption
+        UI_Floating_InStageOption,
+
+        UI_Floating_SettingUI
 
         #endregion
 

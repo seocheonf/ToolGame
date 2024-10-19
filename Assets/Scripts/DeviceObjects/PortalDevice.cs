@@ -11,7 +11,7 @@ enum PortalTarget
     None
 }
 
-delegate void ResponsePlayer(GameObject playable);
+delegate void ResponseGameObject(GameObject playable);
 
 public class PortalDevice : MyComponent
 {
@@ -27,7 +27,7 @@ public class PortalDevice : MyComponent
 
     private bool ready = false;
 
-    private ResponsePlayer DoOnPlayerEnter;
+    private ResponseGameObject DoOnPlayerEnter;
 
     protected override void MyStart()
     {
@@ -66,48 +66,67 @@ public class PortalDevice : MyComponent
     private void OnTriggerEnter(Collider other)
     {
         if (ready)// && other.TryGetComponent(out Playable result))
-        {
+        {  
             DoOnPlayerEnter?.Invoke(other.gameObject);
         }
     }
 
-    private void DoSceneChangeS(GameObject playable)
+    private void DoSceneChangeS(GameObject target)
     {
-        if (playable.TryGetComponent(out Playable result))
+        if (target.TryGetComponent(out Playable result))
         {
             GameManager.Instance.SceneChange(targetSceneName);
         }
     }
-    private void DoSceneChangeI(GameObject playable)
+    private void DoSceneChangeI(GameObject target)
     {
-        if (playable.TryGetComponent(out Playable result))
+        if (target.TryGetComponent(out Playable result))
         {
             GameManager.Instance.SceneChange(targetSceneIndex);
         }
     }
-    private void DoTeleport(GameObject playable)
+    private void DoTeleport(GameObject target)
     {
-        if (targetPortal != null)
-        {
-            if(!playable.TryGetComponent(out UniqueTool result2))
-            {
-                playable.transform.position = targetPortal.transform.position;
-            }
-            else
-            {
-                result2.TP(targetPortal.transform);
-            }
-        }
-        else
-            Debug.LogError("이동 목적지가 되는 포탈이 없어요!!!!");
+        //if(targetPortal != null)
+        //{
+        //    if(target.TryGetComponent(out ITeleportTarget_Portal result))
+        //    {
+        //        result.TP_Portal(targetPortal.transform.position);
+        //    }
+        //}
+        //else
+        //    Debug.LogError("이동 목적지가 되는 포탈이 없어요!!!!");
 
-        if(playable.TryGetComponent(out MovablePositionObject result))
+        // 위 VS 아래
+
+        if(targetPortal == null)
         {
-            result.CurrentRigidbody.velocity = Vector3.zero;
+            Debug.LogError("이동 목적지가 되는 포탈이 없어요!!!!");
+            return;
+        }
+
+        if (target.TryGetComponent(out ITeleportTarget_Portal result))
+        {
+            result.TP_Portal(targetPortal.transform.position);
+            return;
         }
     }
     private void DoNone(GameObject playable)
     {
 
     }
+}
+
+
+
+//==============================================================================//
+
+
+
+/// <summary>
+/// 포탈에 의한 TP대상에게 부착한다.
+/// </summary>
+public interface ITeleportTarget_Portal
+{
+    public void TP_Portal(Vector3 targetPosition);
 }

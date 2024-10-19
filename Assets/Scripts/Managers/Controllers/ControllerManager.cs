@@ -52,6 +52,7 @@ public class ControllerManager : Manager
         keyCodeConnection.Add(OuterKeyCode.Rot_Forward_Left, KeyCode.Q);
         keyCodeConnection.Add(OuterKeyCode.Rot_Backward_Right, KeyCode.E);
         keyCodeConnection.Add(OuterKeyCode.Esc, KeyCode.Escape);
+        keyCodeConnection.Add(OuterKeyCode.Sight, KeyCode.F5);
 
         //
         keyCodeConnection.Add(OuterKeyCode.T1, KeyCode.Numlock);
