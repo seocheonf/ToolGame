@@ -40,6 +40,11 @@ public class CameraManager : Manager
                         CameraLateUpdate = ThirdViewCameraLateUpdate;
                         break;
                     }
+                case CameraViewType.Custom:
+                    {
+                        CameraLateUpdate = CustomViewCameraLateUpdate;
+                        break;
+                    }
                 default :
                     {
                         CameraLateUpdate = DefaultCameraLateUpdate;
@@ -236,7 +241,7 @@ public class CameraManager : Manager
 
         FirstViewCameraData targetData = cameraTargetLStack[0].cameraTarget.FirstViewCameraSet();
 
-        mainCamera.transform.position = targetData.targetPosition;
+        mainCamera.transform.position = targetData.targetPosition + targetData.targetForward * 0.5f;
         mainCamera.transform.forward = targetData.targetForward;
 
     }
@@ -290,6 +295,15 @@ public class CameraManager : Manager
 
     }
 
+    /// <summary>
+    /// Custom 카메라 동작
+    /// </summary>
+    /// <param name="deltaTime"></param>
+    private void CustomViewCameraLateUpdate(float deltaTime)
+    {
+        cameraTargetLStack[0].cameraTarget.CustomViewCameraSet(mainCamera, deltaTime);
+    }
+
     public override void ManagerLateUpdate(float deltaTime)
     {
         base.ManagerLateUpdate(deltaTime);
@@ -314,6 +328,7 @@ public interface ICameraTarget
 {
     public FirstViewCameraData FirstViewCameraSet();
     public ThirdViewCameraData ThirdViewCameraSet();
+    public void CustomViewCameraSet(Camera main, float deltaTime);
     //public CustomViewCameraData CustomViewCameraSet(Camera mainCamera);
 }
 
@@ -383,12 +398,14 @@ public class ThirdViewCameraData
     */
     #endregion
 }
-/*
-public class CustomViewCameraData
-{
 
-}
-*/
+
+
+//public class CustomViewCameraData
+//{
+
+//}
+
 
 /// <summary>
 /// 카메라 타겟과, 그 타겟에 대응하는 현재 카메라 타입을 보관하는 클래스

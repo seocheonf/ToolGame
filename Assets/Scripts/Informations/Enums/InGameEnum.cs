@@ -26,9 +26,11 @@ namespace ToolGame
 
     public enum CameraViewType
     {
+        Custom,
         Default,
         FirstView,
-        ThirdView
+        ThirdView,
+        Length
     }
 
     public enum OuterKeyCode
@@ -63,6 +65,9 @@ namespace ToolGame
 
         //Esc
         Esc,
+
+        //ÀÎÄª ÀüÈ¯
+        Sight,
 
         #endregion
 
@@ -111,7 +116,9 @@ namespace ToolGame
     {
         FloatingUITest,
 
-        InStageOption
+        InStageOption,
+
+        SettingUI
     }
 
 }

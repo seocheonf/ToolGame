@@ -36,7 +36,9 @@ public static class ResourcePath
 
         "UIs/UI_Fixed_TitleUI",
 
-        "UIs/UI_Floating_InStageOption"
+        "UIs/UI_Floating_InStageOption",
+
+        "UIs/UI_Floating_SettingUI"
 
 
         #endregion

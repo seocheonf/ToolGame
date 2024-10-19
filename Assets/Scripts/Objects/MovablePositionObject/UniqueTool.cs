@@ -231,18 +231,25 @@ public abstract class UniqueTool : MovablePositionObject
     }
 
 
-
-
-
-
-    public void TP(Transform target)
+    public override void TP_Portal(Vector3 targetPosition)
     {
         if(holdingCharacter == null)
         {
-            transform.position = target.position;
+            base.TP_Portal(targetPosition);
         }
     }
 }
 
 
 
+//==============================================================================//
+
+
+
+/// <summary>
+/// 도구에 의한 TP대상에게 부착한다.
+/// </summary>
+public interface ITeleportTarget_UniqueTool
+{
+
+}
