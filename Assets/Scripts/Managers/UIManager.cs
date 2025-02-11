@@ -44,13 +44,18 @@ class FloatingNode
     }
     public void PopAll()
     {
-
-        while(nonBlockingStack.Count - 1 >= 0)
+        int stackCount = nonBlockingStack.Count - 1;
+        for(int i = stackCount; i >= 0; i--)
         {
             nonBlockingStack.Last().SetActive(false);
+            nonBlockingStack.RemoveAt(i);
         }
 
-        nonBlockingStack.Clear();
+        //while(nonBlockingStack.Count - 1 >= 0)
+        //{
+        //    nonBlockingStack.Last().SetActive(false);
+        //}
+        //nonBlockingStack.Clear();
     }
 
     public bool TryGetTop(out FloatingUIComponent result)
